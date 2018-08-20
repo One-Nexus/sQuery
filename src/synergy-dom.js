@@ -1,4 +1,5 @@
 import isValidSelector from './utilities/isValidSelector';
+import deepextend from 'deep-extend';
 
 import * as API from './api';
 
@@ -11,14 +12,16 @@ import * as API from './api';
  */
 export default function Synergy(SynergyQuery, callback, defaults, custom, parser) {
     const methods = {};
+
     const nameSpace = getModuleNamespace(SynergyQuery);
     const DOMNodes = getDomNodes(SynergyQuery);
     const config = getConfig(defaults, custom, parser);
-    const componentGlue = '_';
-    const modifierGlue = '-';
+
+    const componentGlue = config.componentGlue || (window.Synergy && Synergy.componentGlue) || '_';
+    const modifierGlue  = config.modifierGlue  || (window.Synergy && Synergy.modifierGlue)  || '-';
     
     for (let [key, method] of Object.entries(API)) {
-        methods[key] = method.bind(DOMNodes);
+        methods[key] = method.bind({ nameSpace, DOMNodes, componentGlue, modifierGlue });
     }
 
     if (typeof callback === 'function') {
@@ -39,8 +42,12 @@ function getModuleNamespace(query) {
 }
 
 function getDomNodes(query) {
-    if (query instanceof HTMLElement || query instanceof NodeList) {
+    if (query instanceof NodeList) {
         return query;
+    }
+
+    if (query instanceof HTMLElement) {
+        return [query];
     }
 
     if (typeof query === 'string') {
