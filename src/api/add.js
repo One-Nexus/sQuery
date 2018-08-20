@@ -1,6 +1,6 @@
 /**
  * @param {(String|Array)} modifier 
  */
-export default function add(elements, modifier) {
-
+export default function add(modifier) {
+    console.log(this);
 }
