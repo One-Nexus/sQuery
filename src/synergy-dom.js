@@ -1,5 +1,6 @@
-import isValidSelector from './utilities/isValidSelector';
-import deepextend from 'deep-extend';
+import getConfig from './utilities/getConfig';
+import getDomNodes from './utilities/getDomNodes';
+import getModuleNamespace from './utilities/getModuleNamespace';
 
 import * as API from './api';
 
@@ -13,15 +14,15 @@ import * as API from './api';
 export default function Synergy(SynergyQuery, callback, defaults, custom, parser) {
     const methods = {};
 
-    const nameSpace = getModuleNamespace(SynergyQuery);
+    const namespace = getModuleNamespace(SynergyQuery);
     const DOMNodes = getDomNodes(SynergyQuery);
     const config = getConfig(defaults, custom, parser);
 
     const componentGlue = config.componentGlue || (window.Synergy && Synergy.componentGlue) || '_';
     const modifierGlue  = config.modifierGlue  || (window.Synergy && Synergy.modifierGlue)  || '-';
-    
+
     for (let [key, method] of Object.entries(API)) {
-        methods[key] = method.bind({ nameSpace, DOMNodes, componentGlue, modifierGlue });
+        methods[key] = method.bind({ namespace, DOMNodes, componentGlue, modifierGlue });
     }
 
     if (typeof callback === 'function') {
@@ -29,40 +30,4 @@ export default function Synergy(SynergyQuery, callback, defaults, custom, parser
     }
 
     return methods;
-}
-
-function getModuleNamespace(query) {
-    if (typeof query === 'string' && query.match(`^[a-zA-Z0-9_-]+$`)) {
-        return query;
-    }
-
-    if (typeof query === 'object' && 'name' in query) {
-        return query.name;
-    }
-}
-
-function getDomNodes(query) {
-    if (query instanceof NodeList) {
-        return query;
-    }
-
-    if (query instanceof HTMLElement) {
-        return [query];
-    }
-
-    if (typeof query === 'string') {
-        if (isValidSelector(query) && document.querySelectorAll(query).length) {
-            return document.querySelectorAll(query);
-        }
-    }
-}
-
-function getConfig(defaults, custom, parser) {
-    const extendedConfig = deepextend(defaults, custom);
-
-    if (typeof parser === 'function') {
-        return parser(extendedConfig);
-    }
-
-    return extendedConfig;
 }
