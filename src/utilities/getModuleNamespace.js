@@ -21,5 +21,6 @@ export default function getModuleNamespace(query) {
     }
 
     if (query instanceof HTMLElement) {
+        console.log(query);
     }
 }

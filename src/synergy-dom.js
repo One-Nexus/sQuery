@@ -29,5 +29,5 @@ export default function Synergy(SynergyQuery, callback, defaults, custom, parser
         DOMNodes.forEach(node => callback(node, config));
     }
 
-    return methods;
+    return Object.assign(methods, { namespace, DOMNodes });
 }
