@@ -1,3 +1,5 @@
+import getModuleNamespace from '../utilities/getModuleNamespace';
+
 /**
  * @param {(String|Array)} modifier 
  */
@@ -7,6 +9,6 @@ export default function add(modifier) {
             modifier = modifier.join(this.modifierGlue);
         }
 
-        node.classList.add(this.namespace + this.modifierGlue + modifier);
+        node.classList.add(this.namespace || getModuleNamespace(node) + this.modifierGlue + modifier);
     });
 }

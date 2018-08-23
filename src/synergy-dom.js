@@ -14,9 +14,9 @@ import * as API from './api';
 export default function Synergy(SynergyQuery, callback, defaults, custom, parser) {
     const methods = {};
 
+    const config = getConfig(defaults, custom, parser);
     const namespace = getModuleNamespace(SynergyQuery);
     const DOMNodes = getDomNodes(SynergyQuery);
-    const config = getConfig(defaults, custom, parser);
 
     const componentGlue = config.componentGlue || (window.Synergy && Synergy.componentGlue) || '_';
     const modifierGlue  = config.modifierGlue  || (window.Synergy && Synergy.modifierGlue)  || '-';
@@ -29,5 +29,9 @@ export default function Synergy(SynergyQuery, callback, defaults, custom, parser
         DOMNodes.forEach(node => callback(node, config));
     }
 
-    return Object.assign(methods, { namespace, DOMNodes });
+    return Object.assign(methods, { 
+        namespace, 
+        DOMNodes,
+        DOMNode: DOMNodes ? DOMNodes[0] : null
+    });
 }

@@ -14,13 +14,11 @@ export default function getModuleNamespace(query) {
         return query.name;
     }
 
-    if (isValidSelector(query) && document.querySelector(query).length) {
-        if (document.querySelector(query).hasAttribute('data-module')) {
-            return document.querySelector(query).getAttribute('data-module');
-        }
-    }
-
     if (query instanceof HTMLElement) {
-        console.log(query);
+        if (query.closest('[data-module]')) {
+            return query.closest('[data-module]').getAttribute('data-module');
+        }
+
+        return query.classList[0].split(/-(.+)/)[0];
     }
 }
