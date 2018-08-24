@@ -14,8 +14,16 @@ export default function getDomNodes(query) {
         return [query];
     }
 
+    if (query instanceof Array) {
+        return getDomNodes(query[0]);
+    }
+
     if (isValidSelector(query) && document.querySelectorAll(query).length) {
         return document.querySelectorAll(query);
+    }
+
+    if (typeof query === 'object' && query.name) {
+        return getDomNodes(query.name);
     }
 
     if (typeof query === 'string' && query.match(`^[a-zA-Z0-9_-]+$`)) {

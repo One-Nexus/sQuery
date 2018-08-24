@@ -11,6 +11,9 @@ describe('SynergyDOM function', () => {
 
     it('should expose method APIs', () => {
         assert.equal(typeof SynergyDOM().add, 'function');
+        assert.equal(typeof SynergyDOM().addModifier, 'function');
+        assert.equal(typeof SynergyDOM().component, 'function');
+        assert.equal(typeof SynergyDOM().components, 'function');
     });
 
     describe('when invoked with `SynergyQuery` parameter', () => {
@@ -102,27 +105,103 @@ describe('SynergyDOM function', () => {
             });
         });
 
+        describe('as an array where the first value is the query', () => {
+            it('should return the expected nodes based off the query', () => {
+                assert(NodeListsAreEqual(
+                    SynergyDOM(['foo']).DOMNodes, 
+                    document.querySelectorAll('.foo, [class*="foo-"]'))
+                );
+                assert(NodeListsAreEqual(
+                    SynergyDOM(['.foo']).DOMNodes, 
+                    document.querySelectorAll('.foo'))
+                );
+                assert(NodeListsAreEqual(
+                    SynergyDOM(['#SVRNE']).DOMNodes, 
+                    document.querySelectorAll('#SVRNE'))
+                );
+            });
+        });
+
+        describe('as an object which contains a name key corresponding to a module name', () => {
+            it('should return all DOM elements that match the module name', () => {
+                assert(NodeListsAreEqual(
+                    SynergyDOM({ name: 'foo' }).DOMNodes, 
+                    document.querySelectorAll('.foo, [class*="foo-"]'))
+                );
+                assert(NodeListsAreEqual(
+                    SynergyDOM({ name: 'fizz' }).DOMNodes, 
+                    document.querySelectorAll('.fizz, [class*="fizz-"]'))
+                );
+            });
+        });
+
+        /**
+         * `add` and `addModifier` reference the same function, so
+         * only one needs to be tested
+         */
         describe('and `add` method is called', () => {
-            beforeEach('call the `add` method', () => {
-                SynergyDOM('#SVRNE').add('test');
-                SynergyDOM('#M1FAC').add('test');
-                SynergyDOM('#ZSAE6').add('test');
-                SynergyDOM('#HEN8Z').add('test');
-            });
+            describe('with a single modifier', () => {
+                beforeEach('call the `add` method', () => {
+                    SynergyDOM('#SVRNE').addModifier('test');
+                    SynergyDOM('#M1FAC').addModifier('test');
+                    SynergyDOM('#ZSAE6').addModifier('test');
+                    SynergyDOM('#HEN8Z').addModifier('test');
+                });
 
-            it('should have the added modifier', () => {
-                assert(SynergyDOM('#SVRNE').DOMNode.classList.contains('foo-test'));
-                assert(SynergyDOM('#M1FAC').DOMNode.classList.contains('alpha-test'));
-                assert(SynergyDOM('#ZSAE6').DOMNode.classList.contains('foo-test'));
-                assert(SynergyDOM('#HEN8Z').DOMNode.classList.contains('fizz-test'));
+                it('should have the added modifier', () => {
+                    assert(SynergyDOM('#SVRNE').DOMNode.classList.contains('foo-test'));
+                    assert(SynergyDOM('#M1FAC').DOMNode.classList.contains('alpha-test'));
+                    assert(SynergyDOM('#ZSAE6').DOMNode.classList.contains('foo-test'));
+                    assert(SynergyDOM('#HEN8Z').DOMNode.classList.contains('fizz-test'));
+                });
+            });
+            describe('with an array of modifiers', () => {
+                it('should have the added modifiers', () => {
+                });
             });
         });
 
-        describe('and `addModifier` method is called', () => {
-            it('should have the added modifier', () => {
+        describe('and `component` method is called', () => {
+            describe('with no parameters', () => {
+                it('should find all child components', () => {
+                    assert(NodeListsAreEqual(
+                        SynergyDOM('#SVRNE').components(), 
+                        document.querySelectorAll('#HH156, #HRJM1')
+                    ));
+                    assert(NodeListsAreEqual(
+                        SynergyDOM('#SVRNE, #ZSAE6').components(), 
+                        document.querySelectorAll('#HH156, #HRJM1, #N1WY1')
+                    ));
+                });
+            });
+            describe('with no `operator` parameter', () => {
+                it('should find all child components filtered by the component parameter', () => {
+                    console.log(SynergyDOM('#SVRNE').component('#lorem'));
+                });
+            });
+            describe('with second parameter as `operator`', () => {
+                describe('with `operator` as `find`', () => {
+                    it('should find all child components filtered by the component parameter', () => {
+                    });
+                });
+                describe('with `operator` as `is`', () => {
+                    it('should determine whether element is the specified component', () => {
+                    });
+                });
+                describe('with `operator` as `set`', () => {
+                    it('should set element as the specified Component', () => {
+                    });
+                });
+                describe('with `operator` as `unset`', () => {
+                    it('should unnset element as the specified Component', () => {
+                    });
+                });
+            });
+            describe('with second parameter as `callback`', () => {
+                it('should successfuly call the `callback` function', () => {
+                });    
             });
         });
-
     });
 });
 
@@ -133,7 +212,7 @@ describe('SynergyDOM function', () => {
  * @param {*} expected 
  */
 function NodeListsAreEqual(actual, expected) {
-    if (actual.length !== expected.length) {
+    if ((actual.length || Object.keys(actual).length) !== (expected.length || Object.keys(expected).length)) {
         return false;
     }
 
