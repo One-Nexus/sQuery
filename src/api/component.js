@@ -1,24 +1,39 @@
 import getModuleNamespace from '../utilities/getModuleNamespace';
+import getComponents from '../utilities/getComponents';
 
 /**
- * @param {String} modifier 
+ * @param {String} componentName 
  * @param {(('find'|'is'|'set'|'unset')|Function)} operator 
  */
-export default function component(modifier, operator) {
-    if (!modifier && !operator) {
-        let matches = [];
+export default function component(componentName, operator) {
+    if (!componentName && !operator) {
+        return getComponents(this);
+    }
 
-        this.DOMNodes.forEach(node => {
-            const namespace = this.namespace || getModuleNamespace(node);
+    if (!operator || operator === 'find') {
+        return getComponents(this, componentName);
+    }
 
-            matches.push(...[...node.querySelectorAll(`[class*="${namespace}_"]`)].filter(component => {
-                return ([...component.classList].filter(className => {
-                    return className.indexOf(`${namespace}_`) === 0;
-                })[0].match(/_/g) || []).length === 1;
-            }));
+    if (operator === 'is') {
+        return [...this.DOMNodes].every(node => {
+            return [...node.classList].some(className => {
+                const isComponent = (className.split(this.componentGlue).length - 1) === 1;
+
+                return className.indexOf(this.namespace || getModuleNamespace(node)) === 0 && isComponent;
+            });
         });
+    }
 
-        return Object.assign({}, matches);;
+    if (operator === 'set') {
+        this.DOMNodes.forEach(node => node.classList.add(this.namespace || getModuleNamespace(node) + this.componentGlue + componentName));
+    }
+
+    if (operator === 'unset') {
+        this.DOMNodes.forEach(node => node.classList.remove(this.namespace || getModuleNamespace(node)));
+    }
+
+    if (typeof operator === 'function') {
+        this.DOMNodes.forEach(node => operator(node));
     }
 
     return;

@@ -21,13 +21,14 @@ describe('SynergyDOM function', () => {
             document.body.innerHTML = (`
                 <div class="foo" id="SVRNE">
                     <div class="foo_lorem" id="HH156">
-                        <div class="foo_lorem_ipsum" id="00BG9"></div>
+                        <div class="foo_lorem_ipsum" id="A0BG9"></div>
                     </div>
                     <div class="foo_lorem" id="HRJM1">
                         <div class="foo_lorem_ipsum-dolor-sit-amet" id="E0RZS"></div>
                         <div class="fizz" id="KJ4PM"></div>
                         <div class="foo-bar-qux" id="FH5FN"></div>
                     </div>
+                    <div class="foo_ipsum" id="HY7S3"></div>
                 </div>
                 <div class="foo bar" data-module="foo" id="ZSAE6">
                     <div class="foo_lorem" data-component="lorem" id="N1WY1">
@@ -166,39 +167,65 @@ describe('SynergyDOM function', () => {
                 it('should find all child components', () => {
                     assert(NodeListsAreEqual(
                         SynergyDOM('#SVRNE').components(), 
-                        document.querySelectorAll('#HH156, #HRJM1')
+                        document.querySelectorAll('#HH156, #HRJM1, #HY7S3')
                     ));
                     assert(NodeListsAreEqual(
                         SynergyDOM('#SVRNE, #ZSAE6').components(), 
-                        document.querySelectorAll('#HH156, #HRJM1, #N1WY1')
+                        document.querySelectorAll('#HH156, #HRJM1, #HY7S3, #N1WY1')
                     ));
                 });
             });
             describe('with no `operator` parameter', () => {
-                it('should find all child components filtered by the component parameter', () => {
-                    console.log(SynergyDOM('#SVRNE').component('#lorem'));
+                it('should find all child components filtered by the given parameter', () => {
+                    assert(NodeListsAreEqual(
+                        SynergyDOM('#SVRNE').component('lorem'), 
+                        document.querySelectorAll('#HH156, #HRJM1')
+                    ));
+                    assert(NodeListsAreEqual(
+                        SynergyDOM('#SVRNE').component('ipsum'), 
+                        document.querySelectorAll('#HY7S3')
+                    ));
                 });
             });
             describe('with second parameter as `operator`', () => {
                 describe('with `operator` as `find`', () => {
-                    it('should find all child components filtered by the component parameter', () => {
+                    it('should find all child components filtered by the given parameter', () => {
+                        assert(NodeListsAreEqual(
+                            SynergyDOM('#SVRNE').component('lorem', 'find'), 
+                            document.querySelectorAll('#HH156, #HRJM1')
+                        ));
+                        assert(NodeListsAreEqual(
+                            SynergyDOM('#SVRNE').component('ipsum', 'find'), 
+                            document.querySelectorAll('#HY7S3')
+                        ));
                     });
                 });
                 describe('with `operator` as `is`', () => {
                     it('should determine whether element is the specified component', () => {
+                        assert(SynergyDOM('#HH156').component('lorem', 'is'));
+                        assert(SynergyDOM('#HY7S3').component('ipsum', 'is'));
                     });
                 });
                 describe('with `operator` as `set`', () => {
+                    beforeEach(() => SynergyDOM('#VQTLX').component('lorem', 'set'));
+
                     it('should set element as the specified Component', () => {
+                        assert(document.getElementById('VQTLX').classList.contains('fizz_lorem'));
                     });
                 });
                 describe('with `operator` as `unset`', () => {
+                    beforeEach(() => SynergyDOM('#HH156').component('lorem', 'unset'));
+
                     it('should unnset element as the specified Component', () => {
+                        assert(!document.getElementById('HH156').classList.contains('foo_lorem'));
                     });
                 });
             });
             describe('with second parameter as `callback`', () => {
+                beforeEach(() => SynergyDOM('#HH156').component('lorem', element => element.classList.add('callback-success')));
+
                 it('should successfuly call the `callback` function', () => {
+                    assert(document.getElementById('HH156').classList.contains('callback-success'));
                 });    
             });
         });
