@@ -14,6 +14,7 @@ describe('SynergyDOM function', () => {
         assert.equal(typeof SynergyDOM().addModifier, 'function');
         assert.equal(typeof SynergyDOM().component, 'function');
         assert.equal(typeof SynergyDOM().components, 'function');
+        assert.equal(typeof SynergyDOM().find, 'function');
     });
 
     describe('when invoked with `SynergyQuery` parameter', () => {
@@ -56,10 +57,12 @@ describe('SynergyDOM function', () => {
                     SynergyDOM('foo').DOMNodes, 
                     document.querySelectorAll('.foo, [class*="foo-"]'))
                 );
+
                 assert(NodeListsAreEqual(
                     SynergyDOM('bar').DOMNodes, 
                     document.querySelectorAll('.bar, [class*="bar-"]'))
                 );
+
                 assert(NodeListsAreEqual(
                     SynergyDOM('fizz').DOMNodes, 
                     document.querySelectorAll('.fizz, [class*="fizz-"]'))
@@ -73,10 +76,12 @@ describe('SynergyDOM function', () => {
                     SynergyDOM('.foo').DOMNodes, 
                     document.querySelectorAll('.foo'))
                 );
+
                 assert(NodeListsAreEqual(
                     SynergyDOM('.bar').DOMNodes, 
                     document.querySelectorAll('.bar'))
                 );
+
                 assert(NodeListsAreEqual(
                     SynergyDOM('#SVRNE').DOMNodes, 
                     document.querySelectorAll('#SVRNE'))
@@ -99,6 +104,7 @@ describe('SynergyDOM function', () => {
                     SynergyDOM(document.querySelectorAll('.foo')).DOMNodes, 
                     document.querySelectorAll('.foo'))
                 );
+
                 assert(NodeListsAreEqual(
                     SynergyDOM(document.querySelectorAll('div')).DOMNodes, 
                     document.querySelectorAll('div'))
@@ -112,10 +118,12 @@ describe('SynergyDOM function', () => {
                     SynergyDOM(['foo']).DOMNodes, 
                     document.querySelectorAll('.foo, [class*="foo-"]'))
                 );
+
                 assert(NodeListsAreEqual(
                     SynergyDOM(['.foo']).DOMNodes, 
                     document.querySelectorAll('.foo'))
                 );
+
                 assert(NodeListsAreEqual(
                     SynergyDOM(['#SVRNE']).DOMNodes, 
                     document.querySelectorAll('#SVRNE'))
@@ -129,6 +137,7 @@ describe('SynergyDOM function', () => {
                     SynergyDOM({ name: 'foo' }).DOMNodes, 
                     document.querySelectorAll('.foo, [class*="foo-"]'))
                 );
+
                 assert(NodeListsAreEqual(
                     SynergyDOM({ name: 'fizz' }).DOMNodes, 
                     document.querySelectorAll('.fizz, [class*="fizz-"]'))
@@ -156,6 +165,7 @@ describe('SynergyDOM function', () => {
                     assert(SynergyDOM('#HEN8Z').DOMNode.classList.contains('fizz-test'));
                 });
             });
+
             describe('with an array of modifiers', () => {
                 it('should have the added modifiers', () => {
                 });
@@ -169,6 +179,7 @@ describe('SynergyDOM function', () => {
                         SynergyDOM('#SVRNE').components(), 
                         document.querySelectorAll('#HH156, #HRJM1, #HY7S3')
                     ));
+
                     assert(NodeListsAreEqual(
                         SynergyDOM('#SVRNE, #ZSAE6').components(), 
                         document.querySelectorAll('#HH156, #HRJM1, #HY7S3, #N1WY1')
@@ -181,6 +192,7 @@ describe('SynergyDOM function', () => {
                         SynergyDOM('#SVRNE').component('lorem'), 
                         document.querySelectorAll('#HH156, #HRJM1')
                     ));
+
                     assert(NodeListsAreEqual(
                         SynergyDOM('#SVRNE').component('ipsum'), 
                         document.querySelectorAll('#HY7S3')
@@ -194,18 +206,21 @@ describe('SynergyDOM function', () => {
                             SynergyDOM('#SVRNE').component('lorem', 'find'), 
                             document.querySelectorAll('#HH156, #HRJM1')
                         ));
+
                         assert(NodeListsAreEqual(
                             SynergyDOM('#SVRNE').component('ipsum', 'find'), 
                             document.querySelectorAll('#HY7S3')
                         ));
                     });
                 });
+
                 describe('with `operator` as `is`', () => {
                     it('should determine whether element is the specified component', () => {
                         assert(SynergyDOM('#HH156').component('lorem', 'is'));
                         assert(SynergyDOM('#HY7S3').component('ipsum', 'is'));
                     });
                 });
+
                 describe('with `operator` as `set`', () => {
                     beforeEach(() => SynergyDOM('#VQTLX').component('lorem', 'set'));
 
@@ -213,6 +228,7 @@ describe('SynergyDOM function', () => {
                         assert(document.getElementById('VQTLX').classList.contains('fizz_lorem'));
                     });
                 });
+
                 describe('with `operator` as `unset`', () => {
                     beforeEach(() => SynergyDOM('#HH156').component('lorem', 'unset'));
 
@@ -221,12 +237,79 @@ describe('SynergyDOM function', () => {
                     });
                 });
             });
+
             describe('with second parameter as `callback`', () => {
                 beforeEach(() => SynergyDOM('#HH156').component('lorem', element => element.classList.add('callback-success')));
 
                 it('should successfuly call the `callback` function', () => {
                     assert(document.getElementById('HH156').classList.contains('callback-success'));
                 });    
+            });
+        });
+
+        describe('and `find` method is called', () => {
+            beforeEach(() => {
+                document.body.innerHTML = (`
+                    <div class="foo" id="SVRNE">
+                        <div class="fizz" id="KJ4PM">
+                            <div class="fizz_buzz" id="DD45Q">
+                            <div class="fizz_buzz-alpha" id="XU3V8">
+                        </div>
+                        <div class="foo_lorem" id="HH156"></div>
+                        <div class="foo_lorem-alpha" id="HRJM1"></div>
+                    </div>
+                `)
+            });
+
+            it('should find all requested child elements', () => {
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').find({
+                        module: 'fizz'
+                    }),
+                    document.querySelectorAll('#KJ4PM')
+                ));
+
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').find({
+                        module: 'fizz',
+                        component: 'buzz'
+                    }),
+                    document.querySelectorAll('#DD45Q, #XU3V8')
+                ));
+
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').find({
+                        module: 'fizz',
+                        component: 'buzz',
+                        modifier: 'alpha'
+                    }),
+                    document.querySelectorAll('#XU3V8')
+                ));
+
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').find({
+                        component: 'lorem'
+                    }),
+                    document.querySelectorAll('#HH156, #HRJM1')
+                ));
+
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').find({
+                        component: 'lorem',
+                        modifier: 'alpha'
+                    }),
+                    document.querySelectorAll('#HRJM1')
+                ));
+
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').find('lorem'), 
+                    document.querySelectorAll('#HH156, #HRJM1')
+                ));
+
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').find('fizz'), 
+                    document.querySelectorAll('#KJ4PM')
+                ));
             });
         });
     });
