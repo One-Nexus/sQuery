@@ -15,6 +15,13 @@ describe('SynergyDOM function', () => {
         assert.equal(typeof SynergyDOM().component, 'function');
         assert.equal(typeof SynergyDOM().components, 'function');
         assert.equal(typeof SynergyDOM().find, 'function');
+        assert.equal(typeof SynergyDOM().getChildComponent, 'function');
+        assert.equal(typeof SynergyDOM().getChildComponents, 'function');
+        assert.equal(typeof SynergyDOM().getModifiers, 'function');
+        assert.equal(typeof SynergyDOM().has, 'function');
+        assert.equal(typeof SynergyDOM().hasModifier, 'function');
+        assert.equal(typeof SynergyDOM().is, 'function');
+        assert.equal(typeof SynergyDOM().isComponent, 'function');
     });
 
     describe('when invoked with `SynergyQuery` parameter', () => {
@@ -186,6 +193,7 @@ describe('SynergyDOM function', () => {
                     ));
                 });
             });
+
             describe('with no `operator` parameter', () => {
                 it('should find all child components filtered by the given parameter', () => {
                     assert(NodeListsAreEqual(
@@ -199,6 +207,7 @@ describe('SynergyDOM function', () => {
                     ));
                 });
             });
+
             describe('with second parameter as `operator`', () => {
                 describe('with `operator` as `find`', () => {
                     it('should find all child components filtered by the given parameter', () => {
@@ -310,6 +319,63 @@ describe('SynergyDOM function', () => {
                     SynergyDOM('#SVRNE').find('fizz'), 
                     document.querySelectorAll('#KJ4PM')
                 ));
+            });
+        });
+
+        describe('and `getChildComponent` method is called', () => {
+            it('should return the first instance of the matched component', () => {
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').getChildComponent('lorem'), 
+                    document.querySelectorAll('#HH156')
+                ));
+            });
+        });
+
+        describe('and `getChildComponents` method is called', () => {
+            it('should return all matched components', () => {
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').getChildComponents('lorem'), 
+                    document.querySelectorAll('#HH156, #HRJM1')
+                ));
+            });
+        });
+
+        describe('and `getModifiers` method is called', () => {
+            it('should return the modifiers of each matched element', () => {
+                assert.equal(
+                    JSON.stringify(SynergyDOM('#E0RZS').getModifiers()), 
+                    JSON.stringify(['dolor', 'sit', 'amet'])
+                );
+
+                assert.equal(
+                    JSON.stringify(SynergyDOM('#E0RZS, #FH5FN').getModifiers()), 
+                    JSON.stringify(['dolor', 'sit', 'amet', 'bar', 'qux'])
+                );
+            });
+        });
+
+        describe('and `hasModifier` method is called', () => {            
+            describe('with a single modifier', () => {
+                it('determine if each matched element has the passed modifier', () => {
+                    assert(SynergyDOM('#E0RZS').hasModifier('dolor'));
+                });
+            });
+
+            describe('with an array of modifiers', () => {
+            });
+        });
+
+        describe('and `is` method is called', () => {
+            it('should determine if the matched elements match the passed query', () => {
+                assert(SynergyDOM('#SVRNE').is('foo'));
+                assert(SynergyDOM('#HH156').is('lorem'));
+                assert(SynergyDOM('#FH5FN').is('bar'));
+            });
+        });
+    
+        describe('and `isComponent` method is called', () => {
+            it('should determine if the matched elements are the passed component', () => {
+                assert(SynergyDOM('#HH156').isComponent('lorem'));
             });
         });
     });

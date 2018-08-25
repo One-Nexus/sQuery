@@ -1,6 +1,8 @@
 import getModuleNamespace from '../utilities/getModuleNamespace';
 import getComponents from '../utilities/getComponents';
 
+import isComponent from './isComponent';
+
 /**
  * @param {String} componentName 
  * @param {(('find'|'is'|'set'|'unset')|Function)} operator 
@@ -15,13 +17,7 @@ export default function component(componentName, operator) {
     }
 
     if (operator === 'is') {
-        return [...this.DOMNodes].every(node => {
-            return [...node.classList].some(className => {
-                const isComponent = (className.split(this.componentGlue).length - 1) === 1;
-
-                return className.indexOf(this.namespace || getModuleNamespace(node)) === 0 && isComponent;
-            });
-        });
+        return isComponent.bind(this)(componentName);
     }
 
     if (operator === 'set') {

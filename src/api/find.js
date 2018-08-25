@@ -11,11 +11,7 @@ export default function find(query) {
         this.DOMNodes.forEach(node => {
             if (query.module) {
                 if (query.component) {
-                    if (query.modifier) {
-                        return matches.push(...getComponents(this, query.component, query.module, query.modifier));
-                    }
-                    
-                    return matches.push(...getComponents(this, query.component, query.module));
+                    return matches.push(...getComponents(this, query.component, query.module, query.modifier));
                 }
 
                 return matches.push(...node.querySelectorAll(`.${query.module}, [class*="${query.module + query.modifierGlue}"]`));
