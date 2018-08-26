@@ -15,13 +15,25 @@ export default function is(query) {
                 });
 
                 if (query.modifier) {
-                    console.log(query.modifier);
+                    return isModuleNamespace && isComponent.bind(this)(query.component) && hasModifier.bind(this)(query.modifier);
                 }
 
                 return isModuleNamespace && isComponent.bind(this)(query.component);
             }
 
             return isModule(this, query.module);
+        }
+
+        if (query.component) {
+            if (query.modifier) {
+                return isComponent.bind(this)(query.component) && hasModifier.bind(this)(query.modifier);
+            }
+
+            return isComponent.bind(this)(query.component);
+        }
+
+        if (query.modifier) {
+            return hasModifier.bind(this)(query.modifier)
         }
     }
 

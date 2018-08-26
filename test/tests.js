@@ -396,18 +396,18 @@ describe('SynergyDOM function', () => {
                     modifier: 'alpha'
                 }));
 
-                // assert(SynergyDOM('#HH156').is({
-                //     component: 'lorem'
-                // }));
+                assert(SynergyDOM('#HH156').is({
+                    component: 'lorem'
+                }));
 
-                // assert(SynergyDOM('#HRJM1').is({
-                //     component: 'lorem',
-                //     modifier: 'alpha'
-                // }));
+                assert(SynergyDOM('#HRJM1').is({
+                    component: 'lorem',
+                    modifier: 'alpha'
+                }));
 
-                // assert(SynergyDOM('#HRJM1').is({
-                //     modifier: 'alpha'
-                // }));
+                assert(SynergyDOM('#HRJM1').is({
+                    modifier: 'alpha'
+                }));
 
                 assert(SynergyDOM('#SVRNE').is('foo'));
                 assert(SynergyDOM('#HH156').is('lorem'));
