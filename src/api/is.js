@@ -1,3 +1,5 @@
+import getModuleNamespace from '../utilities/getModuleNamespace';
+
 import isComponent from './isComponent';
 import hasModifier from './hasModifier';
 
@@ -6,12 +8,26 @@ import hasModifier from './hasModifier';
  */
 export default function is(query) {
     if (typeof query === 'object') {
+        if (query.module) {
+            if (query.component) {
+                const isModuleNamespace = [...this.DOMNodes].every(node => {
+                    return (this.namespace || getModuleNamespace(node, true)) === query.module;
+                });
 
+                if (query.modifier) {
+                    console.log(query.modifier);
+                }
+
+                return isModuleNamespace && isComponent.bind(this)(query.component);
+            }
+
+            return isModule(this, query.module);
+        }
     }
 
     if (typeof query === 'string') {
-        if (getModules(this, query).length) {
-            return getModules(this, query);
+        if (isModule(this, query)) {
+            return isModule(this, query);
         }
 
         if (isComponent.bind(this)(query)) {
@@ -24,12 +40,8 @@ export default function is(query) {
     }
 }
 
-function getModules(target, moduleName) {
-    let matches = [];
-
-    target.DOMNodes.forEach(node => {
-        matches.push(...node.querySelectorAll(`.${moduleName}, [class*="${moduleName + target.modifierGlue}"]`));
+function isModule(target, moduleName) {
+    return [...target.DOMNodes].every(node => {
+        return node.matches(`.${moduleName}, [class*="${moduleName + target.modifierGlue}"]`);
     });
-
-    return matches;
 }

@@ -22,6 +22,7 @@ describe('SynergyDOM function', () => {
         assert.equal(typeof SynergyDOM().hasModifier, 'function');
         assert.equal(typeof SynergyDOM().is, 'function');
         assert.equal(typeof SynergyDOM().isComponent, 'function');
+        assert.equal(typeof SynergyDOM().modifier, 'function');
     });
 
     describe('when invoked with `SynergyQuery` parameter', () => {
@@ -261,8 +262,8 @@ describe('SynergyDOM function', () => {
                 document.body.innerHTML = (`
                     <div class="foo" id="SVRNE">
                         <div class="fizz" id="KJ4PM">
-                            <div class="fizz_buzz" id="DD45Q">
-                            <div class="fizz_buzz-alpha" id="XU3V8">
+                            <div class="fizz_buzz" id="DD45Q"></div>
+                            <div class="fizz_buzz-alpha" id="XU3V8"></div>
                         </div>
                         <div class="foo_lorem" id="HH156"></div>
                         <div class="foo_lorem-alpha" id="HRJM1"></div>
@@ -366,16 +367,84 @@ describe('SynergyDOM function', () => {
         });
 
         describe('and `is` method is called', () => {
+            beforeEach(() => {
+                document.body.innerHTML = (`
+                    <div class="foo" id="SVRNE">
+                        <div class="fizz" id="KJ4PM">
+                            <div class="fizz_buzz" id="DD45Q"></div>
+                            <div class="fizz_buzz-alpha" id="XU3V8"></div>
+                        </div>
+                        <div class="foo_lorem" id="HH156"></div>
+                        <div class="foo_lorem-alpha" id="HRJM1"></div>
+                    </div>
+                `)
+            });
+
             it('should determine if the matched elements match the passed query', () => {
+                assert(SynergyDOM('#SVRNE').is({
+                    module: 'foo'
+                }));
+
+                assert(SynergyDOM('#HH156').is({
+                    module: 'foo',
+                    component: 'lorem'
+                }));
+
+                assert(SynergyDOM('#HRJM1').is({
+                    module: 'foo',
+                    component: 'lorem',
+                    modifier: 'alpha'
+                }));
+
+                // assert(SynergyDOM('#HH156').is({
+                //     component: 'lorem'
+                // }));
+
+                // assert(SynergyDOM('#HRJM1').is({
+                //     component: 'lorem',
+                //     modifier: 'alpha'
+                // }));
+
+                // assert(SynergyDOM('#HRJM1').is({
+                //     modifier: 'alpha'
+                // }));
+
                 assert(SynergyDOM('#SVRNE').is('foo'));
                 assert(SynergyDOM('#HH156').is('lorem'));
-                assert(SynergyDOM('#FH5FN').is('bar'));
             });
         });
     
         describe('and `isComponent` method is called', () => {
             it('should determine if the matched elements are the passed component', () => {
                 assert(SynergyDOM('#HH156').isComponent('lorem'));
+                assert(SynergyDOM('#HH156, #HRJM1').isComponent('lorem'));
+            });
+        });
+
+        describe('and `modifier` method is called', () => {
+            describe('with no `operator` parameter', () => {
+                it('should determine if each matched element has the specified modifier', () => {
+                }); 
+            });
+            describe('with second parameter as `operator`', () => {
+                describe('with `operator` as `find`', () => {
+                    it('should find all descendent DOM elements that have the specified modifier of each matched element', () => {
+                    }); 
+                });
+                describe('with `operator` as `is`', () => {
+                    it('should determine if each matched element has the specified modifier', () => {
+                    }); 
+                });
+                describe('with `operator` as `set`', () => {
+                    it('should add the specified modifier to each matched element', () => {
+                    }); 
+                });
+                describe('should remove the specified modifier to each matched element', () => {
+                });
+            });
+            describe('with second parameter as `callback`', () => {
+                it('should successfuly call the `callback` function', () => {
+                }); 
             });
         });
     });

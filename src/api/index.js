@@ -36,3 +36,7 @@ export {
 export {
     default as isComponent,
 } from './isComponent';
+
+export {
+    default as modifier,
+} from './modifier';
