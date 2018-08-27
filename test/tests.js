@@ -23,6 +23,7 @@ describe('SynergyDOM function', () => {
         assert.equal(typeof SynergyDOM().is, 'function');
         assert.equal(typeof SynergyDOM().isComponent, 'function');
         assert.equal(typeof SynergyDOM().modifier, 'function');
+        assert.equal(typeof SynergyDOM().removeModifier, 'function');
     });
 
     describe('when invoked with `SynergyQuery` parameter', () => {
@@ -424,27 +425,70 @@ describe('SynergyDOM function', () => {
         describe('and `modifier` method is called', () => {
             describe('with no `operator` parameter', () => {
                 it('should determine if each matched element has the specified modifier', () => {
+                    assert(SynergyDOM('#FH5FN').modifier('qux'));
+                    assert(SynergyDOM('#FH5FN').modifier('bar'));
                 }); 
             });
+
             describe('with second parameter as `operator`', () => {
-                describe('with `operator` as `find`', () => {
-                    it('should find all descendent DOM elements that have the specified modifier of each matched element', () => {
-                    }); 
-                });
                 describe('with `operator` as `is`', () => {
                     it('should determine if each matched element has the specified modifier', () => {
+                        assert(SynergyDOM('#FH5FN').modifier('qux', 'is'));
+                        assert(SynergyDOM('#FH5FN').modifier('bar', 'is'));
                     }); 
                 });
+
                 describe('with `operator` as `set`', () => {
+                    beforeEach('call the `modifier` method', () => {
+                        SynergyDOM('#SVRNE').modifier('test', 'set');
+                    });
+
                     it('should add the specified modifier to each matched element', () => {
-                    }); 
+                        assert(document.getElementById('SVRNE').classList.contains('foo-test'));
+                    });
                 });
-                describe('should remove the specified modifier to each matched element', () => {
+
+                describe('with `operator` as `unset`', () => {
+                    beforeEach('call the `modifier` method', () => {
+                        SynergyDOM('#HEN8Z').modifier('buzz', 'unset');
+                    });
+
+                    it('should remove the specified modifier(s) from each matched element', () => {
+                        // assert(!document.getElementById('HEN8Z').classList.contains('fizz-buzz'));
+                    }); 
                 });
             });
+
             describe('with second parameter as `callback`', () => {
                 it('should successfuly call the `callback` function', () => {
                 }); 
+            });
+        });
+
+        describe('and `removeModifier` method is called', () => {
+            describe('with a single modifier', () => {
+                beforeEach('call the `modifier` method', () => {
+                    SynergyDOM('#HEN8Z').removeModifier('buzz', 'unset');
+                    SynergyDOM('#FH5FN').removeModifier('bar', 'unset');
+                });
+
+                it('should remove the specified modifier from each matched element', () => {
+                    assert(!document.getElementById('HEN8Z').classList.contains('fizz-buzz'));
+                    assert(document.getElementById('HEN8Z').classList.contains('fizz'));
+                    assert(!document.getElementById('FH5FN').classList.contains('foo-bar-qux'));
+                    assert(document.getElementById('FH5FN').classList.contains('foo-qux'));
+                });
+            });
+
+            describe('with multiple modifiers', () => {
+                beforeEach('call the `modifier` method', () => {
+                    SynergyDOM('#FH5FN').removeModifier(['bar', 'qux'], 'unset');
+                });
+
+                it('should remove the specified modifiers from each matched element', () => {
+                    assert(!document.getElementById('FH5FN').classList.contains('foo-bar-qux'));
+                    assert(document.getElementById('FH5FN').classList.contains('foo'));
+                });
             });
         });
     });

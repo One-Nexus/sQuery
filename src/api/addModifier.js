@@ -9,6 +9,6 @@ export default function addModifier(modifier) {
             modifier = modifier.join(this.modifierGlue);
         }
 
-        node.classList.add(this.namespace || getModuleNamespace(node) + this.modifierGlue + modifier);
+        node.classList.add((this.namespace || getModuleNamespace(node)) + this.modifierGlue + modifier);
     });
 }

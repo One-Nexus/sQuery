@@ -40,3 +40,7 @@ export {
 export {
     default as modifier,
 } from './modifier';
+
+export {
+    default as removeModifier,
+} from './removeModifier';

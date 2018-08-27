@@ -31,6 +31,4 @@ export default function component(componentName, operator) {
     if (typeof operator === 'function') {
         this.DOMNodes.forEach(node => operator(node));
     }
-
-    return;
 }

@@ -1,5 +1,6 @@
 import getComponents from '../utilities/getComponents';
 import getModuleNamespace from '../utilities/getModuleNamespace';
+import getModules from '../utilities/getModules';
 
 /**
  * @param {*} query 
@@ -53,14 +54,4 @@ export default function find(query) {
             return getModules(this, query);
         }
     }
-}
-
-function getModules(target, moduleName) {
-    let matches = [];
-
-    target.DOMNodes.forEach(node => {
-        matches.push(...node.querySelectorAll(`.${moduleName}, [class*="${moduleName + target.modifierGlue}"]`));
-    });
-
-    return matches;
 }

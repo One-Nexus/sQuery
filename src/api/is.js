@@ -1,4 +1,5 @@
 import getModuleNamespace from '../utilities/getModuleNamespace';
+import isModule from '../utilities/isModule';
 
 import isComponent from './isComponent';
 import hasModifier from './hasModifier';
@@ -50,10 +51,4 @@ export default function is(query) {
             return hasModifier.bind(this)(query);
         }
     }
-}
-
-function isModule(target, moduleName) {
-    return [...target.DOMNodes].every(node => {
-        return node.matches(`.${moduleName}, [class*="${moduleName + target.modifierGlue}"]`);
-    });
 }
