@@ -24,6 +24,7 @@ describe('SynergyDOM function', () => {
         assert.equal(typeof SynergyDOM().isComponent, 'function');
         assert.equal(typeof SynergyDOM().modifier, 'function');
         assert.equal(typeof SynergyDOM().removeModifier, 'function');
+        assert.equal(typeof SynergyDOM().parent, 'function');
     });
 
     describe('when invoked with `SynergyQuery` parameter', () => {
@@ -177,6 +178,7 @@ describe('SynergyDOM function', () => {
 
             describe('with an array of modifiers', () => {
                 it('should have the added modifiers', () => {
+                    // @TODO
                 });
             });
         });
@@ -454,14 +456,35 @@ describe('SynergyDOM function', () => {
                     });
 
                     it('should remove the specified modifier(s) from each matched element', () => {
-                        // assert(!document.getElementById('HEN8Z').classList.contains('fizz-buzz'));
+                        assert(!document.getElementById('HEN8Z').classList.contains('fizz-buzz'));
+                        assert(document.getElementById('HEN8Z').classList.contains('fizz'));
                     }); 
                 });
             });
+        });
 
-            describe('with second parameter as `callback`', () => {
-                it('should successfuly call the `callback` function', () => {
-                }); 
+        describe('and `parent` method is called', () => {
+            beforeEach(() => {
+                document.body.innerHTML = (`
+                    <div class="foo" id="SVRNE" data-module="foo">
+                        <div class="foo_bar" id="KJ4PM" data-component="bar">
+                            <div class="foo_buzz" id="DD45Q" data-component="buzz"></div>
+                            <div class="fizz_buzz" id="XU3V8" data-component="buzz"></div>
+                        </div>
+                    </div>
+                `)
+            });
+    
+            it('should find the specified parent element', () => {
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#DD45Q').parent('module'),
+                    document.querySelectorAll('#SVRNE')
+                ));
+
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#DD45Q').parent('component'),
+                    document.querySelectorAll('#KJ4PM')
+                ));
             });
         });
 
@@ -482,7 +505,7 @@ describe('SynergyDOM function', () => {
 
             describe('with multiple modifiers', () => {
                 beforeEach('call the `modifier` method', () => {
-                    SynergyDOM('#FH5FN').removeModifier(['bar', 'qux'], 'unset');
+                    SynergyDOM('#FH5FN').removeModifier(['qux', 'bar'], 'unset');
                 });
 
                 it('should remove the specified modifiers from each matched element', () => {

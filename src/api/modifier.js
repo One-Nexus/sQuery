@@ -1,5 +1,6 @@
 import hasModifier from './hasModifier';
 import addModifier from './addModifier';
+import removeModifier from './removeModifier';
 
 /**
  * @param {String} modifier 
@@ -15,10 +16,6 @@ export default function modifier(modifier, operator) {
     }
 
     if (operator === 'unset') {
-        
-    }
-
-    if (typeof operator === 'function') {
-
+        return removeModifier.bind(this)(modifier);
     }
 }

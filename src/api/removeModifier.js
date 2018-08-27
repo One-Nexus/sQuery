@@ -6,7 +6,9 @@ import getModuleNamespace from '../utilities/getModuleNamespace';
 export default function removeModifier(modifier) {
     this.DOMNodes.forEach(node => {
         if (modifier.constructor === Array) {
-            modifier = modifier.join(this.modifierGlue);
+            return modifier.forEach(_modifier => {
+                removeModifier.bind(Object.assign(this, { DOMNodes: [node] }))(_modifier);
+            });
         }
 
         [...node.classList].forEach(className => {
