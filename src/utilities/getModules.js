@@ -3,11 +3,7 @@
  * @param {*} moduleName 
  */
 export default function getModules(target, moduleName) {
-    let matches = [];
-
-    target.DOMNodes.forEach(node => {
-        matches.push(...node.querySelectorAll(`.${moduleName}, [class*="${moduleName + target.modifierGlue}"]`));
-    });
-
-    return matches;
+    return [...target.DOMNodes].reduce((matches, node) => {
+        return matches.concat(...node.querySelectorAll(`.${moduleName}, [class*="${moduleName + target.modifierGlue}"]`));
+    }, []);
 }

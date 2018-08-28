@@ -12,6 +12,8 @@ export { default as find } from './find';
 export { default as getComponent } from './getComponent';
 export { default as getComponents } from './getComponents';
 export { default as getModifiers } from './getModifiers';
+export { default as getSubComponent } from './getSubComponent';
+export { default as getSubComponents } from './getSubComponents';
 
 export {
     default as has,

@@ -18,6 +18,8 @@ describe('SynergyDOM function', () => {
         assert.equal(typeof SynergyDOM().getComponent, 'function');
         assert.equal(typeof SynergyDOM().getComponents, 'function');
         assert.equal(typeof SynergyDOM().getModifiers, 'function');
+        assert.equal(typeof SynergyDOM().getSubComponent, 'function');
+        assert.equal(typeof SynergyDOM().getSubComponents, 'function');
         assert.equal(typeof SynergyDOM().has, 'function');
         assert.equal(typeof SynergyDOM().hasModifier, 'function');
         assert.equal(typeof SynergyDOM().is, 'function');
@@ -361,6 +363,60 @@ describe('SynergyDOM function', () => {
             });
         });
 
+        describe('and `getSubComponent` method is called', () => {
+            beforeEach(() => {
+                document.body.innerHTML = (`
+                    <div class="foo" id="SVRNE">
+                        <div class="foo_alpha" id="KJ4PM">
+                            <div class="foo_alpha_beta" id="DD45Q"></div>
+                            <div class="foo_alpha_beta" id="HRJM1"></div>
+                        </div>
+                    </div>
+                `);
+            });
+
+            it('should return the first matched sub-component', () => {
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').getSubComponent('beta', ['alpha']), 
+                    document.querySelectorAll('#DD45Q')
+                ));
+            });
+        });
+
+        describe('and `getSubComponents` method is called', () => {
+            beforeEach(() => {
+                document.body.innerHTML = (`
+                    <div class="foo" id="SVRNE">
+                        <div class="foo_alpha" id="KJ4PM">
+                            <div class="foo_alpha_beta" id="DD45Q">
+                                <div class="foo_alpha_beta_gamma" id="XU3V8">
+                                    <div class="foo_alpha_beta_gamma_delta" id="HH156"></div>
+                                </div>
+                            </div>
+                            <div class="foo_alpha_beta" id="HRJM1"></div>
+                        </div>
+                    </div>
+                `);
+            });
+
+            it('should return all matched sub-components', () => {
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').getSubComponents('beta', ['alpha']), 
+                    document.querySelectorAll('#DD45Q, #HRJM1')
+                ));
+
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').getSubComponents('delta', ['alpha', 'beta', 'gamma']), 
+                    document.querySelectorAll('#HH156')
+                ));
+
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#KJ4PM').getSubComponents('beta'), 
+                    document.querySelectorAll('#DD45Q, #HRJM1')
+                ));
+            });
+        });
+
         describe('and `hasModifier` method is called', () => {            
             describe('with a single modifier', () => {
                 it('determine if each matched element has the passed modifier', () => {
@@ -369,6 +425,7 @@ describe('SynergyDOM function', () => {
             });
 
             describe('with an array of modifiers', () => {
+                // @TODO
             });
         });
 
@@ -578,6 +635,9 @@ describe('SynergyDOM function', () => {
                 assert(document.getElementById('SVRNE').classList.contains('foo_bar'));
                 assert(!document.getElementById('SVRNE').classList.contains('foo'));
             });
+        });
+
+        describe('and `subComponent` method is called', () => {
         });
 
         describe('and `unsetComponent` method is called', () => {
