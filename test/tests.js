@@ -15,8 +15,8 @@ describe('SynergyDOM function', () => {
         assert.equal(typeof SynergyDOM().component, 'function');
         assert.equal(typeof SynergyDOM().components, 'function');
         assert.equal(typeof SynergyDOM().find, 'function');
-        assert.equal(typeof SynergyDOM().getChildComponent, 'function');
-        assert.equal(typeof SynergyDOM().getChildComponents, 'function');
+        assert.equal(typeof SynergyDOM().getComponent, 'function');
+        assert.equal(typeof SynergyDOM().getComponents, 'function');
         assert.equal(typeof SynergyDOM().getModifiers, 'function');
         assert.equal(typeof SynergyDOM().has, 'function');
         assert.equal(typeof SynergyDOM().hasModifier, 'function');
@@ -25,6 +25,9 @@ describe('SynergyDOM function', () => {
         assert.equal(typeof SynergyDOM().modifier, 'function');
         assert.equal(typeof SynergyDOM().removeModifier, 'function');
         assert.equal(typeof SynergyDOM().parent, 'function');
+        assert.equal(typeof SynergyDOM().parentComponent, 'function');
+        assert.equal(typeof SynergyDOM().setComponent, 'function');
+        assert.equal(typeof SynergyDOM().unsetComponent, 'function');
     });
 
     describe('when invoked with `SynergyQuery` parameter', () => {
@@ -159,7 +162,7 @@ describe('SynergyDOM function', () => {
          * `add` and `addModifier` reference the same function, so
          * only one needs to be tested
          */
-        describe('and `add` method is called', () => {
+        describe('and `addModifier` method is called', () => {
             describe('with a single modifier', () => {
                 beforeEach('call the `add` method', () => {
                     SynergyDOM('#SVRNE').addModifier('test');
@@ -271,7 +274,7 @@ describe('SynergyDOM function', () => {
                         <div class="foo_lorem" id="HH156"></div>
                         <div class="foo_lorem-alpha" id="HRJM1"></div>
                     </div>
-                `)
+                `);
             });
 
             it('should find all requested child elements', () => {
@@ -326,19 +329,19 @@ describe('SynergyDOM function', () => {
             });
         });
 
-        describe('and `getChildComponent` method is called', () => {
+        describe('and `getComponent` method is called', () => {
             it('should return the first instance of the matched component', () => {
                 assert(NodeListsAreEqual(
-                    SynergyDOM('#SVRNE').getChildComponent('lorem'), 
+                    SynergyDOM('#SVRNE').getComponent('lorem'), 
                     document.querySelectorAll('#HH156')
                 ));
             });
         });
 
-        describe('and `getChildComponents` method is called', () => {
+        describe('and `getComponents` method is called', () => {
             it('should return all matched components', () => {
                 assert(NodeListsAreEqual(
-                    SynergyDOM('#SVRNE').getChildComponents('lorem'), 
+                    SynergyDOM('#SVRNE').getComponents('lorem'), 
                     document.querySelectorAll('#HH156, #HRJM1')
                 ));
             });
@@ -380,7 +383,7 @@ describe('SynergyDOM function', () => {
                         <div class="foo_lorem" id="HH156"></div>
                         <div class="foo_lorem-alpha" id="HRJM1"></div>
                     </div>
-                `)
+                `);
             });
 
             it('should determine if the matched elements match the passed query', () => {
@@ -469,10 +472,14 @@ describe('SynergyDOM function', () => {
                     <div class="foo" id="SVRNE" data-module="foo">
                         <div class="foo_bar" id="KJ4PM" data-component="bar">
                             <div class="foo_buzz" id="DD45Q" data-component="buzz"></div>
-                            <div class="fizz_buzz" id="XU3V8" data-component="buzz"></div>
+                            <div class="fizz" id="WJTAI" data-module="fizz">
+                                <div class="fizz_qux" id="KPZCZ" data-component="qux">
+                                    <div class="fizz_buzz" id="XU3V8" data-component="buzz"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                `)
+                `);
             });
     
             it('should find the specified parent element', () => {
@@ -483,6 +490,49 @@ describe('SynergyDOM function', () => {
 
                 assert(NodeListsAreEqual(
                     SynergyDOM('#DD45Q').parent('component'),
+                    document.querySelectorAll('#KJ4PM')
+                ));
+
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#XU3V8').parent('foo'),
+                    document.querySelectorAll('#SVRNE')
+                ));
+
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#XU3V8').parent('fizz'),
+                    document.querySelectorAll('#WJTAI')
+                ));
+
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#XU3V8').parent('bar'),
+                    document.querySelectorAll('#KJ4PM')
+                ));
+            });
+        });
+
+        describe('and `parentComponent` method is called', () => {
+            beforeEach(() => {
+                document.body.innerHTML = (`
+                    <div class="foo" id="SVRNE" data-module="foo">
+                        <div class="foo_bar" id="KJ4PM" data-component="bar">
+                            <div class="fizz" id="WJTAI" data-module="fizz">
+                                <div class="fizz_qux" id="KPZCZ" data-component="qux">
+                                    <div class="fizz_buzz" id="XU3V8" data-component="buzz"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+            });
+    
+            it('should find the specified parent component', () => {
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#XU3V8').parentComponent('qux'),
+                    document.querySelectorAll('#KPZCZ')
+                ));
+
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#XU3V8').parentComponent('bar'),
                     document.querySelectorAll('#KJ4PM')
                 ));
             });
@@ -512,6 +562,36 @@ describe('SynergyDOM function', () => {
                     assert(!document.getElementById('FH5FN').classList.contains('foo-bar-qux'));
                     assert(document.getElementById('FH5FN').classList.contains('foo'));
                 });
+            });
+        });
+
+        describe('and `setComponent` method is called', () => {
+            beforeEach(() => {
+                document.body.innerHTML = (`
+                    <div class="foo" id="SVRNE"></div>
+                `);
+
+                SynergyDOM('#SVRNE').setComponent('bar');
+            });
+
+            it('should set each matched element as the specified component', () => {
+                assert(document.getElementById('SVRNE').classList.contains('foo_bar'));
+                assert(!document.getElementById('SVRNE').classList.contains('foo'));
+            });
+        });
+
+        describe('and `unsetComponent` method is called', () => {
+            beforeEach(() => {
+                document.body.innerHTML = (`
+                    <div class="bar foo_test" id="SVRNE" data-module="foo"></div>
+                `);
+
+                SynergyDOM('#SVRNE').unsetComponent('test');
+            });
+
+            it('should unset each matched element as the specified component', () => {
+                assert(document.getElementById('SVRNE').classList.length === 1);
+                assert(document.getElementById('SVRNE').classList.contains('bar'));
             });
         });
     });

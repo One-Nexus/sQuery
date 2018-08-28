@@ -11,8 +11,9 @@ export default function parent(query) {
     }
 
     if (typeof query === 'string') {
-        // try for module
+        const moduleMatch = [...this.DOMNodes].map(node => node.parentNode.closest(`[data-module="${query}"]`));
+        const componentMatch = [...this.DOMNodes].map(node => node.parentNode.closest(`[data-component="${query}"]`));
 
-        // try for component
+        return moduleMatch[0] ? moduleMatch : componentMatch;
     }
 }

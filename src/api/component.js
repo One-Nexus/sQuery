@@ -1,6 +1,6 @@
 import getModuleNamespace from '../utilities/getModuleNamespace';
-import getComponents from '../utilities/getComponents';
 
+import getComponents from './getComponents';
 import isComponent from './isComponent';
 
 /**
@@ -9,11 +9,11 @@ import isComponent from './isComponent';
  */
 export default function component(componentName, operator) {
     if (!componentName && !operator) {
-        return getComponents(this);
+        return getComponents.bind(this)();
     }
 
     if (!operator || operator === 'find') {
-        return getComponents(this, componentName);
+        return getComponents.bind(this)(componentName);
     }
 
     if (operator === 'is') {

@@ -9,11 +9,8 @@ export {
 } from './component';
 
 export { default as find } from './find';
-
-export { default as getChildComponent } from './getChildComponent';
-
-export { default as getChildComponents } from './getChildComponents';
-
+export { default as getComponent } from './getComponent';
+export { default as getComponents } from './getComponents';
 export { default as getModifiers } from './getModifiers';
 
 export {
@@ -22,11 +19,10 @@ export {
 } from './hasModifier';
 
 export { default as is } from './is';
-
 export { default as isComponent } from './isComponent';
-
 export { default as modifier } from './modifier';
-
 export { default as removeModifier } from './removeModifier';
-
 export { default as parent } from './parent';
+export { default as parentComponent } from './parentComponent';
+export { default as setComponent } from './setComponent';
+export { default as unsetComponent } from './unsetComponent';
