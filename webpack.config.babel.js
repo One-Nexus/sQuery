@@ -1,13 +1,10 @@
 import path from 'path';
 import webpack from 'webpack';
 
-export default function(env) {
-
-    const target = env.target || 'node';
-
-    const entry = (target === 'node') ? {'synergy': './src/index.js'} : {
-        'synergy.web': './src/js/synergy.js',
-        'synergy.web.min': './src/js/synergy.js',
+export default function() {
+    const entry = {
+        'synergy.web': './src/synergy-dom.js',
+        'synergy.web.min': './src/synergy-dom.js',
     };
 
     return {
@@ -16,11 +13,8 @@ export default function(env) {
         output: {
             path: path.resolve(__dirname, 'dist/'),
             filename: '[name].js',
-            publicPath: '/',
-            libraryTarget: (target === 'node') ? 'commonjs2' : 'var'
+            publicPath: '/'
         },
-
-        target,
 
         plugins: [
             new webpack.optimize.UglifyJsPlugin({
@@ -32,17 +26,11 @@ export default function(env) {
             })
         ],
 
-        externals: {
-            'react': 'react',
-            'react-dom': 'react-dom',
-            'prop-types': 'prop-types'
-        },
-
-        node: { Buffer: (target === 'web') ? false : true },
+        node: { Buffer: false },
 
         module: {
             loaders: [{
-                test: /\.(js|jsx)$/,
+                test: /\.(js)$/,
                 exclude: /node_modules/,
                 loaders: ['babel-loader'],
             }]
@@ -52,5 +40,4 @@ export default function(env) {
 
         devtool: false
     }
-
 };

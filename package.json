@@ -55,7 +55,8 @@
   "scripts": {
     "lint": "eslint './src/js/**/*.js'",
     "test": "mocha test/tests.js --require babel-register",
-    "docs": "jsdoc src/js -r -d docs/js",
-    "compile": "npm run lint && npm test && npm run docs && webpack"
+    "docs": "jsdoc src -r -d docs/js",
+    "js": "webpack",
+    "compile": "npm run lint && npm test && npm run docs && npm run js"
   }
 }
