@@ -29,6 +29,6 @@ export default function component(componentName, operator) {
     }
 
     if (typeof operator === 'function') {
-        this.DOMNodes.forEach(node => operator(node));
+        getComponents.bind(this)(componentName).forEach(node => operator(node));
     }
 }

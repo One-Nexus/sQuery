@@ -27,4 +27,10 @@ export { default as removeModifier } from './removeModifier';
 export { default as parent } from './parent';
 export { default as parentComponent } from './parentComponent';
 export { default as setComponent } from './setComponent';
+
+export { 
+    default as subComponent,
+    default as subComponents
+} from './subComponent';
+
 export { default as unsetComponent } from './unsetComponent';
