@@ -50,8 +50,9 @@
   "scripts": {
     "lint": "eslint './src/js/**/*.js'",
     "test": "nyc --require babel-register mocha test/tests.js --require babel-register",
+    "report": "nyc report && nyc report --reporter=lcov",
     "docs": "jsdoc src -r -d docs/js",
     "js": "webpack",
-    "compile": "npm run lint && npm test && npm run docs && npm run js"
+    "compile": "npm run lint && npm test && npm run report && npm run docs && npm run js"
   }
 }
