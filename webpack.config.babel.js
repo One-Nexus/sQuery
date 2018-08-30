@@ -3,8 +3,8 @@ import webpack from 'webpack';
 
 export default function() {
     const entry = {
-        'synergy.web': './src/synergy-dom.js',
-        'synergy.web.min': './src/synergy-dom.js',
+        'squery': './src/squery.js',
+        'squery.min': './src/squery.js',
     };
 
     return {

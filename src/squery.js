@@ -11,7 +11,7 @@ import * as API from './api';
  * @param {Object} [custom]
  * @param {Object} [parser]
  */
-export default function Synergy(SynergyQuery, callback, defaults, custom, parser) {
+export default function sQuery(SynergyQuery, callback, defaults, custom, parser) {
     const methods = {};
 
     const config = getConfig(defaults, custom, parser);

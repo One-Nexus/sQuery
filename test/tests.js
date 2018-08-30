@@ -1,6 +1,6 @@
 import assert from 'assert';
 import jsdom from 'jsdom-global';
-import SynergyDOM from '../src/synergy-dom';
+import SynergyDOM from '../src/squery';
 
 jsdom();
 

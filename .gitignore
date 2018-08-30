@@ -2,6 +2,7 @@
 .vscode
 .settings
 .sass-cache
+.nyc_output
 debug.log
 node_modules
 docs
