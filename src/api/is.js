@@ -51,4 +51,6 @@ export default function is(query) {
             return hasModifier.bind(this)(query);
         }
     }
+
+    return false;
 }

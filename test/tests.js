@@ -72,18 +72,18 @@ describe('SynergyDOM function', () => {
             it('should return all DOM elements that match the module name', () => {
                 assert(NodeListsAreEqual(
                     SynergyDOM('foo').DOMNodes, 
-                    document.querySelectorAll('.foo, [class*="foo-"]'))
-                );
+                    document.querySelectorAll('.foo, [class*="foo-"]')
+                ));
 
                 assert(NodeListsAreEqual(
                     SynergyDOM('bar').DOMNodes, 
-                    document.querySelectorAll('.bar, [class*="bar-"]'))
-                );
+                    document.querySelectorAll('.bar, [class*="bar-"]')
+                ));
 
                 assert(NodeListsAreEqual(
                     SynergyDOM('fizz').DOMNodes, 
-                    document.querySelectorAll('.fizz, [class*="fizz-"]'))
-                );
+                    document.querySelectorAll('.fizz, [class*="fizz-"]')
+                ));
             });
         });
         
@@ -91,18 +91,18 @@ describe('SynergyDOM function', () => {
             it('should return all DOM elements that match the query', () => {
                 assert(NodeListsAreEqual(
                     SynergyDOM('.foo').DOMNodes, 
-                    document.querySelectorAll('.foo'))
-                );
+                    document.querySelectorAll('.foo')
+                ));
 
                 assert(NodeListsAreEqual(
                     SynergyDOM('.bar').DOMNodes, 
-                    document.querySelectorAll('.bar'))
-                );
+                    document.querySelectorAll('.bar')
+                ));
 
                 assert(NodeListsAreEqual(
                     SynergyDOM('#SVRNE').DOMNodes, 
-                    document.querySelectorAll('#SVRNE'))
-                );
+                    document.querySelectorAll('#SVRNE')
+                ));
             });
         });
         
@@ -110,8 +110,8 @@ describe('SynergyDOM function', () => {
             it('should return the passed HTMLElement inside an Array', () => {
                 assert(NodeListsAreEqual(
                     SynergyDOM(document.getElementById('SVRNE')).DOMNodes, 
-                    [document.getElementById('SVRNE')])
-                );
+                    [document.getElementById('SVRNE')]
+                ));
             });
         });
         
@@ -119,13 +119,13 @@ describe('SynergyDOM function', () => {
             it('should return the passed NodeList', () => {
                 assert(NodeListsAreEqual(
                     SynergyDOM(document.querySelectorAll('.foo')).DOMNodes, 
-                    document.querySelectorAll('.foo'))
-                );
+                    document.querySelectorAll('.foo')
+                ));
 
                 assert(NodeListsAreEqual(
                     SynergyDOM(document.querySelectorAll('div')).DOMNodes, 
-                    document.querySelectorAll('div'))
-                );
+                    document.querySelectorAll('div')
+                ));
             });
         });
 
@@ -133,18 +133,18 @@ describe('SynergyDOM function', () => {
             it('should return the expected nodes based off the query', () => {
                 assert(NodeListsAreEqual(
                     SynergyDOM(['foo']).DOMNodes, 
-                    document.querySelectorAll('.foo, [class*="foo-"]'))
-                );
+                    document.querySelectorAll('.foo, [class*="foo-"]')
+                ));
 
                 assert(NodeListsAreEqual(
                     SynergyDOM(['.foo']).DOMNodes, 
-                    document.querySelectorAll('.foo'))
-                );
+                    document.querySelectorAll('.foo')
+                ));
 
                 assert(NodeListsAreEqual(
                     SynergyDOM(['#SVRNE']).DOMNodes, 
-                    document.querySelectorAll('#SVRNE'))
-                );
+                    document.querySelectorAll('#SVRNE')
+                ));
             });
         });
 
@@ -152,13 +152,13 @@ describe('SynergyDOM function', () => {
             it('should return all DOM elements that match the module name', () => {
                 assert(NodeListsAreEqual(
                     SynergyDOM({ name: 'foo' }).DOMNodes, 
-                    document.querySelectorAll('.foo, [class*="foo-"]'))
-                );
+                    document.querySelectorAll('.foo, [class*="foo-"]')
+                ));
 
                 assert(NodeListsAreEqual(
                     SynergyDOM({ name: 'fizz' }).DOMNodes, 
-                    document.querySelectorAll('.fizz, [class*="fizz-"]'))
-                );
+                    document.querySelectorAll('.fizz, [class*="fizz-"]')
+                ));
             });
         });
 

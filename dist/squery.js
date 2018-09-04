@@ -99,11 +99,13 @@ function getModuleNamespace(query) {
             return query.closest('[data-module]').getAttribute('data-module');
         }
 
-        if (strict) {
-            return query.classList[0].split(/-(.+)/)[0].split(/_(.+)/)[0];
-        }
+        if (query.classList.length) {
+            if (strict) {
+                return query.classList[0].split(/-(.+)/)[0].split(/_(.+)/)[0];
+            }
 
-        return query.classList[0].split(/-(.+)/)[0];
+            return query.classList[0].split(/-(.+)/)[0];
+        }
     }
 }
 
@@ -441,6 +443,8 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 /**
  * @param {*} SynergyQuery
  * @param {Function} [callback]
@@ -500,6 +504,107 @@ function sQuery(SynergyQuery, callback, defaults, custom, parser) {
         DOMNode: DOMNodes ? DOMNodes[0] : null
     });
 }
+
+/**
+ */
+sQuery.init = function (custom) {
+    var options = Object.assign({
+        elementProto: true,
+        nodeListProto: true,
+        preset: 'Synergy',
+        attachToWindow: true,
+        alterMethodName: true
+    }, custom);
+
+    var attachToWindow = options.attachToWindow;
+    var elementProto = options.elementProto;
+    var nodeListProto = options.nodeListProto;
+    var alterMethodName = options.alterMethodName;
+    var preset = options.preset;
+
+    var PRESETS = {
+        BEM: ['__', '--', 'block', 'element', 'modifier'],
+        Synergy: ['_', '-', 'module', 'component', 'modifier']
+    };
+
+    var _ref3 = [].concat(_toConsumableArray(PRESETS[preset])),
+        componentGlue = _ref3[0],
+        modifierGlue = _ref3[1],
+        moduleNamespace = _ref3[2],
+        componentNamespace = _ref3[3],
+        modifierNamespace = _ref3[4];
+
+    if (elementProto || nodeListProto) {
+        var _loop = function _loop(key, method) {
+            if (alterMethodName) {
+                if (key.toLowerCase().indexOf(moduleNamespace) > -1) {
+                    console.log(key);
+                }
+
+                if (key.toLowerCase().indexOf(componentNamespace) > -1) {
+                    console.log(key);
+                }
+
+                if (key.toLowerCase().indexOf(modifierNamespace) > -1) {
+                    console.log(key);
+                }
+            }
+
+            if (elementProto) {
+                Element.prototype[key] = function () {
+                    method.bind({
+                        namespace: (0, _getModuleNamespace2.default)(this), DOMNodes: [this], componentGlue: componentGlue, modifierGlue: modifierGlue
+                    }).apply(undefined, arguments);
+                };
+            }
+
+            if (nodeListProto) {
+                NodeList.prototype[key] = function () {
+                    method.bind({
+                        namespace: (0, _getModuleNamespace2.default)(this[0]), DOMNodes: this, componentGlue: componentGlue, modifierGlue: modifierGlue
+                    }).apply(undefined, arguments);
+                };
+            }
+        };
+
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+            for (var _iterator2 = Object.entries(API)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                var _ref4 = _step2.value;
+
+                var _ref5 = _slicedToArray(_ref4, 2);
+
+                var key = _ref5[0];
+                var method = _ref5[1];
+
+                _loop(key, method);
+            }
+        } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                    _iterator2.return();
+                }
+            } finally {
+                if (_didIteratorError2) {
+                    throw _iteratorError2;
+                }
+            }
+        }
+    }
+
+    if (attachToWindow) {
+        // window.Synergy = window.Synergy || {};
+
+        // window.Synergy.componentGlue = componentGlue;
+        // window.Synergy.modifierGlue = modifierGlue;
+    }
+};
 
 /***/ }),
 /* 9 */
@@ -1255,6 +1360,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 function is(query) {
     var _this = this;
 
+    console.log(query, this);
     if ((typeof query === 'undefined' ? 'undefined' : _typeof(query)) === 'object') {
         if (query.module) {
             if (query.component) {
@@ -1298,6 +1404,8 @@ function is(query) {
             return _hasModifier2.default.bind(this)(query);
         }
     }
+
+    return false;
 }
 
 /***/ }),

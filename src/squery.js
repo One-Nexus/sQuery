@@ -1,6 +1,7 @@
 import getConfig from './utilities/getConfig';
 import getDomNodes from './utilities/getDomNodes';
 import getModuleNamespace from './utilities/getModuleNamespace';
+import init from './utilities/init';
 
 import * as API from './api';
 
@@ -35,3 +36,5 @@ export default function sQuery(SynergyQuery, callback, defaults, custom, parser)
         DOMNode: DOMNodes ? DOMNodes[0] : null
     });
 }
+
+sQuery.init = init;
