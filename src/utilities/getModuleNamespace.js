@@ -4,7 +4,7 @@
  * @param {*} query 
  * @param {Bool} strict
  */
-export default function getModuleNamespace(query, strict = false) {
+export default function getModuleNamespace(query, componentGlue, modifierGlue, strict = false) {
     if (typeof query === 'string' && query.match(`^[a-zA-Z0-9_-]+$`)) {
         return query;
     }
@@ -14,17 +14,16 @@ export default function getModuleNamespace(query, strict = false) {
     }
 
     if (query instanceof HTMLElement) {
-        // @TODO this returns the `strict` value when it shouldn't
-        // if (query.closest('[data-module]')) {
-        //     return query.closest('[data-module]').getAttribute('data-module');
-        // }
+        if (query.hasAttribute('data-module')) {
+            return query.getAttribute('data-module');
+        }
 
         if (query.classList.length) {
             if (strict) {
-                return query.classList[0].split(/-(.+)/)[0].split(/_(.+)/)[0];
+                return query.classList[0].split(modifierGlue)[0].split(componentGlue)[0];
             }
 
-            return query.classList[0].split(/-(.+)/)[0];
+            return query.classList[0].split(modifierGlue)[0];
         }
     }
 }

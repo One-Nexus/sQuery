@@ -26,7 +26,7 @@ export default function find(query) {
                     return matches.push(
                         ...components.filter(component => {
                             return [...component.classList].some(className => {
-                                const isNamespace = className.indexOf(this.namespace || getModuleNamespace(component)) === 0;
+                                const isNamespace = className.indexOf(this.namespace || getModuleNamespace(component, this.componentGlue, this.modifierGlue)) === 0;
                                 const hasModifier = className.indexOf(query.modifier) > -1;
 
                                 return isNamespace && hasModifier;

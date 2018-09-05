@@ -38,7 +38,7 @@ export default function init(custom) {
             if (options.elementProto) {
                 Element.prototype[key] = function(...params) {
                     return method.bind({ 
-                        namespace: getModuleNamespace(this), DOMNodes: [this], componentGlue, modifierGlue 
+                        namespace: getModuleNamespace(this, componentGlue, modifierGlue), DOMNodes: [this], componentGlue, modifierGlue 
                     })(...params);
                 }
             }
@@ -46,7 +46,7 @@ export default function init(custom) {
             if (options.nodeListProto) {
                 NodeList.prototype[key] = function(...params) {
                     return method.bind({ 
-                        namespace: getModuleNamespace(this[0]), DOMNodes: this, componentGlue, modifierGlue 
+                        namespace: getModuleNamespace(this[0], componentGlue, modifierGlue), DOMNodes: this, componentGlue, modifierGlue 
                     })(...params);
                 }
             }

@@ -17,7 +17,7 @@ export default function subComponent(subComponentName, operator) {
 
     if (operator === 'is') {
         return [...this.DOMNodes].every(node => {
-            const query = this.namespace || getModuleNamespace(node);
+            const query = this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue);
             const isMatch = query.indexOf(subComponentName) === (query.length - subComponentName.length);
 
             return [...node.classList].some(className => {

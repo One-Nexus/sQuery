@@ -12,7 +12,7 @@ export default function removeModifier(modifier) {
         }
 
         [...node.classList].forEach(className => {
-            const moduleMatch = className.indexOf((this.namespace || getModuleNamespace(node)) + this.modifierGlue) === 0;
+            const moduleMatch = className.indexOf((this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue)) + this.modifierGlue) === 0;
             const modifierMatch = className.indexOf(this.modifierGlue + modifier) > -1;
             const newClass = className.replace(new RegExp(this.modifierGlue + modifier, 'g'), '');
 

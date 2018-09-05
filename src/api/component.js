@@ -21,11 +21,13 @@ export default function component(componentName, operator) {
     }
 
     if (operator === 'set') {
-        this.DOMNodes.forEach(node => node.classList.add(this.namespace || getModuleNamespace(node) + this.componentGlue + componentName));
+        this.DOMNodes.forEach(node => {
+            node.classList.add(this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue) + this.componentGlue + componentName);
+        });
     }
 
     if (operator === 'unset') {
-        this.DOMNodes.forEach(node => node.classList.remove(this.namespace || getModuleNamespace(node)));
+        this.DOMNodes.forEach(node => node.classList.remove(this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue)));
     }
 
     if (typeof operator === 'function') {

@@ -5,7 +5,7 @@ import getModuleNamespace from '../utilities/getModuleNamespace';
  */
 export default function getComponents(componentName = '', modifier, namespace) {
     return [...this.DOMNodes].reduce((matches, node) => {
-        namespace = namespace || this.namespace || getModuleNamespace(node, 'strict');
+        namespace = namespace || this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue, 'strict');
 
         const query = namespace + (componentName ? (this.componentGlue + componentName) : '');
 

@@ -5,7 +5,7 @@ import getModuleNamespace from '../utilities/getModuleNamespace';
  */
 export default function getSubComponts(subComponentName, context = [], modifier) {
     return [...this.DOMNodes].reduce((matches, node) => {
-        let namespace = this.namespace || getModuleNamespace(node);
+        let namespace = this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue);
 
         if (context.length) {
             namespace = [namespace].concat(context, [subComponentName]).join(this.componentGlue);

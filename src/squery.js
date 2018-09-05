@@ -14,13 +14,13 @@ import * as API from './api';
  */
 export default function sQuery(SynergyQuery, callback, defaults, custom, parser) {
     const methods = {};
-
     const config = getConfig(defaults, custom, parser);
-    const namespace = getModuleNamespace(SynergyQuery);
-    const DOMNodes = getDomNodes(SynergyQuery);
 
     const componentGlue = config.componentGlue || (window.Synergy && Synergy.componentGlue) || '_';
     const modifierGlue  = config.modifierGlue  || (window.Synergy && Synergy.modifierGlue)  || '-';
+
+    const namespace = getModuleNamespace(SynergyQuery, componentGlue, modifierGlue);
+    const DOMNodes = getDomNodes(SynergyQuery);
 
     for (let [key, method] of Object.entries(API)) {
         methods[key] = method.bind({ namespace, DOMNodes, componentGlue, modifierGlue });

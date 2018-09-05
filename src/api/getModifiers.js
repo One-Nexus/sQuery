@@ -9,7 +9,7 @@ export default function getModifiers() {
     // @TODO return a single array rather than an array of arrays
     this.DOMNodes.forEach(node => {
         matches.push(...[...node.classList].filter(className => {
-            return className.indexOf(this.namespace || getModuleNamespace(node)) === 0
+            return className.indexOf(this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue)) === 0
         }).map(target => target.split(this.modifierGlue).slice(1)));
     });
     
