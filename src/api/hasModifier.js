@@ -1,4 +1,4 @@
-import getModifiers from './getModifiers';
+import getModuleNamespace from '../utilities/getModuleNamespace';
 
 /**
  * @param {*} modifier 
@@ -10,7 +10,14 @@ export default function hasModifier(modifier) {
         }
 
         return [...this.DOMNodes].every(node => {
-            return getModifiers.bind(Object.assign(this, { DOMNodes: [node] }))().includes(modifier)
+            return [...node.classList].some(className => {
+                const matchIndex = className.indexOf(this.modifierGlue + modifier);
+                const namespaceMatch  = className.indexOf(this.namespace || getModuleNamespace(node, this.modifierGlue, this.componentGlue)) === 0;
+                const isModifierTest1 = className.indexOf(this.modifierGlue + modifier + this.modifierGlue) > -1;
+                const isModifierTest2 = matchIndex > -1 && matchIndex === (className.length - modifier.length - 1);
+        
+                return namespaceMatch && (isModifierTest1 || isModifierTest2);
+            });
         });
     }
 }
