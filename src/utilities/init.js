@@ -15,9 +15,12 @@ export default function init(custom) {
         Synergy: ['_', '-', 'module', 'component', 'modifier']
     }
 
-    const [componentGlue, modifierGlue, moduleNamespace, componentNamespace, modifierNamespace] = [
+    let [componentGlue, modifierGlue, moduleNamespace, componentNamespace, modifierNamespace] = [
         ...PRESETS[options.preset]
     ];
+
+    if (options.componentGlue) componentGlue = options.componentGlue;
+    if (options.modifierGlue) modifierGlue = options.modifierGlue;
 
     if ((options.elementProto || options.nodeListProto)) {
         for (let [key, method] of Object.entries(API)) {
