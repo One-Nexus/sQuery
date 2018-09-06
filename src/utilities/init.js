@@ -7,7 +7,7 @@ export default function init(custom) {
         nodeListProto: true,
         preset: 'Synergy',
         attachToWindow: true,
-        alterMethodName: false
+        alterMethodName: true
     }, custom);
 
     const PRESETS = {
@@ -19,44 +19,63 @@ export default function init(custom) {
         ...PRESETS[options.preset]
     ];
 
-    if (options.elementProto || options.nodeListProto) {
+    if ((options.elementProto || options.nodeListProto)) {
         for (let [key, method] of Object.entries(API)) {
+            let methodName = key;
+        
             if (options.alterMethodName) {
-                if (key.toLowerCase().indexOf(moduleNamespace) > -1) {
-                    console.log(key);
+                const moduleUpperCase = moduleNamespace[0].toUpperCase() + moduleNamespace.substring(1);
+                const componentUpperCase = componentNamespace[0].toUpperCase() + componentNamespace.substring(1);
+                const modifierUpperCase = modifierNamespace[0].toUpperCase() + modifierNamespace.substring(1);
+
+                if (methodName.toLowerCase().indexOf('module') > -1) {
+                    methodName = methodName.replace(new RegExp('module', 'g'), moduleNamespace);
                 }
 
-                if (key.toLowerCase().indexOf(componentNamespace) > -1) {
-                    console.log(key);
+                if (methodName.toLowerCase().indexOf('Module') > -1) {
+                    methodName = methodName.replace(new RegExp('Module', 'g'), moduleUpperCase);
                 }
 
-                if (key.toLowerCase().indexOf(modifierNamespace) > -1) {
-                    console.log(key);
+                if (methodName.indexOf('component') > -1) {
+                    methodName = methodName.replace(new RegExp('component', 'g'), componentNamespace);
+                }
+
+                if (methodName.indexOf('Component') > -1) {
+                    methodName = methodName.replace(new RegExp('Component', 'g'), componentUpperCase);
+                }
+
+                if (methodName.toLowerCase().indexOf('modifier') > -1) {
+                    methodName = methodName.replace(new RegExp('modifier', 'g'), modifierNamespace);
+                }
+
+                if (methodName.toLowerCase().indexOf('Modifier') > -1) {
+                    methodName = methodName.replace(new RegExp('Modifier', 'g'), modifierUpperCase);
                 }
             }
 
-            if (options.elementProto) {
-                Element.prototype[key] = function(...params) {
-                    return method.bind({ 
-                        namespace: getModuleNamespace(this, componentGlue, modifierGlue), DOMNodes: [this], componentGlue, modifierGlue 
-                    })(...params);
+            if (typeof document.body[methodName] === 'undefined') {
+                if (options.elementProto) {
+                    Element.prototype[methodName] = function(...params) {
+                        return method.bind({ 
+                            namespace: getModuleNamespace(this, componentGlue, modifierGlue), DOMNodes: [this], componentGlue, modifierGlue 
+                        })(...params);
+                    }
                 }
-            }
 
-            if (options.nodeListProto) {
-                NodeList.prototype[key] = function(...params) {
-                    return method.bind({ 
-                        namespace: getModuleNamespace(this[0], componentGlue, modifierGlue), DOMNodes: this, componentGlue, modifierGlue 
-                    })(...params);
+                if (options.nodeListProto) {
+                    NodeList.prototype[methodName] = function(...params) {
+                        return method.bind({ 
+                            namespace: getModuleNamespace(this[0], componentGlue, modifierGlue), DOMNodes: this, componentGlue, modifierGlue 
+                        })(...params);
+                    }
                 }
             }
         }
     }
 
     if (options.attachToWindow) {
-        // window.Synergy = window.Synergy || {};
+        window.Synergy = Synergy || {};
 
-        // window.Synergy.componentGlue = componentGlue;
-        // window.Synergy.modifierGlue = modifierGlue;
+        Object.assign(Synergy, { componentGlue, modifierGlue });
     }
 }
