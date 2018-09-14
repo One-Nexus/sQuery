@@ -1,5 +1,4 @@
 import * as API from '../api';
-import getDomNodes from './getDomNodes';
 import getModuleNamespace from './getModuleNamespace';
 
 export default function init(custom) {
