@@ -4,14 +4,13 @@ import getModuleNamespace from '../utilities/getModuleNamespace';
  * @param {*} componentName 
  */
 export default function getModifiers() {
-    let matches = [];
+    if (this.DOMNodes instanceof NodeList) {
+        return [...this.DOMNodes].reduce((matches, DOMNodes) => {
+            return matches.concat(...getModifiers.bind(Object.assign(this, { DOMNodes }))());
+        }, []);
+    }
 
-    // @TODO return a single array rather than an array of arrays
-    this.DOMNodes.forEach(node => {
-        matches.push(...[...node.classList].filter(className => {
-            return className.indexOf(this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue)) === 0
-        }).map(target => target.split(this.modifierGlue).slice(1)));
-    });
-    
-    return [].concat(...matches);
+    return [].concat(...[...this.DOMNodes.classList].filter(className => {
+        return className.indexOf(this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue)) === 0
+    }).map(target => target.split(this.modifierGlue).slice(1)));
 }

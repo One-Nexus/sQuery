@@ -77,7 +77,7 @@ export default function init(custom) {
                 Element.prototype[methodName] = function(...params) {
                     return method.bind({ 
                         namespace: getModuleNamespace(this, componentGlue, modifierGlue), 
-                        DOMNodes: [this], 
+                        DOMNodes: this, 
                         componentGlue, 
                         modifierGlue 
                     })(...params);

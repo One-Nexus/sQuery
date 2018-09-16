@@ -27,7 +27,11 @@ export default function sQuery(SynergyQuery, callback, defaults, custom, parser)
     }
 
     if (typeof callback === 'function') {
-        DOMNodes.forEach(node => callback(node, config));
+        if (DOMNodes instanceof NodeList) {
+            DOMNodes.forEach(node => callback(node, config));
+        } else {
+            callback(node, DOMNodes);
+        }
     }
 
     return Object.assign(methods, { 

@@ -11,7 +11,7 @@ export default function getDomNodes(query) {
     }
 
     if (query instanceof HTMLElement) {
-        return [query];
+        return query;
     }
 
     if (query instanceof Array) {

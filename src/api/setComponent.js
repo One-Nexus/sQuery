@@ -4,10 +4,12 @@ import getModuleNamespace from '../utilities/getModuleNamespace';
  * @param {*} componentName 
  */
 export default function setComponent(componentName) {
-    this.DOMNodes.forEach(node => {        
-        const namespace = this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue);
+    if (this.DOMNodes instanceof NodeList) {
+        return this.DOMNodes.forEach(DOMNodes => setComponent.bind(Object.assign(this, { DOMNodes }))(componentName));
+    }
 
-        node.classList.remove(namespace);
-        node.classList.add(namespace + this.componentGlue + componentName);
-    });
+    const namespace = this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue);
+
+    this.DOMNodes.classList.remove(namespace);
+    this.DOMNodes.classList.add(namespace + this.componentGlue + componentName);
 }

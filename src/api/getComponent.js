@@ -4,7 +4,11 @@ import getComponents from './getComponents';
  * @param {*} componentName 
  */
 export default function getComponent(componentName) {
-    return [...this.DOMNodes].map(node => {
-        return getComponents.bind(Object.assign(this, { DOMNodes: [node] }))(componentName)[0]
-    });
+    if (this.DOMNodes instanceof NodeList) {
+        return [...this.DOMNodes].map(DOMNodes => {
+            return getComponent.bind(Object.assign(this, { DOMNodes }))(componentName);
+        });
+    };
+
+    return getComponents.bind(this)(componentName)[0]
 }

@@ -8,6 +8,8 @@ import isComponent from './isComponent';
  * @param {(('find'|'is'|'set'|'unset')|Function)} operator 
  */
 export default function component(componentName, operator) {
+    let namespace = this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue);
+
     if (!componentName && !operator) {
         return getComponents.bind(this)();
     }
@@ -21,13 +23,27 @@ export default function component(componentName, operator) {
     }
 
     if (operator === 'set') {
-        this.DOMNodes.forEach(node => {
-            node.classList.add(this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue) + this.componentGlue + componentName);
-        });
+        if (this.DOMNodes instanceof NodeList) {
+            this.DOMNodes.forEach(node => {
+                namespace = this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue);
+
+                return node.classList.add(namespace + this.componentGlue + componentName)
+            });
+        } else {
+            this.DOMNodes.classList.add(namespace + this.componentGlue + componentName)
+        }
     }
 
     if (operator === 'unset') {
-        this.DOMNodes.forEach(node => node.classList.remove(this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue)));
+        if (this.DOMNodes instanceof NodeList) {
+            this.DOMNodes.forEach(node => {
+                namespace = this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue);
+
+                return node.classList.remove(namespace)
+            });
+        } else {
+            this.DOMNodes.classList.remove(namespace)
+        }
     }
 
     if (typeof operator === 'function') {
