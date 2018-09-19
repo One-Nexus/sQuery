@@ -4,6 +4,8 @@ import SynergyDOM from '../src/squery';
 
 jsdom();
 
+SynergyDOM.init();
+
 describe('SynergyDOM function', () => {
     it('should exist', () => {
         assert.equal(typeof SynergyDOM, 'function');
@@ -172,7 +174,7 @@ describe('SynergyDOM function', () => {
                     SynergyDOM('#SVRNE').addModifier('test');
                     SynergyDOM('#M1FAC').addModifier('test');
                     SynergyDOM('#ZSAE6').addModifier('test');
-                    SynergyDOM('#HEN8Z').addModifier('test');
+                    document.getElementById('HEN8Z').addModifier('test');
                 });
 
                 it('should have the added modifier', () => {
@@ -235,6 +237,11 @@ describe('SynergyDOM function', () => {
                         SynergyDOM('#A0BG9').components(), 
                         document.querySelectorAll('#VQTLX')
                     ));
+
+                    assert(NodeListsAreEqual(
+                        document.getElementById('A0BG9').components(), 
+                        document.querySelectorAll('#VQTLX')
+                    ));
                 });
             });
 
@@ -246,7 +253,12 @@ describe('SynergyDOM function', () => {
                     ));
 
                     assert(NodeListsAreEqual(
-                        SynergyDOM('#SVRNE').component('ipsum'), 
+                        SynergyDOM('#SVRNE').components('ipsum'), 
+                        document.querySelectorAll('#HY7S3')
+                    ));
+
+                    assert(NodeListsAreEqual(
+                        document.getElementById('SVRNE').components('ipsum'), 
                         document.querySelectorAll('#HY7S3')
                     ));
                 });
@@ -264,6 +276,11 @@ describe('SynergyDOM function', () => {
                             SynergyDOM('#SVRNE').component('ipsum', 'find'), 
                             document.querySelectorAll('#HY7S3')
                         ));
+
+                        assert(NodeListsAreEqual(
+                            document.getElementById('SVRNE').component('ipsum', 'find'), 
+                            document.querySelectorAll('#HY7S3')
+                        ));
                     });
                 });
 
@@ -271,6 +288,7 @@ describe('SynergyDOM function', () => {
                     it('should determine whether element is the specified component', () => {
                         assert(SynergyDOM('#HH156').component('lorem', 'is'));
                         assert(SynergyDOM('#HY7S3').component('ipsum', 'is'));
+                        assert(document.getElementById('HY7S3').component('ipsum', 'is'));
                     });
                 });
 
@@ -278,13 +296,16 @@ describe('SynergyDOM function', () => {
                     beforeEach(() => {
                         document.body.innerHTML = (`
                             <div data-module="fizz" id="VQTLX"></div>
+                            <div data-module="fizz" id="HY7S3"></div>
                         `);
 
-                        SynergyDOM('#VQTLX').component('lorem', 'set')
+                        SynergyDOM('#VQTLX').component('lorem', 'set');
+                        document.getElementById('HY7S3').component('ipsum', 'set');
                     });
 
                     it('should set element as the specified Component', () => {
                         assert(document.getElementById('VQTLX').classList.contains('fizz_lorem'));
+                        assert(document.getElementById('HY7S3').classList.contains('fizz_ipsum'));
                     });
                 });
 
@@ -292,13 +313,16 @@ describe('SynergyDOM function', () => {
                     beforeEach(() => {
                         document.body.innerHTML = (`
                             <div class="fizz_lorem" id="HH156"></div>
+                            <div class="fizz_ipsum" id="HY7S3"></div>
                         `);
 
-                        SynergyDOM('#HH156').component('lorem', 'unset')
+                        SynergyDOM('#HH156').component('lorem', 'unset');
+                        document.getElementById('HY7S3').component('ipsum', 'unset');
                     });
 
                     it('should unnset element as the specified Component', () => {
                         assert(document.getElementById('HH156').classList.length === 0);
+                        assert(document.getElementById('HY7S3').classList.length === 0);
                     });
                 });
             });
@@ -313,11 +337,14 @@ describe('SynergyDOM function', () => {
                     `);
 
                     SynergyDOM('#SVRNE').component('lorem', element => element.classList.add('callback-success'));
+                    document.getElementById('SVRNE').component('lorem', element => element.classList.add('callback-success-2'));
                 });
 
                 it('should successfuly call the `callback` function', () => {
                     assert(document.getElementById('HH156').classList.contains('callback-success'));
                     assert(document.getElementById('HRJM1').classList.contains('callback-success'));
+                    assert(document.getElementById('HH156').classList.contains('callback-success-2'));
+                    assert(document.getElementById('HRJM1').classList.contains('callback-success-2'));
                 });    
             });
         });
@@ -344,10 +371,12 @@ describe('SynergyDOM function', () => {
                     document.querySelectorAll('#KJ4PM')
                 ));
 
-                console.log(SynergyDOM('#SVRNE').find({
-                    module: 'fizz',
-                    component: 'buzz'
-                }));
+                assert(NodeListsAreEqual(
+                    document.getElementById('SVRNE').find({
+                        module: 'fizz'
+                    }),
+                    document.querySelectorAll('#KJ4PM')
+                ));
 
                 assert(NodeListsAreEqual(
                     SynergyDOM('#SVRNE').find({
@@ -357,39 +386,48 @@ describe('SynergyDOM function', () => {
                     document.querySelectorAll('#DD45Q, #XU3V8')
                 ));
 
-                // assert(NodeListsAreEqual(
-                //     SynergyDOM('#SVRNE').find({
-                //         module: 'fizz',
-                //         component: 'buzz',
-                //         modifier: 'alpha'
-                //     }),
-                //     document.querySelectorAll('#XU3V8')
-                // ));
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').find({
+                        module: 'fizz',
+                        component: 'buzz',
+                        modifier: 'alpha'
+                    }),
+                    document.querySelectorAll('#XU3V8')
+                ));
 
-                // assert(NodeListsAreEqual(
-                //     SynergyDOM('#SVRNE').find({
-                //         component: 'lorem'
-                //     }),
-                //     document.querySelectorAll('#HH156, #HRJM1')
-                // ));
+                assert(NodeListsAreEqual(
+                    document.getElementById('SVRNE').find({
+                        module: 'fizz',
+                        component: 'buzz',
+                        modifier: 'alpha'
+                    }),
+                    document.querySelectorAll('#XU3V8')
+                ));
 
-                // assert(NodeListsAreEqual(
-                //     SynergyDOM('#SVRNE').find({
-                //         component: 'lorem',
-                //         modifier: 'alpha'
-                //     }),
-                //     document.querySelectorAll('#HRJM1')
-                // ));
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').find({
+                        component: 'lorem'
+                    }),
+                    document.querySelectorAll('#HH156, #HRJM1')
+                ));
 
-                // assert(NodeListsAreEqual(
-                //     SynergyDOM('#SVRNE').find('lorem'), 
-                //     document.querySelectorAll('#HH156, #HRJM1')
-                // ));
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').find({
+                        component: 'lorem',
+                        modifier: 'alpha'
+                    }),
+                    document.querySelectorAll('#HRJM1')
+                ));
 
-                // assert(NodeListsAreEqual(
-                //     SynergyDOM('#SVRNE').find('fizz'), 
-                //     document.querySelectorAll('#KJ4PM')
-                // ));
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').find('lorem'), 
+                    document.querySelectorAll('#HH156, #HRJM1')
+                ));
+
+                assert(NodeListsAreEqual(
+                    SynergyDOM('#SVRNE').find('fizz'), 
+                    document.querySelectorAll('#KJ4PM')
+                ));
             });
         });
 
@@ -399,6 +437,11 @@ describe('SynergyDOM function', () => {
                     SynergyDOM('#SVRNE').getComponent('lorem'), 
                     document.querySelectorAll('#HH156')
                 ));
+
+                assert.equal(
+                    document.getElementById('SVRNE').getComponent('lorem'), 
+                    document.getElementById('HH156')
+                );
             });
         });
 
@@ -406,6 +449,11 @@ describe('SynergyDOM function', () => {
             it('should return all matched components', () => {
                 assert(NodeListsAreEqual(
                     SynergyDOM('#SVRNE').getComponents('lorem'), 
+                    document.querySelectorAll('#HH156, #HRJM1')
+                ));
+
+                assert(NodeListsAreEqual(
+                    document.getElementById('SVRNE').getComponents('lorem'), 
                     document.querySelectorAll('#HH156, #HRJM1')
                 ));
             });
@@ -420,6 +468,11 @@ describe('SynergyDOM function', () => {
 
                 assert.equal(
                     JSON.stringify(SynergyDOM('#E0RZS, #FH5FN').getModifiers()), 
+                    JSON.stringify(['dolor', 'sit', 'amet', 'bar', 'qux'])
+                );
+
+                assert.equal(
+                    JSON.stringify(document.querySelectorAll('#E0RZS, #FH5FN').getModifiers()), 
                     JSON.stringify(['dolor', 'sit', 'amet', 'bar', 'qux'])
                 );
             });
@@ -447,6 +500,11 @@ describe('SynergyDOM function', () => {
                     SynergyDOM('#SVRNE').getSubComponent('beta', ['alpha']), 
                     document.querySelectorAll('#DD45Q')
                 ));
+    
+                assert.equal(
+                    document.getElementById('SVRNE').getSubComponent('beta', ['alpha']), 
+                    document.getElementById('DD45Q')
+                );
             });
         });
 
@@ -482,6 +540,11 @@ describe('SynergyDOM function', () => {
                     SynergyDOM('#KJ4PM').getSubComponents('beta'), 
                     document.querySelectorAll('#DD45Q, #HRJM1')
                 ));
+
+                assert(NodeListsAreEqual(
+                    document.getElementById('KJ4PM').getSubComponents('beta'), 
+                    document.querySelectorAll('#DD45Q, #HRJM1')
+                ));
             });
         });
 
@@ -489,12 +552,14 @@ describe('SynergyDOM function', () => {
             describe('with a single modifier', () => {
                 it('determine if each matched element has the passed modifier', () => {
                     assert(SynergyDOM('#E0RZS').hasModifier('dolor'));
+                    assert(document.getElementById('E0RZS').hasModifier('dolor'));
                 });
             });
 
             describe('with an array of modifiers', () => {
                 it('should have the added modifiers', () => {
                     assert(SynergyDOM('#E0RZS').hasModifier(['dolor', 'sit', 'amet']));
+                    assert(document.getElementById('E0RZS').hasModifier(['dolor', 'sit', 'amet']));
                 });
             });
         });
@@ -529,11 +594,22 @@ describe('SynergyDOM function', () => {
                     modifier: 'alpha'
                 }));
 
+                assert(document.getElementById('HRJM1').is({
+                    module: 'floo',
+                    component: 'lorem',
+                    modifier: 'alpha'
+                }));
+
                 assert(SynergyDOM('#HH156').is({
                     component: 'lorem'
                 }));
 
                 assert(SynergyDOM('#HRJM1').is({
+                    component: 'lorem',
+                    modifier: 'alpha'
+                }));
+
+                assert(document.getElementById('HRJM1').is({
                     component: 'lorem',
                     modifier: 'alpha'
                 }));
@@ -544,6 +620,7 @@ describe('SynergyDOM function', () => {
 
                 assert(SynergyDOM('#SVRNE').is('foo'));
                 assert(SynergyDOM('#HH156').is('lorem'));
+                assert(document.getElementById('HH156').is('lorem'));
             });
         });
     
@@ -551,6 +628,8 @@ describe('SynergyDOM function', () => {
             it('should determine if the matched elements are the passed component', () => {
                 assert(SynergyDOM('#HH156').isComponent('lorem'));
                 assert(SynergyDOM('#HH156, #HRJM1').isComponent('lorem'));
+                assert(document.getElementById('HH156').isComponent('lorem'));
+                assert(document.querySelectorAll('#HH156, #HRJM1').isComponent('lorem'));
             });
         });
 
@@ -559,6 +638,7 @@ describe('SynergyDOM function', () => {
                 it('should determine if each matched element has the specified modifier', () => {
                     assert(SynergyDOM('#FH5FN').modifier('qux'));
                     assert(SynergyDOM('#FH5FN').modifier('bar'));
+                    assert(document.getElementById('FH5FN').modifier('bar'));
                 }); 
             });
 
@@ -567,27 +647,31 @@ describe('SynergyDOM function', () => {
                     it('should determine if each matched element has the specified modifier', () => {
                         assert(SynergyDOM('#FH5FN').modifier('qux', 'is'));
                         assert(SynergyDOM('#FH5FN').modifier('bar', 'is'));
+                        assert(document.getElementById('FH5FN').modifier('bar', 'is'));
                     }); 
                 });
 
                 describe('with `operator` as `set`', () => {
                     beforeEach('call the `modifier` method', () => {
                         SynergyDOM('#SVRNE').modifier('test', 'set');
+                        document.getElementById('ZSAE6').modifier('test', 'set');
                     });
 
                     it('should add the specified modifier to each matched element', () => {
                         assert(document.getElementById('SVRNE').classList.contains('foo-test'));
+                        assert(document.getElementById('ZSAE6').classList.contains('foo-test'));
                     });
                 });
 
                 describe('with `operator` as `unset`', () => {
                     beforeEach('call the `modifier` method', () => {
                         SynergyDOM('#HEN8Z').modifier('buzz', 'unset');
+                        document.getElementById('FH5FN').modifier('bar', 'unset');
                     });
 
                     it('should remove the specified modifier(s) from each matched element', () => {
                         assert(!document.getElementById('HEN8Z').classList.contains('fizz-buzz'));
-                        assert(document.getElementById('HEN8Z').classList.contains('fizz'));
+                        assert(document.getElementById('FH5FN').classList.contains('foo-qux'));
                     }); 
                 });
             });
@@ -634,6 +718,11 @@ describe('SynergyDOM function', () => {
                     SynergyDOM('#XU3V8').parent('bar'),
                     document.querySelectorAll('#KJ4PM')
                 ));
+
+                assert.equal(
+                    document.getElementById('XU3V8').parent('bar'),
+                    document.getElementById('KJ4PM')
+                );
             });
         });
 
@@ -662,14 +751,24 @@ describe('SynergyDOM function', () => {
                     SynergyDOM('#XU3V8').parentComponent('bar'),
                     document.querySelectorAll('#KJ4PM')
                 ));
+
+                assert(NodeListsAreEqual(
+                    document.querySelectorAll('#XU3V8').parentComponent('bar'),
+                    document.querySelectorAll('#KJ4PM')
+                ));
+
+                assert(NodeListsAreEqual(
+                    document.getElementById('XU3V8').parentComponent('bar'),
+                    document.getElementById('KJ4PM')
+                ));
             });
         });
 
         describe('and `removeModifier` method is called', () => {
             describe('with a single modifier', () => {
                 beforeEach('call the `modifier` method', () => {
-                    SynergyDOM('#HEN8Z').removeModifier('buzz', 'unset');
-                    SynergyDOM('#FH5FN').removeModifier('bar', 'unset');
+                    SynergyDOM('#HEN8Z').removeModifier('buzz');
+                    document.getElementById('FH5FN').removeModifier('bar');
                 });
 
                 it('should remove the specified modifier from each matched element', () => {
@@ -682,7 +781,7 @@ describe('SynergyDOM function', () => {
 
             describe('with multiple modifiers', () => {
                 beforeEach('call the `modifier` method', () => {
-                    SynergyDOM('#FH5FN').removeModifier(['qux', 'bar'], 'unset');
+                    SynergyDOM('#FH5FN').removeModifier(['qux', 'bar']);
                 });
 
                 it('should remove the specified modifiers from each matched element', () => {
@@ -696,14 +795,18 @@ describe('SynergyDOM function', () => {
             beforeEach(() => {
                 document.body.innerHTML = (`
                     <div class="foo" id="SVRNE"></div>
+                    <div class="fizz" id="FH5FN"></div>
                 `);
 
                 SynergyDOM('#SVRNE').setComponent('bar');
+                document.getElementById('FH5FN').setComponent('buzz');
             });
 
             it('should set each matched element as the specified component', () => {
                 assert(document.getElementById('SVRNE').classList.contains('foo_bar'));
                 assert(!document.getElementById('SVRNE').classList.contains('foo'));
+                assert(document.getElementById('FH5FN').classList.contains('fizz_buzz'));
+                assert(!document.getElementById('FH5FN').classList.contains('fizz'));
             });
         });
 
@@ -735,6 +838,11 @@ describe('SynergyDOM function', () => {
                         SynergyDOM('#XU3V8').subComponents(),
                         document.querySelectorAll('#HH156')
                     ));
+
+                    assert(NodeListsAreEqual(
+                        document.getElementById('XU3V8').subComponents(),
+                        document.querySelectorAll('#HH156')
+                    ));
                 });
             });
 
@@ -747,6 +855,11 @@ describe('SynergyDOM function', () => {
 
                     assert(NodeListsAreEqual(
                         SynergyDOM('#KJ4PM').subComponents('gamma'),
+                        document.querySelectorAll('#DD45Q, #HRJM1')
+                    ));
+
+                    assert(NodeListsAreEqual(
+                        document.getElementById('KJ4PM').subComponents('gamma'),
                         document.querySelectorAll('#DD45Q, #HRJM1')
                     ));
                 });
@@ -764,6 +877,11 @@ describe('SynergyDOM function', () => {
                             SynergyDOM('#KJ4PM').subComponents('gamma', 'find'),
                             document.querySelectorAll('#DD45Q, #HRJM1')
                         ));
+
+                        assert(NodeListsAreEqual(
+                            document.getElementById('KJ4PM').subComponents('gamma', 'find'),
+                            document.querySelectorAll('#DD45Q, #HRJM1')
+                        ));
                     });
                 });
 
@@ -771,6 +889,7 @@ describe('SynergyDOM function', () => {
                     it('should determine whether each matched element is the specified sub-component', () => {
                         assert(SynergyDOM('#HH156').subComponents('delta', 'is'));
                         assert(SynergyDOM('#DD45Q, #HRJM1').subComponents('beta', 'is'));
+                        assert(document.querySelectorAll('#DD45Q, #HRJM1').subComponents('beta', 'is'));
                     });
                 });
             });
@@ -787,17 +906,20 @@ describe('SynergyDOM function', () => {
                                     </div>
                                 </div>
                                 <div class="foo_alpha_beta" id="HRJM1"></div>
-                                <div class="foo_alpha_fizz" id="HRJM1"></div>
+                                <div class="foo_alpha_fizz" id="POY7S"></div>
                             </div>
                         </div>
                     `);
 
                     SynergyDOM('#KJ4PM').subComponents('beta', element => element.classList.add('callback-success'));
+                    document.getElementById('KJ4PM').subComponents('beta', element => element.classList.add('callback-success-2'));
                 });
 
                 it('should successfuly call the `callback` function', () => {
                     assert(document.getElementById('DD45Q').classList.contains('callback-success'));
                     assert(document.getElementById('HRJM1').classList.contains('callback-success'));
+                    assert(document.getElementById('DD45Q').classList.contains('callback-success-2'));
+                    assert(document.getElementById('HRJM1').classList.contains('callback-success-2'));
                 });      
             });
         });
@@ -806,14 +928,18 @@ describe('SynergyDOM function', () => {
             beforeEach(() => {
                 document.body.innerHTML = (`
                     <div class="bar foo_test" id="SVRNE" data-module="foo"></div>
+                    <div class="bar fizz_buzz" id="HRJM1" data-module="fizz"></div>
                 `);
 
                 SynergyDOM('#SVRNE').unsetComponent('test');
+                document.getElementById('HRJM1').unsetComponent('buzz');
             });
 
             it('should unset each matched element as the specified component', () => {
                 assert(document.getElementById('SVRNE').classList.length === 1);
                 assert(document.getElementById('SVRNE').classList.contains('bar'));
+                assert(document.getElementById('HRJM1').classList.length === 1);
+                assert(document.getElementById('HRJM1').classList.contains('bar'));
             });
         });
     });

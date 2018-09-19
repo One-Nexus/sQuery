@@ -28,7 +28,7 @@ export default function init(custom) {
         window.sQuery = this;
         window.Synergy = window.Synergy || {};
 
-        Object.assign(Synergy, { componentGlue, modifierGlue });
+        Object.assign(window.Synergy, { componentGlue, modifierGlue });
     }
 
     for (let [key, method] of Object.entries(API)) {
@@ -76,7 +76,7 @@ export default function init(custom) {
             if (typeof document.body[methodName] === 'undefined') {
                 Element.prototype[methodName] = function(...params) {
                     return method.bind({ 
-                        namespace: getModuleNamespace(this, componentGlue, modifierGlue), 
+                        // namespace: getModuleNamespace(this, componentGlue, modifierGlue), 
                         DOMNodes: this, 
                         componentGlue, 
                         modifierGlue 
@@ -90,7 +90,7 @@ export default function init(custom) {
 
             NodeList.prototype[methodName] = function(...params) {
                 return method.bind({ 
-                    namespace: getModuleNamespace(this[0], componentGlue, modifierGlue), 
+                    // namespace: getModuleNamespace(this[0], componentGlue, modifierGlue), 
                     DOMNodes: this, 
                     componentGlue, 
                     modifierGlue 

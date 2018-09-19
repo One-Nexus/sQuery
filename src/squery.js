@@ -16,8 +16,8 @@ export default function sQuery(SynergyQuery, callback, defaults, custom, parser)
     const methods = {};
     const config = getConfig(defaults, custom, parser);
 
-    const componentGlue = config.componentGlue || (window.Synergy && Synergy.componentGlue) || '_';
-    const modifierGlue  = config.modifierGlue  || (window.Synergy && Synergy.modifierGlue)  || '-';
+    const componentGlue = config.componentGlue || (window.Synergy && window.Synergy.componentGlue) || '_';
+    const modifierGlue  = config.modifierGlue  || (window.Synergy && window.Synergy.modifierGlue)  || '-';
 
     const namespace = getModuleNamespace(SynergyQuery, componentGlue, modifierGlue);
     const DOMNodes = getDomNodes(SynergyQuery);

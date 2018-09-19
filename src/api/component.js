@@ -8,7 +8,7 @@ import isComponent from './isComponent';
  * @param {(('find'|'is'|'set'|'unset')|Function)} operator 
  */
 export default function component(componentName, operator) {
-    let namespace = this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue);
+    let namespace = node => this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue, 'strict');
 
     if (!componentName && !operator) {
         return getComponents.bind(this)();
@@ -25,24 +25,20 @@ export default function component(componentName, operator) {
     if (operator === 'set') {
         if (this.DOMNodes instanceof NodeList) {
             this.DOMNodes.forEach(node => {
-                namespace = this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue);
-
-                return node.classList.add(namespace + this.componentGlue + componentName)
+                return node.classList.add(namespace(node) + this.componentGlue + componentName);
             });
         } else {
-            this.DOMNodes.classList.add(namespace + this.componentGlue + componentName)
+            this.DOMNodes.classList.add(namespace(this.DOMNodes) + this.componentGlue + componentName);
         }
     }
 
     if (operator === 'unset') {
         if (this.DOMNodes instanceof NodeList) {
             this.DOMNodes.forEach(node => {
-                namespace = this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue);
-
-                return node.classList.remove(namespace)
+                return node.classList.remove(namespace(node) + this.componentGlue + componentName);
             });
         } else {
-            this.DOMNodes.classList.remove(namespace)
+            this.DOMNodes.classList.remove(namespace(this.DOMNodes) + this.componentGlue + componentName);
         }
     }
 
