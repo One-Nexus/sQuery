@@ -26,4 +26,8 @@ export default function getModuleNamespace(query, componentGlue, modifierGlue, s
             return query.classList[0].split(modifierGlue)[0];
         }
     }
+
+    if (query.constructor === Array) {
+        return query[1];
+    }
 }

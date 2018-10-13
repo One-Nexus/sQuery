@@ -16,8 +16,9 @@ export default function hasModifier(modifier) {
         const node = this.DOMNodes;
 
         return [...node.classList].some(className => {
+            const namespace = this.namespace || node.namespace || getModuleNamespace(node, this.modifierGlue, this.componentGlue);
             const matchIndex = className.indexOf(this.modifierGlue + modifier);
-            const namespaceMatch  = className.indexOf(this.namespace || getModuleNamespace(node, this.modifierGlue, this.componentGlue)) === 0;
+            const namespaceMatch  = className.indexOf(namespace) === 0;
             const isModifierTest1 = className.indexOf(this.modifierGlue + modifier + this.modifierGlue) > -1;
             const isModifierTest2 = matchIndex > -1 && matchIndex === (className.length - modifier.length - 1);
     

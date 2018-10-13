@@ -41,4 +41,9 @@ export default function sQuery(SynergyQuery, callback, defaults, custom, parser)
     });
 }
 
+export { 
+    API,
+    getModuleNamespace
+};
+
 sQuery.init = init;

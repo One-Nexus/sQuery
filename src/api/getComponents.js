@@ -1,4 +1,5 @@
 import getModuleNamespace from '../utilities/getModuleNamespace';
+import parent from './parent';
 
 /**
  * @param {*} componentName 
@@ -15,6 +16,13 @@ export default function getComponents(componentName = '', modifier, namespace) {
     const query = namespace + (componentName ? (this.componentGlue + componentName) : '');
 
     return [].concat(...[...this.DOMNodes.querySelectorAll(`[class*="${query}"]`)].filter(component => {
+        // filter out components from nested modules
+        if (this.parentElement) {
+            if (this.parentElement !== parent.bind(Object.assign(this, { DOMNodes: component }))(namespace)) {
+                return false;
+            }
+        }
+        
         return ([...component.classList].some(className => {
             const isComponent = (className.split(this.componentGlue).length - 1) === 1;
             const isQueryMatch = className.indexOf(query) === 0;

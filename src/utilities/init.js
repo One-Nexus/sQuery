@@ -1,5 +1,4 @@
 import * as API from '../api';
-import getModuleNamespace from './getModuleNamespace';
 
 export default function init(custom) {
     const options = Object.assign({
@@ -75,9 +74,9 @@ export default function init(custom) {
 
             if (typeof document.body[methodName] === 'undefined') {
                 Element.prototype[methodName] = function(...params) {
-                    return method.bind({ 
-                        // namespace: getModuleNamespace(this, componentGlue, modifierGlue), 
-                        DOMNodes: this, 
+                    return method.bind({
+                        DOMNodes: this,
+                        parentElement: this,
                         componentGlue, 
                         modifierGlue 
                     })(...params);
@@ -89,9 +88,9 @@ export default function init(custom) {
             methodName = options.alterMethodName.includes('nodeListProto') ? newMethodName : methodName;
 
             NodeList.prototype[methodName] = function(...params) {
-                return method.bind({ 
-                    // namespace: getModuleNamespace(this[0], componentGlue, modifierGlue), 
+                return method.bind({
                     DOMNodes: this, 
+                    parentElement: this,
                     componentGlue, 
                     modifierGlue 
                 })(...params);

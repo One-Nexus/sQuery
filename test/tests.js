@@ -890,6 +890,7 @@ describe('SynergyDOM function', () => {
                         assert(SynergyDOM('#HH156').subComponents('delta', 'is'));
                         assert(SynergyDOM('#DD45Q, #HRJM1').subComponents('beta', 'is'));
                         assert(document.querySelectorAll('#DD45Q, #HRJM1').subComponents('beta', 'is'));
+                        assert(document.getElementById('HH156').subComponents('delta', 'is'));
                     });
                 });
             });

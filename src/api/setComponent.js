@@ -10,6 +10,5 @@ export default function setComponent(componentName) {
 
     const namespace = this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue);
 
-    this.DOMNodes.classList.remove(namespace);
     this.DOMNodes.classList.add(namespace + this.componentGlue + componentName);
 }
