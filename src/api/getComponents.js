@@ -16,11 +16,8 @@ export default function getComponents(componentName = '', modifier, namespace) {
     const query = namespace + (componentName ? (this.componentGlue + componentName) : '');
 
     return [].concat(...[...this.DOMNodes.querySelectorAll(`[class*="${query}"]`)].filter(component => {
-        // filter out components from nested modules
-        if (this.parentElement) {
-            if (this.parentElement !== parent.bind(Object.assign(this, { DOMNodes: component }))(namespace)) {
-                return false;
-            }
+        if (this.parentElement && (this.parentElement !== parent.bind(Object.assign(this, { DOMNodes: component }))(namespace))) {
+            return false;
         }
         
         return ([...component.classList].some(className => {
