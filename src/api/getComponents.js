@@ -11,11 +11,13 @@ export default function getComponents(componentName = '', modifier, namespace) {
         }, []);
     }
 
+    if (componentName.indexOf('modifier(') === 0) return;
+
     namespace = namespace || this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue, 'strict');
 
     const query = namespace + (componentName ? (this.componentGlue + componentName) : '');
 
-    return [].concat(...[...this.DOMNodes.querySelectorAll(`[class*="${query}"]`)].filter(component => {
+    return [].concat(...[...this.DOMNodes.querySelectorAll(`.${query}, [class*="${query + this.modifierGlue}"]`)].filter(component => {
         if (this.parentElement && (this.parentElement !== parent.bind(Object.assign(this, { DOMNodes: component }))(namespace))) {
             return false;
         }
