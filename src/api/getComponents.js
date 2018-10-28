@@ -18,7 +18,10 @@ export default function getComponents(componentName = '', modifier, namespace) {
     const query = namespace + (componentName ? (this.componentGlue + componentName) : '');
 
     return [].concat(...[...this.DOMNodes.querySelectorAll(`.${query}, [class*="${query + this.modifierGlue}"]`)].filter(component => {
-        if (this.parentElement && (this.parentElement !== parent.bind(Object.assign(this, { DOMNodes: component }))(namespace))) {
+        const parentModule = parent.bind(Object.assign(this, { DOMNodes: component }))(namespace);
+        const parentElementIsModule = this.parentElement.matches(`.${namespace}, [class*="${namespace}-"]`);
+
+        if (this.parentElement && parentElementIsModule && this.parentElement !== parentModule) {
             return false;
         }
         
