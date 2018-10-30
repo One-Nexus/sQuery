@@ -21,7 +21,7 @@ export default function getComponents(componentName = '', modifier, namespace) {
         const parentModule = parent.bind(Object.assign(this, { DOMNodes: component }))(namespace);
         const parentElementIsModule = this.parentElement.matches(`.${namespace}, [class*="${namespace}-"]`);
 
-        if (this.parentElement && parentElementIsModule && this.parentElement !== parentModule) {
+        if (parentElementIsModule && this.parentElement !== parentModule) {
             return false;
         }
         
