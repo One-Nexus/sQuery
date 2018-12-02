@@ -11,11 +11,11 @@ export default function modifier(modifier, operator) {
         return hasModifier.bind(this)(modifier);
     }
 
-    if (operator === 'set') {
+    if (operator === 'set' || operator === 'add') {
         return addModifier.bind(this)(modifier);
     }
 
-    if (operator === 'unset') {
+    if (operator === 'unset' || operator === 'remove') {
         return removeModifier.bind(this)(modifier);
     }
 }

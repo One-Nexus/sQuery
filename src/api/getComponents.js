@@ -1,10 +1,13 @@
 import getModuleNamespace from '../utilities/getModuleNamespace';
+import isValidSelector from '../utilities/isValidSelector';
 import parent from './parent';
 
 /**
  * @param {*} componentName 
  */
 export default function getComponents(componentName = '', modifier, namespace) {
+    if (!isValidSelector(componentName)) return [];
+
     if (this.DOMNodes instanceof NodeList) {
         return [...this.DOMNodes].reduce((matches, node) => {
             return matches.concat(...getComponents.bind(Object.assign(this, { DOMNodes: node }))(componentName, modifier, namespace));
@@ -19,7 +22,7 @@ export default function getComponents(componentName = '', modifier, namespace) {
 
     return [].concat(...[...this.DOMNodes.querySelectorAll(`.${query}, [class*="${query + this.modifierGlue}"]`)].filter(component => {
         const parentModule = parent.bind(Object.assign(this, { DOMNodes: component }))(namespace);
-        const parentElementIsModule = this.parentElement.matches(`.${namespace}, [class*="${namespace}-"]`);
+        const parentElementIsModule = this.parentElement ? this.parentElement.matches(`.${namespace}, [class*="${namespace}-"]`) : false;
 
         if (parentElementIsModule && this.parentElement !== parentModule) {
             return false;
