@@ -20,6 +20,10 @@ export default function getSubComponts(subComponentName, context = [], modifier)
 
     return [].concat(...[...this.DOMNodes.querySelectorAll(`[class*="${namespace}"]`)].filter(subComponent => {
         return [...subComponent.classList].some(className => {
+            if ((className.match(new RegExp(this.componentGlue, 'g')) || []).length < 2) {
+                return false;
+            }
+
             let namespaceMatch;
 
             if (modifier) {
@@ -30,7 +34,7 @@ export default function getSubComponts(subComponentName, context = [], modifier)
 
             const depthMatch = (className.split(this.componentGlue).length - 1) === (context.length ? depth : depth + 1);
 
-            return namespaceMatch && depthMatch;
+            return depth ? (namespaceMatch && depthMatch) : namespaceMatch;
         });
     }));
 }
