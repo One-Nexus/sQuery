@@ -6,7 +6,7 @@ import parent from './parent';
  * @param {*} componentName 
  */
 export default function getComponents(componentName = '', modifier, namespace) {
-    if (!isValidSelector(componentName)) return [];
+    if (componentName && !isValidSelector(componentName)) return [];
 
     if (this.DOMNodes instanceof NodeList) {
         return [...this.DOMNodes].reduce((matches, node) => {
@@ -20,7 +20,7 @@ export default function getComponents(componentName = '', modifier, namespace) {
 
     const query = namespace + (componentName ? (this.componentGlue + componentName) : '');
 
-    return [].concat(...[...this.DOMNodes.querySelectorAll(`.${query}, [class*="${query + this.modifierGlue}"]`)].filter(component => {
+    const subComponents = [...this.DOMNodes.querySelectorAll(`[class*="${query}"]`)].filter(component => {
         const parentModule = parent.bind(Object.assign(this, { DOMNodes: component }))(namespace);
         const parentElementIsModule = this.parentElement ? this.parentElement.matches(`.${namespace}, [class*="${namespace}-"]`) : false;
 
@@ -28,7 +28,7 @@ export default function getComponents(componentName = '', modifier, namespace) {
             return false;
         }
         
-        return ([...component.classList].some(className => {
+        return [...component.classList].some(className => {
             const isComponent = (className.split(this.componentGlue).length - 1) === 1;
             const isQueryMatch = className.indexOf(query) === 0;
 
@@ -37,6 +37,8 @@ export default function getComponents(componentName = '', modifier, namespace) {
             } else {
                 return isQueryMatch && isComponent;
             }
-        }));
-    }));
+        });
+    });
+
+    return subComponents;
 }
