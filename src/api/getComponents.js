@@ -20,7 +20,7 @@ export default function getComponents(componentName = '', modifier, namespace) {
 
     const query = namespace + (componentName ? (this.componentGlue + componentName) : '');
 
-    const subComponents = [...this.DOMNodes.querySelectorAll(`[class*="${query}"]`)].filter(component => {
+    const subComponents = [...this.DOMNodes.querySelectorAll(`.${query}, [class*="${query + this.modifierGlue}"]`)].filter(component => {
         const parentModule = parent.bind(Object.assign(this, { DOMNodes: component }))(namespace);
         const parentElementIsModule = this.parentElement ? this.parentElement.matches(`.${namespace}, [class*="${namespace}-"]`) : false;
 
