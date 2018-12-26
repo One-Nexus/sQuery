@@ -12,11 +12,13 @@ export default function getSubComponts(subComponentName, context = [], modifier)
 
     let namespace = this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue);
 
+    const depth = namespace.split(this.componentGlue).length - 1;
+
     if (context.length) {
         namespace = [namespace].concat(context, [subComponentName]).join(this.componentGlue);
+    } else if (subComponentName) {
+        namespace = namespace + this.componentGlue + subComponentName;
     }
-
-    const depth = namespace.split(this.componentGlue).length - 1;
 
     return [...this.DOMNodes.querySelectorAll(`[class*="${namespace}"]`)].filter(subComponent => {
         return [...subComponent.classList].some(className => {
