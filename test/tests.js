@@ -854,12 +854,7 @@ describe('SynergyDOM function', () => {
                     ));
 
                     assert(NodeListsAreEqual(
-                        SynergyDOM('#KJ4PM').subComponents('gamma'),
-                        document.querySelectorAll('#DD45Q, #HRJM1')
-                    ));
-
-                    assert(NodeListsAreEqual(
-                        document.getElementById('KJ4PM').subComponents('gamma'),
+                        SynergyDOM('#KJ4PM').subComponents('beta'),
                         document.querySelectorAll('#DD45Q, #HRJM1')
                     ));
                 });
@@ -869,18 +864,13 @@ describe('SynergyDOM function', () => {
                 describe('with `operator` as `find`', () => {
                     it('should find all child sub-components filtered by the given parameter', () => {
                         assert(NodeListsAreEqual(
-                            SynergyDOM('#KJ4PM').subComponents('gamma', 'find'),
-                            document.querySelectorAll('#DD45Q, #HRJM1')
+                            SynergyDOM('#DD45Q').subComponents('gamma', 'find'),
+                            document.querySelectorAll('#XU3V8')
                         ));
 
                         assert(NodeListsAreEqual(
-                            SynergyDOM('#KJ4PM').subComponents('gamma', 'find'),
-                            document.querySelectorAll('#DD45Q, #HRJM1')
-                        ));
-
-                        assert(NodeListsAreEqual(
-                            document.getElementById('KJ4PM').subComponents('gamma', 'find'),
-                            document.querySelectorAll('#DD45Q, #HRJM1')
+                            document.getElementById('DD45Q').subComponents('gamma', 'find'),
+                            document.querySelectorAll('#XU3V8')
                         ));
                     });
                 });

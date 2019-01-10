@@ -20,7 +20,13 @@ export default function getComponents(componentName = '', modifier, namespace) {
 
     const query = namespace + (componentName ? (this.componentGlue + componentName) : '');
 
-    const subComponents = [...this.DOMNodes.querySelectorAll(`.${query}, [class*="${query + this.modifierGlue}"]`)].filter(component => {
+    let selector = `.${query}, [class*="${query + this.modifierGlue}"]`;
+
+    if (!componentName) {
+        selector = `[class*="${query + this.componentGlue}"]`;
+    }
+
+    const subComponents = [...this.DOMNodes.querySelectorAll(selector)].filter(component => {
         const parentModule = parent.bind(Object.assign(this, { DOMNodes: component }))(namespace);
         const parentElementIsModule = this.parentElement ? this.parentElement.matches(`.${namespace}, [class*="${namespace}-"]`) : false;
 
@@ -39,6 +45,8 @@ export default function getComponents(componentName = '', modifier, namespace) {
             }
         });
     });
+
+    // console.log(subComponents)
 
     return subComponents;
 }

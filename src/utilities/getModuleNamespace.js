@@ -27,7 +27,7 @@ export default function getModuleNamespace(query, componentGlue, modifierGlue, s
         return query.name;
     }
 
-    if (query.constructor === Array) {
+    if (query && query.constructor === Array) {
         return query[1];
     }
 }

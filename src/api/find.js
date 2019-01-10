@@ -18,8 +18,10 @@ export default function find(query) {
     }
 
     if (typeof query === 'string') {
-        if (getComponents.bind(this)(query).length) {
-            return getComponents.bind(this)(query);
+        const components = getComponents.bind(this)(query);
+
+        if (components.length) {
+            return components;
         }
 
         if (getModules(this, query).length) {

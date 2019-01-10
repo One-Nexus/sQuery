@@ -20,7 +20,13 @@ export default function getSubComponts(subComponentName, context = [], modifier)
         namespace = namespace + this.componentGlue + subComponentName;
     }
 
-    return [...this.DOMNodes.querySelectorAll(`[class*="${namespace}"]`)].filter(subComponent => {
+    let selector = `.${namespace}, [class*="${namespace + this.modifierGlue}"]`;
+
+    if (!subComponentName) {
+        selector = `[class*="${namespace + this.componentGlue}"]`;
+    }
+
+    return [...this.DOMNodes.querySelectorAll(selector)].filter(subComponent => {
         return [...subComponent.classList].some(className => {
             if ((className.match(new RegExp(this.componentGlue, 'g')) || []).length < 2) {
                 return false;
