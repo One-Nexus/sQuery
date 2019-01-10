@@ -52,6 +52,6 @@
     "test": "nyc --require babel-register mocha test/tests.js --require babel-register && nyc report --reporter=lcov",
     "docs": "jsdoc src -r -d docs/js",
     "js": "webpack",
-    "compile": "npm run lint && npm test && npm run docs && npm run js"
+    "build": "npm run lint && npm test && npm run docs && npm run js"
   }
 }
