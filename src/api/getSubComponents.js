@@ -1,16 +1,19 @@
 import getModuleNamespace from '../utilities/getModuleNamespace';
+import isValidSelector from '../utilities/isValidSelector';
 
 /**
  * @param {*} subComponentName 
  */
 export default function getSubComponts(subComponentName, context = [], modifier) {
+    if (subComponentName && !isValidSelector(subComponentName)) return [];
+
     if (this.DOMNodes instanceof NodeList) {
         return [...this.DOMNodes].reduce((matches, DOMNodes) => {
             return matches.concat(...getSubComponts.bind(Object.assign(this, { DOMNodes }))(subComponentName, context, modifier));
         }, []);
     }
 
-    let namespace = this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue);
+    let namespace = this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue) || '';
 
     const depth = namespace.split(this.componentGlue).length - 1;
 
