@@ -595,7 +595,7 @@ describe('SynergyDOM function', () => {
                 }));
 
                 assert(document.getElementById('HRJM1').is({
-                    module: 'floo',
+                    module: 'foo',
                     component: 'lorem',
                     modifier: 'alpha'
                 }));

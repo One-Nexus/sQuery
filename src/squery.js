@@ -5,6 +5,30 @@ import init from './utilities/init';
 
 import * as API from './api';
 
+import {
+    add,
+    addModifier,
+    component,
+    components,
+    find,
+    getComponent,
+    getModifiers,
+    getSubComponent,
+    getSubComponents,
+    has,
+    hasModifier,
+    is,
+    isComponent,
+    modifier,
+    removeModifier,
+    parent,
+    parentComponent,
+    setComponent,
+    subComponent,
+    subComponents,
+    unsetComponent,
+} from './api';
+
 /**
  * @param {*} SynergyQuery
  * @param {Function} [callback]
@@ -41,8 +65,29 @@ export default function sQuery(SynergyQuery, callback, defaults, custom, parser)
     });
 }
 
-export { 
-    API,
+export {
+    add,
+    addModifier,
+    component,
+    components,
+    find,
+    getComponent,
+    getModifiers,
+    getSubComponent,
+    getSubComponents,
+    has,
+    hasModifier,
+    is,
+    isComponent,
+    modifier,
+    removeModifier,
+    parent,
+    parentComponent,
+    setComponent,
+    subComponent,
+    subComponents,
+    unsetComponent,
+
     getModuleNamespace
 };
 

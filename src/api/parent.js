@@ -3,7 +3,7 @@ import getModuleNamespace from '../utilities/getModuleNamespace';
 /**
  * @param {(String|'module'|'component')} query 
  */
-export default function parent(query) {
+export default function parent(query, namespace) {
     if (query === 'module') {
         return [...this.DOMNodes].map(node => node.parentNode.closest('[data-module]'));
     }
@@ -17,8 +17,7 @@ export default function parent(query) {
             let parentModule;
 
             if (nodes instanceof NodeList) {
-                // @TODO recurse parent function instead of duplicating logic
-                return [...nodes].map(node => node.parentNode.closest(`[data-module="${query}"]`));
+                return [...nodes].map(node => moduleMatch(node));
             }
 
             parentModule = nodes.parentNode.closest(`[data-module="${query}"]`);
@@ -35,14 +34,32 @@ export default function parent(query) {
         };
 
         const componentMatch = (nodes = this.DOMNodes) => {
+            namespace = namespace || getModuleNamespace(nodes, this.componentGlue, this.modifierGlue, 'strict');
+
+            let parentModule, selector;
+
             if (nodes instanceof NodeList) {
-                // @TODO recurse parent function instead of duplicating logic
-                return [...nodes].map(node => node.parentNode.closest(`[data-component="${query}"]`))
+                return [...nodes].map(node => componentMatch(node));
+            }
+  
+            parentModule = nodes.parentNode.closest(`[data-component="${query}"]`);
+
+            if (parentModule) {
+                return parentModule;
             }
 
-            // @TODO similar to moduleMatch, also test selector string query
-  
-            return nodes.parentNode.closest(`[data-component="${query}"]`);
+            parentModule = nodes.parentNode.closest(`.${namespace + this.componentGlue + query}`);
+
+            if (parentModule) {
+                return parentModule;
+            }
+
+            selector = `[class*="${namespace + this.componentGlue}"][class*="${this.componentGlue + query}"]`;
+            parentModule = nodes.parentNode.closest(selector);
+
+            if (parentModule) {
+                return parentModule;
+            }
         };
 
         if (this.DOMNodes instanceof HTMLElement) {

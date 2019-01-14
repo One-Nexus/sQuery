@@ -34,3 +34,7 @@ export {
 } from './subComponent';
 
 export { default as unsetComponent } from './unsetComponent';
+
+export function fizzBuzz(test) {
+    console.log(test);
+}

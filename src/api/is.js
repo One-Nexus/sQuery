@@ -8,10 +8,12 @@ import hasModifier from './hasModifier';
  * @param {*} query 
  */
 export default function is(query) {
+    const DOMNodes = !(this.DOMNodes instanceof NodeList) ? [this.DOMNodes] : this.DOMNodes;
+
     if (typeof query === 'object') {
         if (query.module) {
             if (query.component) {
-                const isModuleNamespace = [...this.DOMNodes].every(node => {
+                const isModuleNamespace = [...DOMNodes].every(node => {
                     return (this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue, true)) === query.module;
                 });
 
