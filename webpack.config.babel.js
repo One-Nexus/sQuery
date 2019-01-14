@@ -13,7 +13,8 @@ export default function() {
         output: {
             path: path.resolve(__dirname, 'dist/'),
             filename: '[name].js',
-            publicPath: '/'
+            publicPath: '/',
+            libraryTarget: 'umd'
         },
 
         plugins: [

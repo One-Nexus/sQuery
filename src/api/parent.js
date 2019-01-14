@@ -12,7 +12,7 @@ export default function parent(query, namespace) {
         return [...this.DOMNodes].map(node => node.parentNode.closest('[data-component]'));
     }
 
-    if (typeof query === 'string') {
+    if (query && typeof query === 'string') {
         const moduleMatch = (nodes = this.DOMNodes) => {
             let parentModule;
 

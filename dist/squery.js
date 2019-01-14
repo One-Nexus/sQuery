@@ -1,4 +1,14 @@
-/******/ (function(modules) { // webpackBootstrap
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else {
+		var a = factory();
+		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
+	}
+})(typeof self !== 'undefined' ? self : this, function() {
+return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -509,7 +519,7 @@ function parent(query, namespace) {
     });
   }
 
-  if (typeof query === 'string') {
+  if (query && typeof query === 'string') {
     var moduleMatch = function moduleMatch() {
       var nodes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _this.DOMNodes;
       var parentModule;
@@ -641,6 +651,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "components", function() { return __WEBPACK_IMPORTED_MODULE_4__api__["components"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "find", function() { return __WEBPACK_IMPORTED_MODULE_4__api__["find"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "getComponent", function() { return __WEBPACK_IMPORTED_MODULE_4__api__["getComponent"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "getComponents", function() { return __WEBPACK_IMPORTED_MODULE_4__api__["getComponents"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "getModifiers", function() { return __WEBPACK_IMPORTED_MODULE_4__api__["getModifiers"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "getSubComponent", function() { return __WEBPACK_IMPORTED_MODULE_4__api__["getSubComponent"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "getSubComponents", function() { return __WEBPACK_IMPORTED_MODULE_4__api__["getSubComponents"]; });
@@ -1679,3 +1690,4 @@ function unsetComponent(componentName) {
 
 /***/ })
 /******/ ]);
+});

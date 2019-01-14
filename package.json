@@ -54,5 +54,6 @@
     "docs": "jsdoc src -r -d docs/js",
     "js": "webpack",
     "build": "npm run lint && npm test && npm run docs && npm run js"
-  }
+  },
+  "sideEffects": false
 }
