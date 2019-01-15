@@ -66,6 +66,16 @@ export default function sQuery(SynergyQuery, callback, defaults, custom, parser)
     });
 }
 
+sQuery.init = init;
+
+for (let [key, method] of Object.entries(API)) {
+    sQuery[key] = method;
+}
+
+if (typeof window !== 'undefined') {
+    window.sQuery = sQuery;
+}
+
 export {
     add,
     addModifier,
@@ -89,8 +99,4 @@ export {
     subComponent,
     subComponents,
     unsetComponent,
-
-    getModuleNamespace
 };
-
-sQuery.init = init;
