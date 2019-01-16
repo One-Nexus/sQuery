@@ -17,7 +17,7 @@ export default function subComponent(subComponentName, operator) {
 
     if (operator === 'is') {
         if (this.DOMNodes instanceof NodeList) {
-            return [...this.DOMNodes].every(node => is.bind(this)(node, subComponentName));
+            return Array.prototype.slice.call(this.DOMNodes).every(node => is.bind(this)(node, subComponentName));
         }
 
         return is.bind(this)(this.DOMNodes, subComponentName);
@@ -36,7 +36,7 @@ function is(node, subComponentName) {
     const query = this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue);
     const isMatch = query.indexOf(subComponentName) === (query.length - subComponentName.length);
 
-    return [...node.classList].some(className => {
+    return Array.prototype.slice.call(node.classList).some(className => {
         return className.indexOf(query) > -1 && isMatch;
     });
 }

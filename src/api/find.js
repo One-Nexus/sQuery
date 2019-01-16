@@ -9,7 +9,7 @@ import getComponents from './getComponents';
 export default function find(query) {
     if (typeof query === 'object') {
         if (this.DOMNodes instanceof NodeList) {
-            return [...this.DOMNodes].reduce((matches, node) => {
+            return Array.prototype.slice.call(this.DOMNodes).reduce((matches, node) => {
                 return matches.concat(getQueryFromObject.bind(this)(query, node));
             }, []);
         }
@@ -39,10 +39,10 @@ function getQueryFromObject(query, node) {
 
     if (query.module) {
         if (query.component) {
-            return matches.concat(...getComponents.bind(this)(query.component, query.modifier, query.module));
+            return matches.concat(Array.prototype.slice.call(getComponents.bind(this)(query.component, query.modifier, query.module)));
         }
 
-        return matches.concat(...node.querySelectorAll(`.${query.module}, [class*="${query.module + query.modifierGlue}"]`));
+        return matches.concat(Array.prototype.slice.call(node.querySelectorAll(`.${query.module}, [class*="${query.module + query.modifierGlue}"]`)));
     }
 
     if (query.component) {
@@ -50,18 +50,18 @@ function getQueryFromObject(query, node) {
 
         if (query.modifier) {
             return matches.concat(
-                ...components.filter(component => {
-                    return [...component.classList].some(className => {
+                Array.prototype.slice.call(components.filter(component => {
+                    return Array.prototype.slice.call(component.classList).some(className => {
                         const isNamespace = className.indexOf(this.namespace || getModuleNamespace(component, this.componentGlue, this.modifierGlue)) === 0;
                         const hasModifier = className.indexOf(query.modifier) > -1;
 
                         return isNamespace && hasModifier;
                     });
-                })
+                }))
             );
         }
 
-        return matches.concat(...components);
+        return matches.concat(Array.prototype.slice.call(components));
     }
 
     if (query.modifier) {

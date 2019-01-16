@@ -10,12 +10,12 @@ export default function hasModifier(modifier) {
         }
 
         if (this.DOMNodes instanceof NodeList) {
-            return [...this.DOMNodes].every(DOMNodes => hasModifier.bind(Object.assign(this, { DOMNodes }))(modifier));
+            return Array.prototype.slice.call(this.DOMNodes).every(DOMNodes => hasModifier.bind(Object.assign(this, { DOMNodes }))(modifier));
         }
 
         const node = this.DOMNodes;
 
-        return [...node.classList].some(className => {
+        return Array.prototype.slice.call(node.classList).some(className => {
             const namespace = this.namespace || node.namespace || getModuleNamespace(node, this.modifierGlue, this.componentGlue);
             const matchIndex = className.indexOf(this.modifierGlue + modifier);
             const namespaceMatch  = className.indexOf(namespace) === 0;

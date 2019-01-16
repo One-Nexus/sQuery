@@ -14,8 +14,7 @@ export default function() {
             path: path.resolve(__dirname, 'dist/'),
             filename: '[name].js',
             publicPath: '/',
-            libraryTarget: 'umd',
-            globalObject: 'typeof self !== "undefined" ? self : this',
+            libraryTarget: 'umd'
         },
 
         optimization: {
@@ -36,10 +35,7 @@ export default function() {
                 test: /\.(js)$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ["@babel/preset-env"]
-                    }
+                    loader: 'babel-loader'
                 }
             }]
         },

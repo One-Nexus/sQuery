@@ -16,15 +16,12 @@ export default function init(custom) {
         Synergy: ['_', '-', 'module', 'component', 'modifier']
     }
 
-    let [componentGlue, modifierGlue, moduleNamespace, componentNamespace, modifierNamespace] = [
-        ...PRESETS[options.preset]
-    ];
+    let [componentGlue, modifierGlue, moduleNamespace, componentNamespace, modifierNamespace] = Array.prototype.slice.call(PRESETS[options.preset]);
 
     componentGlue = options.componentGlue || componentGlue;
     modifierGlue  = options.modifierGlue  || modifierGlue;
 
     if (options.attachToWindow) {
-        window.sQuery = this;
         window.Synergy = window.Synergy || {};
 
         Object.assign(window.Synergy, { componentGlue, modifierGlue });

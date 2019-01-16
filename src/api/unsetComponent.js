@@ -8,7 +8,7 @@ export default function unsetComponent(componentName) {
         return this.DOMNodes.forEach(DOMNodes => unsetComponent.bind(Object.assign(this, { DOMNodes }))(componentName));
     }
 
-    return [...this.DOMNodes.classList].forEach(className => {
+    return Array.prototype.slice.call(this.DOMNodes.classList).forEach(className => {
         const isAComponent = (className.split(this.componentGlue).length - 1) === 1;
         const isMatch = className.indexOf(
             (this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue)) + this.componentGlue + componentName

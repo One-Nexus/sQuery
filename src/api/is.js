@@ -13,7 +13,7 @@ export default function is(query) {
     if (typeof query === 'object') {
         if (query.module) {
             if (query.component) {
-                const isModuleNamespace = [...DOMNodes].every(node => {
+                const isModuleNamespace = Array.prototype.slice.call(DOMNodes).every(node => {
                     return (this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue, true)) === query.module;
                 });
 

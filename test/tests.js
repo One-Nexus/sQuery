@@ -1,10 +1,11 @@
 import assert from 'assert';
 import jsdom from 'jsdom-global';
+import deepExtend from 'deep-extend';
 import SynergyDOM from '../src/squery';
 
 jsdom();
-
 SynergyDOM.init();
+global.deepExtend = deepExtend;
 
 describe('SynergyDOM function', () => {
     it('should exist', () => {

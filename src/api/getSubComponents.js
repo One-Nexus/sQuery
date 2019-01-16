@@ -8,8 +8,8 @@ export default function getSubComponts(subComponentName, context = [], modifier)
     if (subComponentName && !isValidSelector(subComponentName)) return [];
 
     if (this.DOMNodes instanceof NodeList) {
-        return [...this.DOMNodes].reduce((matches, DOMNodes) => {
-            return matches.concat(...getSubComponts.bind(Object.assign(this, { DOMNodes }))(subComponentName, context, modifier));
+        return Array.prototype.slice.call(this.DOMNodes).reduce((matches, DOMNodes) => {
+            return matches.concat(Array.prototype.slice.call(getSubComponts.bind(Object.assign(this, { DOMNodes }))(subComponentName, context, modifier)));
         }, []);
     }
 
@@ -29,8 +29,8 @@ export default function getSubComponts(subComponentName, context = [], modifier)
         selector = `[class*="${namespace + this.componentGlue}"]`;
     }
 
-    return [...this.DOMNodes.querySelectorAll(selector)].filter(subComponent => {
-        return [...subComponent.classList].some(className => {
+    return Array.prototype.slice.call(this.DOMNodes.querySelectorAll(selector)).filter(subComponent => {
+        return Array.prototype.slice.call(subComponent.classList).some(className => {
             if ((className.match(new RegExp(this.componentGlue, 'g')) || []).length < 2) {
                 return false;
             }

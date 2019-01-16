@@ -9,8 +9,8 @@ export default function getComponents(componentName = '', modifier, namespace) {
     if (componentName && !isValidSelector(componentName)) return [];
 
     if (this.DOMNodes instanceof NodeList) {
-        return [...this.DOMNodes].reduce((matches, node) => {
-            return matches.concat(...getComponents.bind(Object.assign(this, { DOMNodes: node }))(componentName, modifier, namespace));
+        return Array.prototype.slice.call(this.DOMNodes).reduce((matches, node) => {
+            return matches.concat(Array.prototype.slice.call(getComponents.bind(Object.assign(this, { DOMNodes: node }))(componentName, modifier, namespace)));
         }, []);
     }
 
@@ -26,7 +26,7 @@ export default function getComponents(componentName = '', modifier, namespace) {
         selector = `[class*="${query + this.componentGlue}"]`;
     }
 
-    const subComponents = [...this.DOMNodes.querySelectorAll(selector)].filter(component => {
+    const subComponents = Array.prototype.slice.call(this.DOMNodes.querySelectorAll(selector)).filter(component => {
         const parentModule = parent.bind(Object.assign(this, { DOMNodes: component }))(namespace);
         const parentElementIsModule = this.parentElement ? this.parentElement.matches(`.${namespace}, [class*="${namespace}-"]`) : false;
 
@@ -34,7 +34,7 @@ export default function getComponents(componentName = '', modifier, namespace) {
             return false;
         }
         
-        return [...component.classList].some(className => {
+        return Array.prototype.slice.call(component.classList).some(className => {
             const isComponent = (className.split(this.componentGlue).length - 1) === 1;
             const isQueryMatch = className.indexOf(query) === 0;
 

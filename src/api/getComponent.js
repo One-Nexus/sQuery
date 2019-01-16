@@ -5,7 +5,7 @@ import getComponents from './getComponents';
  */
 export default function getComponent(componentName) {
     if (this.DOMNodes instanceof NodeList) {
-        return [...this.DOMNodes].map(DOMNodes => {
+        return Array.prototype.slice.call(this.DOMNodes).map(DOMNodes => {
             return getComponent.bind(Object.assign(this, { DOMNodes }))(componentName);
         });
     };

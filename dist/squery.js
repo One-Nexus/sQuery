@@ -7,7 +7,7 @@
 		var a = factory();
 		for(var i in a) (typeof exports === 'object' ? exports : root)[i] = a[i];
 	}
-})(typeof self !== "undefined" ? self : this, function() {
+})(window, function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -282,20 +282,26 @@ __webpack_require__.d(api_namespaceObject, "subComponent", function() { return s
 __webpack_require__.d(api_namespaceObject, "subComponents", function() { return subComponent; });
 __webpack_require__.d(api_namespaceObject, "unsetComponent", function() { return unsetComponent; });
 
-// EXTERNAL MODULE: ./node_modules/deep-extend/lib/deep-extend.js
-var deep_extend = __webpack_require__(0);
-var deep_extend_default = /*#__PURE__*/__webpack_require__.n(deep_extend);
-
 // CONCATENATED MODULE: ./src/utilities/getConfig.js
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
 
 /**
  * @param {*} defaults 
  * @param {*} custom 
  * @param {*} parser 
  */
-
 function getConfig(defaults, custom, parser) {
-  var extendedConfig = deep_extend_default()(defaults, custom);
+  var extendedConfig;
+
+  if (typeof deepExtend !== 'undefined') {
+    extendedConfig = deepExtend(defaults, custom);
+  } else {
+    Promise.resolve().then(function () {
+      return _interopRequireWildcard(__webpack_require__(0));
+    }).then(function (deepExtend) {
+      extendedConfig = deepExtend(defaults, custom);
+    });
+  }
 
   if (typeof parser === 'function') {
     return parser(extendedConfig);
@@ -517,14 +523,6 @@ function parent_parent(query, namespace) {
   }
 }
 // CONCATENATED MODULE: ./src/api/getComponents.js
-function getComponents_toConsumableArray(arr) { return getComponents_arrayWithoutHoles(arr) || getComponents_iterableToArray(arr) || getComponents_nonIterableSpread(); }
-
-function getComponents_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function getComponents_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function getComponents_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 
 
 
@@ -541,8 +539,8 @@ function getComponents() {
   if (componentName && !isValidSelector(componentName)) return [];
 
   if (this.DOMNodes instanceof NodeList) {
-    return getComponents_toConsumableArray(this.DOMNodes).reduce(function (matches, node) {
-      return matches.concat.apply(matches, getComponents_toConsumableArray(getComponents.bind(Object.assign(_this, {
+    return Array.prototype.slice.call(this.DOMNodes).reduce(function (matches, node) {
+      return matches.concat(Array.prototype.slice.call(getComponents.bind(Object.assign(_this, {
         DOMNodes: node
       }))(componentName, modifier, namespace)));
     }, []);
@@ -557,7 +555,7 @@ function getComponents() {
     selector = "[class*=\"".concat(query + this.componentGlue, "\"]");
   }
 
-  var subComponents = getComponents_toConsumableArray(this.DOMNodes.querySelectorAll(selector)).filter(function (component) {
+  var subComponents = Array.prototype.slice.call(this.DOMNodes.querySelectorAll(selector)).filter(function (component) {
     var parentModule = parent_parent.bind(Object.assign(_this, {
       DOMNodes: component
     }))(namespace);
@@ -567,7 +565,7 @@ function getComponents() {
       return false;
     }
 
-    return getComponents_toConsumableArray(component.classList).some(function (className) {
+    return Array.prototype.slice.call(component.classList).some(function (className) {
       var isComponent = className.split(_this.componentGlue).length - 1 === 1;
       var isQueryMatch = className.indexOf(query) === 0;
 
@@ -579,18 +577,9 @@ function getComponents() {
     });
   }); // console.log(subComponents)
 
-
   return subComponents;
 }
 // CONCATENATED MODULE: ./src/api/isComponent.js
-function isComponent_toConsumableArray(arr) { return isComponent_arrayWithoutHoles(arr) || isComponent_iterableToArray(arr) || isComponent_nonIterableSpread(); }
-
-function isComponent_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function isComponent_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function isComponent_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 
 /**
  * @param {*} componentName 
@@ -600,14 +589,14 @@ function isComponent(componentName) {
   var _this = this;
 
   if (this.DOMNodes instanceof NodeList) {
-    return isComponent_toConsumableArray(this.DOMNodes).every(function (DOMNodes) {
+    return Array.prototype.slice.call(this.DOMNodes).every(function (DOMNodes) {
       return isComponent.bind(Object.assign(_this, {
         DOMNodes: DOMNodes
       }))(componentName);
     });
   }
 
-  return isComponent_toConsumableArray(this.DOMNodes.classList).some(function (className) {
+  return Array.prototype.slice.call(this.DOMNodes.classList).some(function (className) {
     var isAComponent = className.split(_this.componentGlue).length - 1 === 1;
     var query = (_this.namespace || getModuleNamespace(_this.DOMNodes, _this.componentGlue, _this.modifierGlue, 'strict')) + _this.componentGlue + componentName;
     var isMatch = query.indexOf(_this.componentGlue + componentName) > -1;
@@ -669,36 +658,20 @@ function component_component(componentName, operator) {
   }
 }
 // CONCATENATED MODULE: ./src/utilities/getModules.js
-function getModules_toConsumableArray(arr) { return getModules_arrayWithoutHoles(arr) || getModules_iterableToArray(arr) || getModules_nonIterableSpread(); }
-
-function getModules_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function getModules_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function getModules_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 /**
  * @param {*} target 
  * @param {*} moduleName 
  */
 function getModules(target, moduleName) {
   if (target.DOMNodes instanceof NodeList) {
-    return getModules_toConsumableArray(target.DOMNodes).reduce(function (matches, node) {
-      return matches.concat.apply(matches, getModules_toConsumableArray(node.querySelectorAll(".".concat(moduleName, ", [class*=\"").concat(moduleName + target.modifierGlue, "\"]"))));
+    return Array.prototype.slice.call(this.DOMNodes).reduce(function (matches, node) {
+      return matches.concat(Array.prototype.slice.call(node.querySelectorAll(".".concat(moduleName, ", [class*=\"").concat(moduleName + target.modifierGlue, "\"]"))));
     }, []);
   }
 
   return target.DOMNodes.querySelectorAll(".".concat(moduleName, ", [class*=\"").concat(moduleName + target.modifierGlue, "\"]"));
 }
 // CONCATENATED MODULE: ./src/api/find.js
-function find_toConsumableArray(arr) { return find_arrayWithoutHoles(arr) || find_iterableToArray(arr) || find_nonIterableSpread(); }
-
-function find_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function find_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function find_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 function find_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { find_typeof = function _typeof(obj) { return typeof obj; }; } else { find_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return find_typeof(obj); }
 
 
@@ -713,7 +686,7 @@ function find(query) {
 
   if (find_typeof(query) === 'object') {
     if (this.DOMNodes instanceof NodeList) {
-      return find_toConsumableArray(this.DOMNodes).reduce(function (matches, node) {
+      return Array.prototype.slice.call(this.DOMNodes).reduce(function (matches, node) {
         return matches.concat(getQueryFromObject.bind(_this)(query, node));
       }, []);
     }
@@ -745,18 +718,18 @@ function getQueryFromObject(query, node) {
 
   if (query.module) {
     if (query.component) {
-      return matches.concat.apply(matches, find_toConsumableArray(getComponents.bind(this)(query.component, query.modifier, query.module)));
+      return matches.concat(Array.prototype.slice.call(getComponents.bind(this)(query.component, query.modifier, query.module)));
     }
 
-    return matches.concat.apply(matches, find_toConsumableArray(node.querySelectorAll(".".concat(query.module, ", [class*=\"").concat(query.module + query.modifierGlue, "\"]"))));
+    return matches.concat(Array.prototype.slice.call(node.querySelectorAll(".".concat(query.module, ", [class*=\"").concat(query.module + query.modifierGlue, "\"]"))));
   }
 
   if (query.component) {
     var components = getComponents.bind(this)(query.component);
 
     if (query.modifier) {
-      return matches.concat.apply(matches, find_toConsumableArray(components.filter(function (component) {
-        return find_toConsumableArray(component.classList).some(function (className) {
+      return matches.concat(Array.prototype.slice.call(components.filter(function (component) {
+        return Array.prototype.slice.call(component.classList).some(function (className) {
           var isNamespace = className.indexOf(_this2.namespace || getModuleNamespace(component, _this2.componentGlue, _this2.modifierGlue)) === 0;
           var hasModifier = className.indexOf(query.modifier) > -1;
           return isNamespace && hasModifier;
@@ -764,7 +737,7 @@ function getQueryFromObject(query, node) {
       })));
     }
 
-    return matches.concat.apply(matches, find_toConsumableArray(components));
+    return matches.concat(Array.prototype.slice.call(components));
   }
 
   if (query.modifier) {
@@ -772,14 +745,6 @@ function getQueryFromObject(query, node) {
   }
 }
 // CONCATENATED MODULE: ./src/api/getComponent.js
-function getComponent_toConsumableArray(arr) { return getComponent_arrayWithoutHoles(arr) || getComponent_iterableToArray(arr) || getComponent_nonIterableSpread(); }
-
-function getComponent_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function getComponent_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function getComponent_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 
 /**
  * @param {*} componentName 
@@ -789,7 +754,7 @@ function getComponent(componentName) {
   var _this = this;
 
   if (this.DOMNodes instanceof NodeList) {
-    return getComponent_toConsumableArray(this.DOMNodes).map(function (DOMNodes) {
+    return Array.prototype.slice.call(this.DOMNodes).map(function (DOMNodes) {
       return getComponent.bind(Object.assign(_this, {
         DOMNodes: DOMNodes
       }))(componentName);
@@ -800,46 +765,29 @@ function getComponent(componentName) {
   return getComponents.bind(this)(componentName)[0];
 }
 // CONCATENATED MODULE: ./src/api/getModifiers.js
-function getModifiers_toConsumableArray(arr) { return getModifiers_arrayWithoutHoles(arr) || getModifiers_iterableToArray(arr) || getModifiers_nonIterableSpread(); }
-
-function getModifiers_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function getModifiers_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function getModifiers_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 
 /**
  * @param {*} componentName 
  */
 
 function getModifiers() {
-  var _this = this,
-      _ref;
+  var _this = this;
 
   if (this.DOMNodes instanceof NodeList) {
-    return getModifiers_toConsumableArray(this.DOMNodes).reduce(function (matches, DOMNodes) {
-      return matches.concat.apply(matches, getModifiers_toConsumableArray(getModifiers.bind(Object.assign(_this, {
+    return Array.prototype.slice.call(this.DOMNodes).reduce(function (matches, DOMNodes) {
+      return matches.concat(getModifiers.bind(Object.assign(_this, {
         DOMNodes: DOMNodes
-      }))()));
+      }))());
     }, []);
   }
 
-  return (_ref = []).concat.apply(_ref, getModifiers_toConsumableArray(getModifiers_toConsumableArray(this.DOMNodes.classList).filter(function (className) {
+  return Array.prototype.slice.call(this.DOMNodes.classList).filter(function (className) {
     return className.indexOf(_this.namespace || getModuleNamespace(_this.DOMNodes, _this.componentGlue, _this.modifierGlue)) === 0;
   }).map(function (target) {
     return target.split(_this.modifierGlue).slice(1);
-  })));
+  })[0];
 }
 // CONCATENATED MODULE: ./src/api/getSubComponents.js
-function getSubComponents_toConsumableArray(arr) { return getSubComponents_arrayWithoutHoles(arr) || getSubComponents_iterableToArray(arr) || getSubComponents_nonIterableSpread(); }
-
-function getSubComponents_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function getSubComponents_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function getSubComponents_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 
 
 /**
@@ -854,8 +802,8 @@ function getSubComponts(subComponentName) {
   if (subComponentName && !isValidSelector(subComponentName)) return [];
 
   if (this.DOMNodes instanceof NodeList) {
-    return getSubComponents_toConsumableArray(this.DOMNodes).reduce(function (matches, DOMNodes) {
-      return matches.concat.apply(matches, getSubComponents_toConsumableArray(getSubComponts.bind(Object.assign(_this, {
+    return Array.prototype.slice.call(this.DOMNodes).reduce(function (matches, DOMNodes) {
+      return matches.concat(Array.prototype.slice.call(getSubComponts.bind(Object.assign(_this, {
         DOMNodes: DOMNodes
       }))(subComponentName, context, modifier)));
     }, []);
@@ -876,8 +824,8 @@ function getSubComponts(subComponentName) {
     selector = "[class*=\"".concat(namespace + this.componentGlue, "\"]");
   }
 
-  return getSubComponents_toConsumableArray(this.DOMNodes.querySelectorAll(selector)).filter(function (subComponent) {
-    return getSubComponents_toConsumableArray(subComponent.classList).some(function (className) {
+  return Array.prototype.slice.call(this.DOMNodes.querySelectorAll(selector)).filter(function (subComponent) {
+    return Array.prototype.slice.call(subComponent.classList).some(function (className) {
       if ((className.match(new RegExp(_this.componentGlue, 'g')) || []).length < 2) {
         return false;
       }
@@ -896,14 +844,6 @@ function getSubComponts(subComponentName) {
   });
 }
 // CONCATENATED MODULE: ./src/api/getSubComponent.js
-function getSubComponent_toConsumableArray(arr) { return getSubComponent_arrayWithoutHoles(arr) || getSubComponent_iterableToArray(arr) || getSubComponent_nonIterableSpread(); }
-
-function getSubComponent_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function getSubComponent_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function getSubComponent_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 
 /**
  * @param {*} subComponentName 
@@ -915,7 +855,7 @@ function getSubComponent_getComponent(subComponentName) {
   var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 
   if (this.DOMNodes instanceof NodeList) {
-    return getSubComponent_toConsumableArray(this.DOMNodes).map(function () {
+    return Array.prototype.slice.call(this.DOMNodes).map(function () {
       return getSubComponts.bind(_this)(subComponentName, context)[0];
     });
   }
@@ -923,14 +863,6 @@ function getSubComponent_getComponent(subComponentName) {
   return getSubComponts.bind(this)(subComponentName, context)[0];
 }
 // CONCATENATED MODULE: ./src/api/hasModifier.js
-function hasModifier_toConsumableArray(arr) { return hasModifier_arrayWithoutHoles(arr) || hasModifier_iterableToArray(arr) || hasModifier_nonIterableSpread(); }
-
-function hasModifier_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function hasModifier_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function hasModifier_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 
 /**
  * @param {*} modifier 
@@ -947,7 +879,7 @@ function hasModifier_hasModifier(modifier) {
     }
 
     if (this.DOMNodes instanceof NodeList) {
-      return hasModifier_toConsumableArray(this.DOMNodes).every(function (DOMNodes) {
+      return Array.prototype.slice.call(this.DOMNodes).every(function (DOMNodes) {
         return hasModifier_hasModifier.bind(Object.assign(_this, {
           DOMNodes: DOMNodes
         }))(modifier);
@@ -955,7 +887,7 @@ function hasModifier_hasModifier(modifier) {
     }
 
     var node = this.DOMNodes;
-    return hasModifier_toConsumableArray(node.classList).some(function (className) {
+    return Array.prototype.slice.call(node.classList).some(function (className) {
       var namespace = _this.namespace || node.namespace || getModuleNamespace(node, _this.modifierGlue, _this.componentGlue);
       var matchIndex = className.indexOf(_this.modifierGlue + modifier);
       var namespaceMatch = className.indexOf(namespace) === 0;
@@ -966,33 +898,17 @@ function hasModifier_hasModifier(modifier) {
   }
 }
 // CONCATENATED MODULE: ./src/utilities/isModule.js
-function isModule_toConsumableArray(arr) { return isModule_arrayWithoutHoles(arr) || isModule_iterableToArray(arr) || isModule_nonIterableSpread(); }
-
-function isModule_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function isModule_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function isModule_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 /**
  * @param {*} target 
  * @param {*} moduleName 
  */
 function isModule(target, moduleName) {
   var DOMNodes = !(target.DOMNodes instanceof NodeList) ? [target.DOMNodes] : target.DOMNodes;
-  return isModule_toConsumableArray(DOMNodes).every(function (node) {
+  return Array.prototype.slice.call(DOMNodes).every(function (node) {
     return node.matches(".".concat(moduleName, ", [class*=\"").concat(moduleName + target.modifierGlue, "\"]"));
   });
 }
 // CONCATENATED MODULE: ./src/api/is.js
-function is_toConsumableArray(arr) { return is_arrayWithoutHoles(arr) || is_iterableToArray(arr) || is_nonIterableSpread(); }
-
-function is_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function is_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function is_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 function is_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { is_typeof = function _typeof(obj) { return typeof obj; }; } else { is_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return is_typeof(obj); }
 
 
@@ -1011,7 +927,7 @@ function is(query) {
   if (is_typeof(query) === 'object') {
     if (query.module) {
       if (query.component) {
-        var isModuleNamespace = is_toConsumableArray(DOMNodes).every(function (node) {
+        var isModuleNamespace = Array.prototype.slice.call(DOMNodes).every(function (node) {
           return (_this.namespace || getModuleNamespace(node, _this.componentGlue, _this.modifierGlue, true)) === query.module;
         });
 
@@ -1055,14 +971,6 @@ function is(query) {
   return false;
 }
 // CONCATENATED MODULE: ./src/api/removeModifier.js
-function removeModifier_toConsumableArray(arr) { return removeModifier_arrayWithoutHoles(arr) || removeModifier_iterableToArray(arr) || removeModifier_nonIterableSpread(); }
-
-function removeModifier_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function removeModifier_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function removeModifier_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 
 /**
  * @param {(String|Array)} modifier 
@@ -1086,8 +994,7 @@ function removeModifier(modifier) {
   }
 
   var node = this.DOMNodes;
-
-  removeModifier_toConsumableArray(node.classList).forEach(function (className) {
+  Array.prototype.slice.call(node.classList).forEach(function (className) {
     var moduleMatch = className.indexOf((_this.namespace || getModuleNamespace(node, _this.componentGlue, _this.modifierGlue)) + _this.modifierGlue) === 0;
     var modifierMatch = className.indexOf(_this.modifierGlue + modifier) > -1;
     var newClass = className.replace(new RegExp(_this.modifierGlue + modifier, 'g'), '');
@@ -1121,20 +1028,12 @@ function modifier_modifier(modifier, operator) {
   }
 }
 // CONCATENATED MODULE: ./src/api/parentComponent.js
-function parentComponent_toConsumableArray(arr) { return parentComponent_arrayWithoutHoles(arr) || parentComponent_iterableToArray(arr) || parentComponent_nonIterableSpread(); }
-
-function parentComponent_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function parentComponent_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function parentComponent_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 /**
  * @param {*} componentName 
  */
 function parentComponent(componentName) {
   if (this.DOMNodes instanceof NodeList) {
-    return parentComponent_toConsumableArray(this.DOMNodes).map(function (node) {
+    return Array.prototype.slice.call(this.DOMNodes).map(function (node) {
       return node.parentNode.closest("[data-component=\"".concat(componentName, "\"]"));
     });
   }
@@ -1168,14 +1067,6 @@ function setComponent(componentName, namespace, replace) {
   replace && this.DOMNodes.classList.remove(replace);
 }
 // CONCATENATED MODULE: ./src/api/subComponent.js
-function subComponent_toConsumableArray(arr) { return subComponent_arrayWithoutHoles(arr) || subComponent_iterableToArray(arr) || subComponent_nonIterableSpread(); }
-
-function subComponent_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function subComponent_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function subComponent_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 
 
 /**
@@ -1196,7 +1087,7 @@ function subComponent(subComponentName, operator) {
 
   if (operator === 'is') {
     if (this.DOMNodes instanceof NodeList) {
-      return subComponent_toConsumableArray(this.DOMNodes).every(function (node) {
+      return Array.prototype.slice.call(this.DOMNodes).every(function (node) {
         return subComponent_is.bind(_this)(node, subComponentName);
       });
     }
@@ -1218,19 +1109,11 @@ function subComponent(subComponentName, operator) {
 function subComponent_is(node, subComponentName) {
   var query = this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue);
   var isMatch = query.indexOf(subComponentName) === query.length - subComponentName.length;
-  return subComponent_toConsumableArray(node.classList).some(function (className) {
+  return Array.prototype.slice.call(node.classList).some(function (className) {
     return className.indexOf(query) > -1 && isMatch;
   });
 }
 // CONCATENATED MODULE: ./src/api/unsetComponent.js
-function unsetComponent_toConsumableArray(arr) { return unsetComponent_arrayWithoutHoles(arr) || unsetComponent_iterableToArray(arr) || unsetComponent_nonIterableSpread(); }
-
-function unsetComponent_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function unsetComponent_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function unsetComponent_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 
 /**
  * @param {*} componentName 
@@ -1247,7 +1130,7 @@ function unsetComponent(componentName) {
     });
   }
 
-  return unsetComponent_toConsumableArray(this.DOMNodes.classList).forEach(function (className) {
+  return Array.prototype.slice.call(this.DOMNodes.classList).forEach(function (className) {
     var isAComponent = className.split(_this.componentGlue).length - 1 === 1;
     var isMatch = className.indexOf((_this.namespace || getModuleNamespace(_this.DOMNodes, _this.componentGlue, _this.modifierGlue)) + _this.componentGlue + componentName) === 0;
 
@@ -1284,14 +1167,6 @@ function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = 
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-function init_toConsumableArray(arr) { return init_arrayWithoutHoles(arr) || init_iterableToArray(arr) || init_nonIterableSpread(); }
-
-function init_nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function init_iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function init_arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 
 function init(custom) {
   var options = Object.assign({
@@ -1307,18 +1182,18 @@ function init(custom) {
     Synergy: ['_', '-', 'module', 'component', 'modifier']
   };
 
-  var _ref = init_toConsumableArray(PRESETS[options.preset]),
-      componentGlue = _ref[0],
-      modifierGlue = _ref[1],
-      moduleNamespace = _ref[2],
-      componentNamespace = _ref[3],
-      modifierNamespace = _ref[4];
+  var _Array$prototype$slic = Array.prototype.slice.call(PRESETS[options.preset]),
+      _Array$prototype$slic2 = _slicedToArray(_Array$prototype$slic, 5),
+      componentGlue = _Array$prototype$slic2[0],
+      modifierGlue = _Array$prototype$slic2[1],
+      moduleNamespace = _Array$prototype$slic2[2],
+      componentNamespace = _Array$prototype$slic2[3],
+      modifierNamespace = _Array$prototype$slic2[4];
 
   componentGlue = options.componentGlue || componentGlue;
   modifierGlue = options.modifierGlue || modifierGlue;
 
   if (options.attachToWindow) {
-    window.sQuery = this;
     window.Synergy = window.Synergy || {};
     Object.assign(window.Synergy, {
       componentGlue: componentGlue,
@@ -1326,12 +1201,12 @@ function init(custom) {
     });
   }
 
-  var _arr = Object.entries(api_namespaceObject);
+  var _arr2 = Object.entries(api_namespaceObject);
 
   var _loop = function _loop() {
-    var _arr$_i = _slicedToArray(_arr[_i], 2),
-        key = _arr$_i[0],
-        method = _arr$_i[1];
+    var _arr2$_i = _slicedToArray(_arr2[_i2], 2),
+        key = _arr2$_i[0],
+        method = _arr2$_i[1];
 
     var methodName = key,
         newMethodName = void 0;
@@ -1407,7 +1282,7 @@ function init(custom) {
     }
   };
 
-  for (var _i = 0; _i < _arr.length; _i++) {
+  for (var _i2 = 0; _i2 < _arr2.length; _i2++) {
     _loop();
   }
 }
@@ -1498,10 +1373,10 @@ function squery_sQuery(SynergyQuery, callback, defaults, custom, parser) {
 }
 squery_sQuery.init = init;
 
-var _arr2 = Object.entries(api_namespaceObject);
+var squery_arr2 = Object.entries(api_namespaceObject);
 
-for (var _i2 = 0; _i2 < _arr2.length; _i2++) {
-  var _arr2$_i = squery_slicedToArray(_arr2[_i2], 2),
+for (var squery_i2 = 0; squery_i2 < squery_arr2.length; squery_i2++) {
+  var _arr2$_i = squery_slicedToArray(squery_arr2[squery_i2], 2),
       squery_key = _arr2$_i[0],
       squery_method = _arr2$_i[1];
 

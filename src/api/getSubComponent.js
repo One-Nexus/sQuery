@@ -5,7 +5,7 @@ import getSubComponents from './getSubComponents';
  */
 export default function getComponent(subComponentName, context = []) {
     if (this.DOMNodes instanceof NodeList) {
-        return [...this.DOMNodes].map(() => {
+        return Array.prototype.slice.call(this.DOMNodes).map(() => {
             return getSubComponents.bind(this)(subComponentName, context)[0]
         });
     }
