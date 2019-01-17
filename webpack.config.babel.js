@@ -40,7 +40,10 @@ export default function() {
             }]
         },
 
-        node: { Buffer: false },
+        node: {
+            process: false,
+            Buffer: false
+        },
 
         stats: { colors: true },
 

@@ -4,12 +4,12 @@ import isValidSelector from '../utilities/isValidSelector';
 /**
  * @param {*} subComponentName 
  */
-export default function getSubComponts(subComponentName, context = [], modifier) {
+export default function getSubComponents(subComponentName, context = [], modifier) {
     if (subComponentName && !isValidSelector(subComponentName)) return [];
 
     if (this.DOMNodes instanceof NodeList) {
         return Array.prototype.slice.call(this.DOMNodes).reduce((matches, DOMNodes) => {
-            return matches.concat(Array.prototype.slice.call(getSubComponts.bind(Object.assign(this, { DOMNodes }))(subComponentName, context, modifier)));
+            return matches.concat(Array.prototype.slice.call(getSubComponents.bind(Object.assign(this, { DOMNodes }))(subComponentName, context, modifier)));
         }, []);
     }
 

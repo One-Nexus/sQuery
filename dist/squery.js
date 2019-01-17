@@ -268,7 +268,7 @@ __webpack_require__.d(api_namespaceObject, "getComponent", function() { return g
 __webpack_require__.d(api_namespaceObject, "getComponents", function() { return getComponents; });
 __webpack_require__.d(api_namespaceObject, "getModifiers", function() { return getModifiers; });
 __webpack_require__.d(api_namespaceObject, "getSubComponent", function() { return getSubComponent_getComponent; });
-__webpack_require__.d(api_namespaceObject, "getSubComponents", function() { return getSubComponts; });
+__webpack_require__.d(api_namespaceObject, "getSubComponents", function() { return getSubComponents; });
 __webpack_require__.d(api_namespaceObject, "has", function() { return hasModifier_hasModifier; });
 __webpack_require__.d(api_namespaceObject, "hasModifier", function() { return hasModifier_hasModifier; });
 __webpack_require__.d(api_namespaceObject, "is", function() { return is; });
@@ -283,8 +283,6 @@ __webpack_require__.d(api_namespaceObject, "subComponents", function() { return 
 __webpack_require__.d(api_namespaceObject, "unsetComponent", function() { return unsetComponent; });
 
 // CONCATENATED MODULE: ./src/utilities/getConfig.js
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = Object.defineProperty && Object.getOwnPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : {}; if (desc.get || desc.set) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } } newObj.default = obj; return newObj; } }
-
 /**
  * @param {*} defaults 
  * @param {*} custom 
@@ -293,14 +291,10 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 function getConfig(defaults, custom, parser) {
   var extendedConfig;
 
-  if (typeof deepExtend !== 'undefined') {
+  if (typeof deepExtend === 'function' && typeof process !== 'undefined' && process.env.SYNERGY) {
     extendedConfig = deepExtend(defaults, custom);
   } else {
-    Promise.resolve().then(function () {
-      return _interopRequireWildcard(__webpack_require__(0));
-    }).then(function (deepExtend) {
-      extendedConfig = deepExtend(defaults, custom);
-    });
+    extendedConfig = __webpack_require__(0)(defaults, custom);
   }
 
   if (typeof parser === 'function') {
@@ -794,7 +788,7 @@ function getModifiers() {
  * @param {*} subComponentName 
  */
 
-function getSubComponts(subComponentName) {
+function getSubComponents(subComponentName) {
   var _this = this;
 
   var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
@@ -803,7 +797,7 @@ function getSubComponts(subComponentName) {
 
   if (this.DOMNodes instanceof NodeList) {
     return Array.prototype.slice.call(this.DOMNodes).reduce(function (matches, DOMNodes) {
-      return matches.concat(Array.prototype.slice.call(getSubComponts.bind(Object.assign(_this, {
+      return matches.concat(Array.prototype.slice.call(getSubComponents.bind(Object.assign(_this, {
         DOMNodes: DOMNodes
       }))(subComponentName, context, modifier)));
     }, []);
@@ -856,11 +850,11 @@ function getSubComponent_getComponent(subComponentName) {
 
   if (this.DOMNodes instanceof NodeList) {
     return Array.prototype.slice.call(this.DOMNodes).map(function () {
-      return getSubComponts.bind(_this)(subComponentName, context)[0];
+      return getSubComponents.bind(_this)(subComponentName, context)[0];
     });
   }
 
-  return getSubComponts.bind(this)(subComponentName, context)[0];
+  return getSubComponents.bind(this)(subComponentName, context)[0];
 }
 // CONCATENATED MODULE: ./src/api/hasModifier.js
 
@@ -1078,11 +1072,11 @@ function subComponent(subComponentName, operator) {
   var _this = this;
 
   if (!subComponentName && !operator) {
-    return getSubComponts.bind(this)();
+    return getSubComponents.bind(this)();
   }
 
   if (!operator || operator === 'find') {
-    return getSubComponts.bind(this)(subComponentName);
+    return getSubComponents.bind(this)(subComponentName);
   }
 
   if (operator === 'is') {
@@ -1096,7 +1090,7 @@ function subComponent(subComponentName, operator) {
   }
 
   if (typeof operator === 'function') {
-    getSubComponts.bind(this)(subComponentName).forEach(function (node) {
+    getSubComponents.bind(this)(subComponentName).forEach(function (node) {
       return operator(node);
     });
   }
@@ -1297,7 +1291,7 @@ function init(custom) {
 /* concated harmony reexport getComponents */__webpack_require__.d(__webpack_exports__, "getComponents", function() { return getComponents; });
 /* concated harmony reexport getModifiers */__webpack_require__.d(__webpack_exports__, "getModifiers", function() { return getModifiers; });
 /* concated harmony reexport getSubComponent */__webpack_require__.d(__webpack_exports__, "getSubComponent", function() { return getSubComponent_getComponent; });
-/* concated harmony reexport getSubComponents */__webpack_require__.d(__webpack_exports__, "getSubComponents", function() { return getSubComponts; });
+/* concated harmony reexport getSubComponents */__webpack_require__.d(__webpack_exports__, "getSubComponents", function() { return getSubComponents; });
 /* concated harmony reexport has */__webpack_require__.d(__webpack_exports__, "has", function() { return hasModifier_hasModifier; });
 /* concated harmony reexport hasModifier */__webpack_require__.d(__webpack_exports__, "hasModifier", function() { return hasModifier_hasModifier; });
 /* concated harmony reexport is */__webpack_require__.d(__webpack_exports__, "is", function() { return is; });
