@@ -30,6 +30,9 @@ import {
     unsetComponent,
 } from './api';
 
+// spoof env process to assist bundle size
+if (typeof process === 'undefined') window.process = { env: {} };
+
 /**
  * @param {*} SynergyQuery
  * @param {Function} [callback]

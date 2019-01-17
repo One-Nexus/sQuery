@@ -6,9 +6,13 @@
 export default function getConfig(defaults, custom, parser) {
     let extendedConfig;
 
-    if (typeof deepExtend === 'function' && (typeof process !== 'undefined' && process.env.SYNERGY)) {
+    if (process.env.SYNERGY) {
         extendedConfig = deepExtend(defaults, custom);
-    } else {
+    }
+    else if (typeof deepExtend !== 'undefined') {
+        extendedConfig = deepExtend(defaults, custom);
+    }
+    else {
         extendedConfig = require('deep-extend')(defaults, custom);
     }
 

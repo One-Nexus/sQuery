@@ -291,7 +291,9 @@ __webpack_require__.d(api_namespaceObject, "unsetComponent", function() { return
 function getConfig(defaults, custom, parser) {
   var extendedConfig;
 
-  if (typeof deepExtend === 'function' && typeof process !== 'undefined' && process.env.SYNERGY) {
+  if (process.env.SYNERGY) {
+    extendedConfig = deepExtend(defaults, custom);
+  } else if (typeof deepExtend !== 'undefined') {
     extendedConfig = deepExtend(defaults, custom);
   } else {
     extendedConfig = __webpack_require__(0)(defaults, custom);
@@ -1317,7 +1319,13 @@ function squery_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
+ // spoof env process to assis bundle size
 
+if (typeof process === 'undefined') {
+  window.process = {
+    env: {}
+  };
+}
 /**
  * @param {*} SynergyQuery
  * @param {Function} [callback]
@@ -1325,6 +1333,7 @@ function squery_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
  * @param {Object} [custom]
  * @param {Object} [parser]
  */
+
 
 function squery_sQuery(SynergyQuery, callback, defaults, custom, parser) {
   var methods = {};
