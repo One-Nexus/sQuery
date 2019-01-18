@@ -20,7 +20,7 @@ export default function hasModifier(modifier) {
             const matchIndex = className.indexOf(this.modifierGlue + modifier);
             const namespaceMatch  = className.indexOf(namespace) === 0;
             const isModifierTest1 = className.indexOf(this.modifierGlue + modifier + this.modifierGlue) > -1;
-            const isModifierTest2 = matchIndex > -1 && matchIndex === (className.length - modifier.length - 1);
+            const isModifierTest2 = matchIndex > -1 && matchIndex === (className.length - modifier.length - this.modifierGlue.length);
     
             return namespaceMatch && (isModifierTest1 || isModifierTest2);
         });
