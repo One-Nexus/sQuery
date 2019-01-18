@@ -289,12 +289,12 @@ __webpack_require__.d(api_namespaceObject, "unsetComponent", function() { return
  * @param {*} parser 
  */
 function getConfig(defaults, custom, parser) {
-  var extendedConfig;
+  var extendedConfig; // `process` and `require` are exploited to help reduce bundle size
 
   if (process.env.SYNERGY) {
-    extendedConfig = deepExtend(defaults, custom);
-  } else if (typeof deepExtend !== 'undefined') {
-    extendedConfig = deepExtend(defaults, custom);
+    extendedConfig = Synergy.config(defaults, custom);
+  } else if (typeof Synergy !== 'undefined' && typeof Synergy.config === 'function') {
+    extendedConfig = Synergy.config(defaults, custom);
   } else {
     extendedConfig = __webpack_require__(0)(defaults, custom);
   }
@@ -888,7 +888,7 @@ function hasModifier_hasModifier(modifier) {
       var matchIndex = className.indexOf(_this.modifierGlue + modifier);
       var namespaceMatch = className.indexOf(namespace) === 0;
       var isModifierTest1 = className.indexOf(_this.modifierGlue + modifier + _this.modifierGlue) > -1;
-      var isModifierTest2 = matchIndex > -1 && matchIndex === className.length - modifier.length - 1;
+      var isModifierTest2 = matchIndex > -1 && matchIndex === className.length - modifier.length - _this.modifierGlue.length;
       return namespaceMatch && (isModifierTest1 || isModifierTest2);
     });
   }
@@ -1319,13 +1319,11 @@ function squery_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
- // spoof env process to assis bundle size
+ // spoof env process to assist bundle size
 
-if (typeof process === 'undefined') {
-  window.process = {
-    env: {}
-  };
-}
+if (typeof process === 'undefined') window.process = {
+  env: {}
+};
 /**
  * @param {*} SynergyQuery
  * @param {Function} [callback]
@@ -1334,12 +1332,12 @@ if (typeof process === 'undefined') {
  * @param {Object} [parser]
  */
 
-
 function squery_sQuery(SynergyQuery, callback, defaults, custom, parser) {
+  var Synergy = window.Synergy || {};
   var methods = {};
   var config = getConfig(defaults, custom, parser);
-  var componentGlue = config.componentGlue || window.Synergy && window.Synergy.componentGlue || '_';
-  var modifierGlue = config.modifierGlue || window.Synergy && window.Synergy.modifierGlue || '-';
+  var modifierGlue = config.modifierGlue || Synergy.modifierGlue || '-';
+  var componentGlue = config.componentGlue || Synergy.componentGlue || '_';
   var namespace = getModuleNamespace(SynergyQuery, componentGlue, modifierGlue);
   var DOMNodes = getDomNodes(SynergyQuery);
 

@@ -6,12 +6,13 @@
 export default function getConfig(defaults, custom, parser) {
     let extendedConfig;
 
+    // `process` and `require` are exploited to help reduce bundle size
     if (process.env.SYNERGY) {
-        extendedConfig = deepExtend(defaults, custom);
+        extendedConfig = Synergy.config(defaults, custom);
     }
-    else if (typeof deepExtend !== 'undefined') {
-        extendedConfig = deepExtend(defaults, custom);
-    }
+    else if (typeof Synergy !== 'undefined' && typeof Synergy.config === 'function') {
+        extendedConfig = Synergy.config(defaults, custom);
+    } 
     else {
         extendedConfig = require('deep-extend')(defaults, custom);
     }

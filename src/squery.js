@@ -41,11 +41,13 @@ if (typeof process === 'undefined') window.process = { env: {} };
  * @param {Object} [parser]
  */
 export default function sQuery(SynergyQuery, callback, defaults, custom, parser) {
+    var Synergy = window.Synergy || {};
+
     const methods = {};
     const config = getConfig(defaults, custom, parser);
 
-    const componentGlue = config.componentGlue || (window.Synergy && window.Synergy.componentGlue) || '_';
-    const modifierGlue  = config.modifierGlue  || (window.Synergy && window.Synergy.modifierGlue)  || '-';
+    const modifierGlue  = config.modifierGlue  || Synergy.modifierGlue  || '-';
+    const componentGlue = config.componentGlue || Synergy.componentGlue || '_';
 
     const namespace = getModuleNamespace(SynergyQuery, componentGlue, modifierGlue);
     const DOMNodes = getDomNodes(SynergyQuery);
