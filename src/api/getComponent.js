@@ -1,6 +1,11 @@
 import getComponents from './getComponents';
 
 /**
+ * @TODO allow this API
+ * const [title, content] = panel.getComponent(['title', 'content']);
+ */
+
+/**
  * @param {*} componentName 
  */
 export default function getComponent(componentName) {

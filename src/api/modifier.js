@@ -18,4 +18,8 @@ export default function modifier(modifier, operator) {
     if (operator === 'unset' || operator === 'remove') {
         return removeModifier.bind(this)(modifier);
     }
+
+    if (operator === 'toggle') {
+        // @TODO
+    }
 }
