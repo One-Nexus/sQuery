@@ -1,4 +1,5 @@
-import * as API from '../api';
+// import * as API from '../api';
+import * as API from '../../refactor/api';
 
 export default function init(custom) {
     const options = Object.assign({
@@ -22,7 +23,7 @@ export default function init(custom) {
         moduleNamespace, 
         componentNamespace,
         modifierNamespace
-    ] = Array.prototype.slice.call(PRESETS[options.preset]);
+    ] = [].slice.call(PRESETS[options.preset]);
 
     componentGlue = options.componentGlue || componentGlue;
     modifierGlue  = options.modifierGlue  || modifierGlue;
@@ -82,7 +83,7 @@ export default function init(custom) {
                         parentElement: this,
                         componentGlue, 
                         modifierGlue 
-                    })(...params);
+                    })(this, ...params);
                 }
             }
         }
@@ -96,7 +97,7 @@ export default function init(custom) {
                     parentElement: this,
                     componentGlue, 
                     modifierGlue 
-                })(...params);
+                })(this, ...params);
             }
         }
     }
