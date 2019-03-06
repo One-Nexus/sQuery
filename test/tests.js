@@ -1,13 +1,11 @@
-import assert from 'assert';
-import jsdom from 'jsdom-global';
-import deepExtend from 'deep-extend';
-import SynergyDOM from '../src/squery';
+import './setup';
 
-jsdom();
-SynergyDOM.init();
-global.deepExtend = deepExtend;
+import './api/addModifier';
+import './api/removeModifier';
 
-describe('SynergyDOM function', () => {
+const foo = () => {};
+
+foo('SynergyDOM function', () => {
     it('should exist', () => {
         assert.equal(typeof SynergyDOM, 'function');
     });
@@ -30,7 +28,6 @@ describe('SynergyDOM function', () => {
         assert.equal(typeof SynergyDOM().modifier, 'function');
         assert.equal(typeof SynergyDOM().removeModifier, 'function');
         assert.equal(typeof SynergyDOM().parent, 'function');
-        assert.equal(typeof SynergyDOM().parentComponent, 'function');
         assert.equal(typeof SynergyDOM().setComponent, 'function');
         assert.equal(typeof SynergyDOM().subComponent, 'function');
         assert.equal(typeof SynergyDOM().subComponents, 'function');

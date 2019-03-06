@@ -79,8 +79,6 @@ export default function init(custom) {
             if (typeof document.body[methodName] === 'undefined') {
                 Element.prototype[methodName] = function(...params) {
                     return method.bind({
-                        DOMNodes: this,
-                        parentElement: this,
                         componentGlue, 
                         modifierGlue 
                     })(this, ...params);
@@ -93,8 +91,6 @@ export default function init(custom) {
 
             NodeList.prototype[methodName] = function(...params) {
                 return method.bind({
-                    DOMNodes: this, 
-                    parentElement: this,
                     componentGlue, 
                     modifierGlue 
                 })(this, ...params);

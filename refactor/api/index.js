@@ -23,7 +23,12 @@ export {
 export { default as is } from './is';
 export { default as isComponent } from './isComponent';
 export { default as modifier } from './modifier';
-export { default as removeModifier } from './removeModifier';
+
+export { 
+    default as remove,
+    default as removeModifier 
+} from './removeModifier';
+
 export { default as parent } from './parent';
 export { default as setComponent } from './setComponent';
 

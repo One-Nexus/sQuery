@@ -21,7 +21,7 @@ export default function getNamespace(query, strict, config) {
         return query;
     }
 
-    if (typeof query === 'object' && 'name' in query) {
+    if (query && typeof query === 'object' && query.name) {
         return query.name;
     }
 

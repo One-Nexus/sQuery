@@ -10,7 +10,7 @@ export default function addModifier(node, modifier, config) {
 
     const { modifierGlue } = config;
 
-    const namespace = config.namespace || getNamespace(node, false, config);
+    const namespace = config.namespace || getNamespace(node, true, config);
     const safeNamespace = isSafeElement(node, namespace, config);
 
     if (modifier.constructor === Array) {

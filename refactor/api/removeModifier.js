@@ -13,7 +13,7 @@ export default function removeModifier(node, modifier, config) {
 
     const { modifierGlue } = config;
 
-    const namespace = config.namespace || getNamespace(node, false, config);
+    const namespace = config.namespace || getNamespace(node, true, config);
 
     [].slice.call(node.classList).forEach(className => {
         const moduleMatch = className.indexOf(namespace + modifierGlue) === 0;

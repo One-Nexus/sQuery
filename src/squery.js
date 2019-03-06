@@ -3,8 +3,8 @@ import getDomNodes from './utilities/getDomNodes';
 import getModuleNamespace from './utilities/getModuleNamespace';
 import init from './utilities/init';
 
-import * as API from './api';
-// import * as API from '../refactor/api';
+// import * as API from './api';
+import * as API from '../refactor/api';
 
 import {
     add,
@@ -22,6 +22,7 @@ import {
     is,
     isComponent,
     modifier,
+    remove,
     removeModifier,
     parent,
     parentComponent,
@@ -29,7 +30,7 @@ import {
     subComponent,
     subComponents,
     unsetComponent,
-} from './api';
+} from '../refactor/api';
 
 // spoof env process to assist bundle size
 if (typeof process === 'undefined') window.process = { env: {} };
@@ -83,6 +84,8 @@ if (typeof window !== 'undefined') {
 }
 
 export {
+    init,
+
     add,
     addModifier,
     component,
@@ -98,6 +101,7 @@ export {
     is,
     isComponent,
     modifier,
+    remove,
     removeModifier,
     parent,
     parentComponent,
