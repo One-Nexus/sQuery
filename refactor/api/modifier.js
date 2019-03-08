@@ -17,7 +17,7 @@ export default function modifier(node, modifier, operator, config) {
         return removeModifier(node, modifier, config);
     }
 
-    if (operator === 'toggle') {
-        // @TODO
-    }
+    // @TODO
+    // if (operator === 'toggle') {
+    // }
 }

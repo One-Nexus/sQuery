@@ -1,6 +1,6 @@
 import getNamespace from './getNamespace';
 
-export default function hasModifer(node, modifier, config) {
+export default function hasModifier(node, modifier, config) {
     config = config || this;
 
     if (!modifier) return;

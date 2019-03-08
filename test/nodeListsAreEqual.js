@@ -6,5 +6,7 @@ export default function nodeListsAreEqual(actual, expected) {
         return false;
     }
 
-    return Array.from(actual).every((node, index) => node === expected[index]);
+    return Array.from(actual).every(actualNode => {
+        return Array.from(expected).some(expectedNode => actualNode === expectedNode)
+    });
 }

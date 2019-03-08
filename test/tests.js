@@ -1,7 +1,7 @@
 import './setup';
 
-import './api/addModifier';
-import './api/removeModifier';
+import './api/modifier';
+import './api/component';
 
 const foo = () => {};
 
