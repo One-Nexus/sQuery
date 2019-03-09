@@ -8,6 +8,19 @@ export {
     default as components 
 } from './component';
 
+export { 
+    default as module, 
+    default as modules 
+} from './module';
+
+export { 
+    default as isModule
+} from './isModule';
+
+export { 
+    default as getModules
+} from './getModules';
+
 export { default as find } from './find';
 export { default as getComponent } from './getComponent';
 export { default as getComponents } from './getComponents';

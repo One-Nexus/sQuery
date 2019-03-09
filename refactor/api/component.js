@@ -1,22 +1,22 @@
 import getComponents from './getComponents';
-import isComponent from './isComponent';
+import getComponent from './getComponent';
 import setComponent from './setComponent';
 import unsetComponent from './unsetComponent';
-import getComponent from './getComponent';
+import isComponent from './isComponent';
 
 export default function component(node, componentName, operator, config) {
     config = config || this;
 
     if (!componentName && !operator) {
-        return getComponents(node, false, config);
+        return (config.getSubComponents || getComponents)(node, false, config);
     }
 
     if (!operator || operator === 'find') {
-        return getComponents(node, componentName, config);
+        return (config.getSubComponents || getComponents)(node, componentName, config);
     }
 
     if (operator === 'first') {
-        return getComponent(node, componentName, config);
+        return (config.getSubComponent || getComponent)(node, componentName, config);
     }
 
     if (operator === 'is') {
@@ -24,10 +24,14 @@ export default function component(node, componentName, operator, config) {
     }
 
     if (operator === 'set') {
+        //@TODO setSubComponent
+
         return setComponent(node, componentName, null, null, config);
     }
 
     if (operator === 'unset') {
+        //@TODO unsetSubComponent
+    
         return unsetComponent(node, componentName, config);
     }
 

@@ -12,7 +12,11 @@ const TEMPLATE = (`
                 <div class="foo_qux_fizz_buzz" id="M1FAC"></div>
             </div>
         </div>
-        <div class="foo_bar" id="KJ4PM"></div>
+        <div class="foo_bar" id="KJ4PM">
+            <div class="foo" id="N1WY1">
+                <div class="foo_bar" id="ZSAE6"></div>
+            </div>
+        </div>
         <div class="alpha" id="HY7S3"></div>
     </div>
 `);
