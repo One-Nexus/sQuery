@@ -4,7 +4,7 @@ export default function setComponent(node, componentName, namespace, replace, co
     config = config || this;
 
     if (node instanceof NodeList) {
-        return node.forEach(node => setComponent(node, componentName, namespace, replace));
+        return node.forEach(node => setComponent(node, componentName, namespace, replace, config));
     }
 
     if (!namespace && !replace) {

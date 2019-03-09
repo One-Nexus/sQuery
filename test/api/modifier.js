@@ -36,6 +36,32 @@ describe('sQuery `modifier` API', () => {
         assert.equal(typeof sQuery().modifier, 'function');
     });
 
+    describe('when used without parameters', () => {
+        describe('on a single module', () => {
+            beforeEach('setup DOM', () => {
+                EL = document.getElementById('HH156');
+
+                sQuery().modifier(EL, ['fizz', 'buzz'], 'add');
+            });
+
+            it('should return the active modifiers', () => {
+                assert(NodeListsAreEqual(sQuery().modifier(EL), ['fizz', 'buzz']));
+            });
+        });
+
+        describe('on multiple modules', () => {
+            beforeEach('setup DOM', () => {
+                ELS = document.querySelectorAll('#HH156, #HY7S3');
+
+                sQuery().modifier(ELS, ['fizz', 'buzz'], 'add');
+            });
+
+            it('should return the active modifiers', () => {
+                assert(NodeListsAreEqual(sQuery().modifier(ELS), ['fizz', 'buzz']));
+            });
+        });
+    });
+
     describe('when used to add a single modifier', () => {
         describe('to a single module', () => {
             beforeEach('setup DOM', () => {

@@ -61,6 +61,45 @@ describe('sQuery `component` API', () => {
                 document.querySelectorAll('#HH156, #KJ4PM')
             ));
         });
+
+        describe('and a modifier is specified in the config', () => {
+            const config = {
+                modifier: 'test',
+                componentGlue: '_',
+                modifierGlue: '-'
+            };
+
+            beforeEach('setup DOM', () => {
+                sQuery().modifier(document.getElementById('HH156'), 'test', 'add');
+            });
+
+            it('should find all specified child components', () => {
+                assert(NodeListsAreEqual(
+                    sQuery().component(document.getElementById('SVRNE'), 'bar', 'find', config),
+                    document.querySelectorAll('#HH156')
+                ));
+            });
+        });
+    });
+
+    describe('when used with `first` operator', () => {
+        describe('on a single module', () => {
+            it('should find all specified child components', () => {
+                assert.equal(
+                    sQuery().component(document.getElementById('SVRNE'), 'bar', 'first'),
+                    document.getElementById('HH156')
+                );
+            });
+        });
+
+        describe('on multiple modules', () => {
+            it('should find all specified child components', () => {
+                assert(NodeListsAreEqual(
+                    sQuery().component(document.querySelectorAll('#SVRNE, #E0RZS'), 'beta', 'first'),
+                    document.querySelectorAll('#HRJM1, #TKLD4')
+                ));
+            });
+        });
     });
 
     describe('when used with `is` operator', () => {
@@ -118,7 +157,7 @@ describe('sQuery `component` API', () => {
         describe('to unset a single component', () => {
             describe('on a single module', () => {
                 beforeEach('setup DOM', () => {
-                    EL = document.getElementById('SVRNE');
+                    EL = document.getElementById('HH156');
 
                     sQuery().component(EL, 'bar', 'unset');
                 });
@@ -132,11 +171,11 @@ describe('sQuery `component` API', () => {
                 beforeEach('setup DOM', () => {
                     ELS = document.querySelectorAll('#HRJM1, #TKLD4');
         
-                    sQuery().component(ELS, 'bar', 'unset');
+                    sQuery().component(ELS, 'beta', 'unset');
                 });
         
                 it('should unset the element as the specified component', () => {
-                    assert(!sQuery().component(EL, 'bar', 'is'));
+                    assert(!sQuery().component(EL, 'beta', 'is'));
                 });
             });
         });
