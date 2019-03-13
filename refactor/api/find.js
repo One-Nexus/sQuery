@@ -43,7 +43,11 @@ function getQueryFromObject(node, query, config) {
             return matches.concat([].slice.call(
                 getComponents(node, component, { namespace: module, modifier, ...config })
             ));
+
+            // @TODO if modifier?
         }
+
+        // @TODO if modifier?
 
         return matches.concat([].slice.call(
             node.querySelectorAll(`.${module}, [class*="${module + modifierGlue}"]`)
@@ -56,6 +60,7 @@ function getQueryFromObject(node, query, config) {
         if (modifier) {
             return matches.concat(
                 [].slice.call(components.filter(component => {
+                    // return hasModifier(component, modifier);
                     return [].slice.call(component.classList).some(className => {
                         const namespace = config.namespace || getNamespace(component, false, config);
                         const isNamespace = className.indexOf(namespace) === 0;
@@ -71,6 +76,7 @@ function getQueryFromObject(node, query, config) {
     }
 
     if (modifier) {
+        // @TODO ?
         return;
     }
 }

@@ -76,4 +76,13 @@ describe('sQuery `subComponent` API', () => {
             });
         });
     });
+
+    describe('when used with `is` operator', () => {
+        it('should determine if element is the specified sub-component', () => {
+            assert(sQuery().subComponent(document.getElementById('A0BG9'), 'fizz', 'is'));
+            assert(sQuery().subComponent(document.getElementById('FH5FN'), 'buzz', 'is'));
+            assert(!sQuery().subComponent(document.getElementById('A0BG9'), 'bar', 'is'));
+            assert(!sQuery().subComponent(document.getElementById('FH5FN'), 'fizz', 'is'));
+        });
+    });
 });

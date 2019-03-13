@@ -13,9 +13,10 @@ export default function isComponent(node, componentName, config) {
 
     return [].slice.call(node.classList).some(className => {
         if (config.subComponent) {
-            const isMatch = namespace.indexOf(componentName) === (namespace.length - componentName.length);
-    
-            return className.indexOf(namespace) > -1 && isMatch;
+            const isASubComponent = (className.split(componentGlue).length - 1) > 1;
+            const isMatch = className.indexOf(componentName) === (className.length - componentName.length);
+
+            return isASubComponent && isMatch;
         }
 
         const isAComponent = (className.split(componentGlue).length - 1) === 1;
