@@ -46,7 +46,5 @@ export default function getComponents(componentName = '', modifier, namespace) {
         });
     });
 
-    // console.log(subComponents)
-
     return subComponents;
 }

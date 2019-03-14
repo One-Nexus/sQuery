@@ -1,12 +1,15 @@
 const TEMPLATE = (`
     <div class="foo foo-pancake test" id="SVRNE">
-        <div class="fizz" id="HH156"></div>
-        <div class="fizz" id="A0BG9"></div>
+        <div class="foo_fizz" id="HH156"></div>
+        <div class="foo_fizz-buzz" id="A0BG9"></div>
 
         <div class="alpha" id="HY7S3">
-            <div class="fizz" id="ZSAE6"></div>
-            <div class="fizz" id="N1WY1"></div>
+            <div class="alpha_beta" id="ZSAE6"></div>
+            <div class="alpha_fizz-buzz" id="N1WY1"></div>
+            <div class="alpha_fizz" id="TKLD4"></div>
         </div>
+
+        <div class="alpha-beta" id="SW420"></div>
     </div>
 
     <div class="alpha" id="KJ4PM">
@@ -30,37 +33,64 @@ describe('sQuery `component` API', () => {
 
     describe('When `query` is an object', () => {
         describe('with a `module` key', () => {
-            it('', () => {
-                assert(NodeListsAreEqual());
+            it('should retreive the desired modules', () => {
+                assert(NodeListsAreEqual(
+                    sQuery().find(document.getElementById('SVRNE'), { module: 'alpha' }),
+                    document.querySelectorAll('#HY7S3, #SW420')
+                ));
             });
 
             describe('and a `component` key', () => {
-                it('', () => {
-                    assert();
+                it('should retreive the desired components', () => {
+                    assert(NodeListsAreEqual(
+                        sQuery().find(document.getElementById('SVRNE'), { module: 'alpha', component: 'beta' }),
+                        document.querySelectorAll('#ZSAE6')
+                    ));
+
+                    assert(NodeListsAreEqual(
+                        sQuery().find(document.getElementById('SVRNE'), { module: 'alpha', component: 'fizz' }),
+                        document.querySelectorAll('#N1WY1, #TKLD4')
+                    ));
                 });
 
                 describe('and a `modifier` key', () => {
-                    it('', () => {
-                        assert();
+                    it('that have the specified modifier', () => {
+                        assert(NodeListsAreEqual(
+                            sQuery().find(document.getElementById('SVRNE'), { 
+                                module: 'alpha', 
+                                component: 'fizz',
+                                modifier: 'buzz'
+                            }),
+                            document.querySelectorAll('#N1WY1')
+                        ));
                     });
                 });
             });
 
             describe('and a `modifier` key', () => {
-                it('', () => {
-                    assert();
+                it('should retreive the desired modules that have the specified modifier', () => {
+                    assert(NodeListsAreEqual(
+                        sQuery().find(document.getElementById('SVRNE'), { module: 'alpha', modifier: 'beta' }),
+                        document.querySelectorAll('#SW420')
+                    ));
                 });
             });
         });
 
         describe('with a `component` key', () => {
-            it('', () => {
-                assert();
+            it('should retreive the desired components', () => {
+                assert(NodeListsAreEqual(
+                    sQuery().find(document.getElementById('SVRNE'), { component: 'fizz' }),
+                    document.querySelectorAll('#HH156, #A0BG9')
+                ));
             });
 
             describe('and a `modifier` key', () => {
-                it('', () => {
-                    assert();
+                it('that have the specified modifier', () => {
+                    assert(NodeListsAreEqual(
+                        sQuery().find(document.getElementById('SVRNE'), { component: 'fizz', modifier: 'buzz' }),
+                        document.querySelectorAll('#A0BG9')
+                    ));
                 });
             });
         });
@@ -68,14 +98,21 @@ describe('sQuery `component` API', () => {
 
     describe('When `query` is a string', () => {
         describe('to find a module', () => {
-            it('', () => {
-                assert();
+            it('should retreive the desired modules', () => {
+                assert(NodeListsAreEqual(
+                    sQuery().find(document.getElementById('SVRNE'), 'alpha'),
+                    document.querySelectorAll('#HY7S3, #SW420')
+                ));
             });
         });
 
         describe('to find a component', () => {
-            it('', () => {
-                assert();
+            it('should retreive the desired components', () => {
+                // sQuery().find(document.getElementById('SVRNE'), 'fizz').forEach(c => console.log(c.id))
+                assert(NodeListsAreEqual(
+                    sQuery().find(document.getElementById('SVRNE'), 'fizz'),
+                    document.querySelectorAll('#HH156, #A0BG9')
+                ));
             });
         });
     });

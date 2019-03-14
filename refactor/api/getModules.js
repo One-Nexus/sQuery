@@ -15,5 +15,11 @@ export default function getModules(node, moduleName, config) {
         return matchedModules;
     }
 
-    return node.querySelectorAll(`.${moduleName}, [class*="${moduleName + modifierGlue}"]`)
+    const modules = node.querySelectorAll(`.${moduleName}, [class*="${moduleName + modifierGlue}"]`);
+
+    // @TODO need to filter `modules` and be more strict;
+    // `alpha_fizz-buzz` should not be returned when
+    // searching for `fizz-buzz`...
+
+    return modules;
 }
