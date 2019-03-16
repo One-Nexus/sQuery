@@ -1,4 +1,3 @@
-import getNamespace from './getNamespace';
 import getModules from './getModules';
 import getComponents from './getComponents';
 import hasModifier from './hasModifier';

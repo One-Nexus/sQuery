@@ -6,7 +6,7 @@ export default function hasModifier(node, modifier, config) {
     if (!modifier) return;
 
     if (modifier.constructor === Array) {
-        return modifier.every(_modifier => hasModifier(node, _modifier, config));
+        return modifier.every(modifier => hasModifier(node, modifier, config));
     }
 
     if (node instanceof NodeList) {

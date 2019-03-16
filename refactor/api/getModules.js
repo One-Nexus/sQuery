@@ -15,11 +15,13 @@ export default function getModules(node, moduleName, config) {
         return matchedModules;
     }
 
-    const modules = node.querySelectorAll(`.${moduleName}, [class*="${moduleName + modifierGlue}"]`);
+    const potentialModules = node.querySelectorAll(`.${moduleName}, [class*="${moduleName + modifierGlue}"]`);
 
-    // @TODO need to filter `modules` and be more strict;
-    // `alpha_fizz-buzz` should not be returned when
-    // searching for `fizz-buzz`...
+    const modules = [].slice.call(potentialModules).filter(potentialModule => {
+        return [].slice.call(potentialModule.classList).some(className => {
+            return className.indexOf(moduleName) === 0;
+        });
+    });
 
     return modules;
 }

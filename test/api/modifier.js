@@ -32,7 +32,6 @@ describe('sQuery `modifier` API', () => {
         assert.equal(typeof sQuery().hasModifier, 'function');
         assert.equal(typeof sQuery().add, 'function');
         assert.equal(typeof sQuery().remove, 'function');
-        assert.equal(typeof sQuery().is, 'function');
         assert.equal(typeof sQuery().modifier, 'function');
     });
 

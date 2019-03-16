@@ -94,6 +94,16 @@ describe('sQuery `component` API', () => {
                 });
             });
         });
+
+
+        describe('and `node` is a NodeList', () => {
+            it('should retreive the desired components', () => {
+                assert(NodeListsAreEqual(
+                    sQuery().find(document.querySelectorAll('#SVRNE, #HY7S3'), { component: 'fizz' }),
+                    document.querySelectorAll('#HH156, #A0BG9, #N1WY1, #TKLD4')
+                ));
+            });
+        });
     });
 
     describe('When `query` is a string', () => {
@@ -108,7 +118,6 @@ describe('sQuery `component` API', () => {
 
         describe('to find a component', () => {
             it('should retreive the desired components', () => {
-                // sQuery().find(document.getElementById('SVRNE'), 'fizz').forEach(c => console.log(c.id))
                 assert(NodeListsAreEqual(
                     sQuery().find(document.getElementById('SVRNE'), 'fizz'),
                     document.querySelectorAll('#HH156, #A0BG9')
