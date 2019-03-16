@@ -1,9 +1,7 @@
-import getConfig from './utilities/getConfig';
-import getDomNodes from './utilities/getDomNodes';
-import getModuleNamespace from './utilities/getModuleNamespace';
-import init from './utilities/init';
+import getConfig from '../refactor/utilities/getConfig';
+import getDomNodes from '../refactor/utilities/getDOMNodes';
+import init from '../refactor/utilities/init';
 
-// import * as API from './api';
 import * as API from '../refactor/api';
 
 import {
@@ -15,6 +13,7 @@ import {
     getComponent,
     getComponents,
     getModifiers,
+    getNamespace,
     getSubComponent,
     getSubComponents,
     has,
@@ -36,11 +35,6 @@ import {
 if (typeof process === 'undefined') window.process = { env: {} };
 
 /**
- * @param {*} SynergyQuery
- * @param {Function} [callback]
- * @param {Object} [defaults]
- * @param {Object} [custom]
- * @param {Object} [parser]
  */
 export default function sQuery(SynergyQuery, callback, defaults, custom, parser) {
     var Synergy = window.Synergy || {};
@@ -51,25 +45,25 @@ export default function sQuery(SynergyQuery, callback, defaults, custom, parser)
     const modifierGlue  = config.modifierGlue  || Synergy.modifierGlue  || '-';
     const componentGlue = config.componentGlue || Synergy.componentGlue || '_';
 
-    const namespace = getModuleNamespace(SynergyQuery, componentGlue, modifierGlue);
+    const namespace = getNamespace(SynergyQuery, false, { componentGlue, modifierGlue });
     const DOMNodes = getDomNodes(SynergyQuery);
 
     for (let [key, method] of Object.entries(API)) {
-        methods[key] = method.bind({ namespace, DOMNodes, componentGlue, modifierGlue });
+        if (DOMNodes) {
+            methods[key] = method.bind({ namespace, componentGlue, modifierGlue }, DOMNodes);
+        } else {
+            methods[key] = method.bind({ namespace, componentGlue, modifierGlue });
+        }
     }
 
     if (typeof callback === 'function') {
-        if (DOMNodes instanceof NodeList) {
-            DOMNodes.forEach(node => callback(node, config));
-        } else {
-            callback(node, DOMNodes);
-        }
+        DOMNodes.forEach(node => callback(node, config));
     }
 
     return Object.assign(methods, { 
         namespace, 
-        DOMNodes,
-        DOMNode: DOMNodes ? DOMNodes[0] : null
+        nodes: DOMNodes,
+        node: DOMNodes ? DOMNodes[0] : null
     });
 }
 

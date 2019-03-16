@@ -21,6 +21,10 @@ export {
     default as getModules
 } from './getModules';
 
+export { 
+    default as getNamespace
+} from './getNamespace';
+
 export { default as find } from './find';
 export { default as getComponent } from './getComponent';
 export { default as getComponents } from './getComponents';

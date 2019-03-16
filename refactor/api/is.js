@@ -23,6 +23,10 @@ export default function is(node, query, config) {
                 return namespaceMatch && componentMatch;
             }
 
+            if (modifier) {
+                return isModule(node, module, config) && hasModifier(node, modifier, config);
+            }
+
             return isModule(node, module, config);
         }
 

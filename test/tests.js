@@ -1,5 +1,7 @@
 import './setup';
 
+import './sQuery';
+
 import './api/module';
 import './api/component';
 import './api/subComponent';

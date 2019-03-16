@@ -54,7 +54,7 @@ describe('sQuery `component` API', () => {
                 });
 
                 describe('and a `modifier` key', () => {
-                    it('that have the specified modifier', () => {
+                    it('should retreive the desired components that have the specified modifier', () => {
                         assert(NodeListsAreEqual(
                             sQuery().find(document.getElementById('SVRNE'), { 
                                 module: 'alpha', 
@@ -83,25 +83,20 @@ describe('sQuery `component` API', () => {
                     sQuery().find(document.getElementById('SVRNE'), { component: 'fizz' }),
                     document.querySelectorAll('#HH156, #A0BG9')
                 ));
+
+                assert(NodeListsAreEqual(
+                    sQuery().find(document.querySelectorAll('#SVRNE, #HY7S3'), { component: 'fizz' }),
+                    document.querySelectorAll('#HH156, #A0BG9, #N1WY1, #TKLD4')
+                ));
             });
 
             describe('and a `modifier` key', () => {
-                it('that have the specified modifier', () => {
+                it('should retreive the desired components that have the specified modifier', () => {
                     assert(NodeListsAreEqual(
                         sQuery().find(document.getElementById('SVRNE'), { component: 'fizz', modifier: 'buzz' }),
                         document.querySelectorAll('#A0BG9')
                     ));
                 });
-            });
-        });
-
-
-        describe('and `node` is a NodeList', () => {
-            it('should retreive the desired components', () => {
-                assert(NodeListsAreEqual(
-                    sQuery().find(document.querySelectorAll('#SVRNE, #HY7S3'), { component: 'fizz' }),
-                    document.querySelectorAll('#HH156, #A0BG9, #N1WY1, #TKLD4')
-                ));
             });
         });
     });
