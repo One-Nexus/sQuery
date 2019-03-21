@@ -34,6 +34,8 @@ export default function getComponents(node, componentName, config) {
         let sourceDepth = (sourceNamespace.match(new RegExp(componentGlue, 'g')) || []).length;
         let targetDepth = (targetNamespace.match(new RegExp(componentGlue, 'g')) || []).length;
 
+        if (subComponent && !sourceDepth) return;
+
         if (subComponent || !sourceDepth) {
             sourceDepth++;
         }
