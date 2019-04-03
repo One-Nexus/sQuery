@@ -23,7 +23,7 @@ export default function getComponents(node, componentName, config) {
         components = node.querySelectorAll(`[class*='${namespace + componentGlue}']`);
     } else {
         const query = namespace + componentGlue + componentName;
-    
+
         components = node.querySelectorAll(`.${query}, [class*='${query + modifierGlue}']`);
     }
 
@@ -34,7 +34,16 @@ export default function getComponents(node, componentName, config) {
         let sourceDepth = (sourceNamespace.match(new RegExp(componentGlue, 'g')) || []).length;
         let targetDepth = (targetNamespace.match(new RegExp(componentGlue, 'g')) || []).length;
 
-        if (subComponent && !sourceDepth) return;
+        // Special condition: if no componentName passed and we want sub-components,
+        // find ALL child sub-components, as parent modules cannot have direct
+        // descendant sub-components
+        if (subComponent && !componentName) {
+            return true;
+        }
+
+        if (subComponent && !sourceDepth) {
+            return false;
+        }
 
         if (subComponent || !sourceDepth) {
             sourceDepth++;
@@ -42,16 +51,26 @@ export default function getComponents(node, componentName, config) {
 
         let modifierCriteria = true;
 
+        const targetClass = [].slice.call(element.classList).filter(className => {
+            return className.indexOf(namespace) === 0;
+        })[0];
+
         if (config.modifier) {
-            modifierCriteria = [].slice.call(element.classList).filter(className => {
-                return className.indexOf(namespace) === 0;
-            })[0].indexOf(config.modifier) > -1;
+            modifierCriteria = targetClass.indexOf(config.modifier) > -1;
+        }
+
+        if (!subComponent && sourceDepth > 1) {
+            if ((targetClass.split(componentGlue).length - 1) > 1) {
+                return false;
+            }
+
+            return modifierCriteria;
         }
 
         return modifierCriteria && targetDepth === sourceDepth;
     });
 
-    components = filterElements(node, components, config);
+    components = filterElements(node, components, subComponent, config);
 
     return components;
 }

@@ -9,15 +9,29 @@ export default function parent(node, query, config) {
 
     const { componentGlue, modifierGlue } = config;
 
-    const namespace = config.namespace || getNamespace(node, false, config);
+    let namespace = config.namespace || getNamespace(node, false, config);
 
-    query = query || namespace;
+    let $query = query || namespace;
 
-    if (query !== namespace) {
-        query = namespace + componentGlue + query;
+    if ($query !== namespace) {
+        $query = namespace + componentGlue + $query;
     }
 
-    if (query) {
-        return node.closest(`.${query}, [class*='${query + modifierGlue}']`);
+    const parentComponent = $query && node.closest(`.${$query}, [class*='${$query + modifierGlue}']`);
+
+    if (parentComponent) {
+        return parentComponent;
+    }
+
+    namespace = config.namespace || getNamespace(node, true, config);
+
+    if (namespace && namespace.indexOf(query > -1)) {
+        $query = namespace.substring(0, namespace.indexOf(query) + query.length);
+    }
+
+    const parentSubComponent = $query && node.closest(`.${$query}, [class*='${$query + modifierGlue}']`);
+
+    if (parentSubComponent) {
+        return parentSubComponent;
     }
 }
