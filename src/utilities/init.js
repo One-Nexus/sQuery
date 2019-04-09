@@ -1,5 +1,4 @@
-// import * as API from '../api';
-import * as API from '../../refactor/api';
+import * as API from '../api';
 
 export default function init(custom) {
     const options = Object.assign({

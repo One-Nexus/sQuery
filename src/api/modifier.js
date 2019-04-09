@@ -1,25 +1,28 @@
 import hasModifier from './hasModifier';
 import addModifier from './addModifier';
 import removeModifier from './removeModifier';
+import getModifiers from './getModifiers';
 
-/**
- * @param {String} modifier 
- * @param {(('is'|'set'|'unset')|Function)} operator 
- */
-export default function modifier(modifier, operator) {
+export default function modifier(node, modifier, operator, config) {
+    config = Object.assign(this || {}, config || {});
+
+    if (!operator && !modifier) {
+        return getModifiers(node, config);
+    }
+
     if (!operator || operator === 'is') {
-        return hasModifier.bind(this)(modifier);
+        return hasModifier(node, modifier, config);
     }
 
     if (operator === 'set' || operator === 'add') {
-        return addModifier.bind(this)(modifier);
+        return addModifier(node, modifier, config);
     }
 
     if (operator === 'unset' || operator === 'remove') {
-        return removeModifier.bind(this)(modifier);
+        return removeModifier(node, modifier, config);
     }
 
-    if (operator === 'toggle') {
-        // @TODO
-    }
+    // @TODO
+    // if (operator === 'toggle') {
+    // }
 }

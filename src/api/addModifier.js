@@ -1,20 +1,27 @@
-import getModuleNamespace from '../utilities/getModuleNamespace';
+import getNamespace from './getNamespace';
+import isSafeElement from '../utilities/isSafeElement';
 
-/**
- * @param {(String|Array)} modifier 
- */
-export default function addModifier(modifier) {
-    if (this.DOMNodes instanceof NodeList) {
-        return this.DOMNodes.forEach(node => addModifier.bind(Object.assign(this, { DOMNodes: node }))(modifier));
+export default function addModifier(node, modifier, config) {
+    config = Object.assign(this || {}, config || {});
+
+    if (node instanceof NodeList || node instanceof Array) {
+        return node.forEach(node => addModifier(node, modifier, config));
     }
+
+    const { modifierGlue } = config;
+
+    const namespace = config.namespace || getNamespace(node, true, config);
+    const safeNamespace = isSafeElement(node, namespace, config);
 
     if (modifier.constructor === Array) {
-        modifier = modifier.join(this.modifierGlue);
+        modifier = modifier.join(modifierGlue);
     }
 
-    const namespace = this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue);
+    if (safeNamespace) {
+        node.classList.replace(safeNamespace, safeNamespace + modifierGlue + modifier);
+    } else {
+        node.classList.add(namespace + modifierGlue + modifier);
+    }
 
-    this.DOMNodes.classList.add(namespace + this.modifierGlue + modifier);
-
-    return this.DOMNodes;
+    return node;
 }

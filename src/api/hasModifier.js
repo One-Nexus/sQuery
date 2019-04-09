@@ -1,28 +1,28 @@
-import getModuleNamespace from '../utilities/getModuleNamespace';
+import getNamespace from './getNamespace';
 
-/**
- * @param {*} modifier 
- */
-export default function hasModifier(modifier) {
-    if (modifier) {
-        if (modifier.constructor === Array) {
-            return modifier.every(_modifier => hasModifier.bind(this)(_modifier));
-        }
+export default function hasModifier(node, modifier, config) {
+    config = Object.assign(this || {}, config || {});
 
-        if (this.DOMNodes instanceof NodeList) {
-            return Array.prototype.slice.call(this.DOMNodes).every(DOMNodes => hasModifier.bind(Object.assign(this, { DOMNodes }))(modifier));
-        }
+    if (!modifier) return;
 
-        const node = this.DOMNodes;
-
-        return Array.prototype.slice.call(node.classList).some(className => {
-            const namespace = this.namespace || node.namespace || getModuleNamespace(node, this.modifierGlue, this.componentGlue);
-            const matchIndex = className.indexOf(this.modifierGlue + modifier);
-            const namespaceMatch  = className.indexOf(namespace) === 0;
-            const isModifierTest1 = className.indexOf(this.modifierGlue + modifier + this.modifierGlue) > -1;
-            const isModifierTest2 = matchIndex > -1 && matchIndex === (className.length - modifier.length - this.modifierGlue.length);
-    
-            return namespaceMatch && (isModifierTest1 || isModifierTest2);
-        });
+    if (modifier.constructor === Array) {
+        return modifier.every(modifier => hasModifier(node, modifier, config));
     }
+
+    if (node instanceof NodeList || node instanceof Array) {
+        return [].slice.call(node).every(node => hasModifier(node, modifier, config));
+    }
+
+    const { modifierGlue } = config;
+
+    const namespace = config.namespace || node.namespace || getNamespace(node, false, config);
+
+    return [].slice.call(node.classList).some(className => {
+        const matchIndex = className.indexOf(modifierGlue + modifier);
+        const namespaceMatch  = className.indexOf(namespace) === 0;
+        const isModifierTest1 = className.indexOf(modifierGlue + modifier + modifierGlue) > -1;
+        const isModifierTest2 = matchIndex > -1 && matchIndex === (className.length - modifier.length - modifierGlue.length);
+
+        return namespaceMatch && (isModifierTest1 || isModifierTest2);
+    });
 }

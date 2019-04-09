@@ -1,14 +1,11 @@
 import getSubComponents from './getSubComponents';
 
-/**
- * @param {*} subComponentName 
- */
-export default function getComponent(subComponentName, context = []) {
-    if (this.DOMNodes instanceof NodeList) {
-        return Array.prototype.slice.call(this.DOMNodes).map(() => {
-            return getSubComponents.bind(this)(subComponentName, context)[0]
-        });
-    }
+export default function getSubComponent(node, componentName, config) {
+    config = Object.assign(this || {}, config || {});
 
-    return getSubComponents.bind(this)(subComponentName, context)[0];
+    if (node instanceof NodeList || node instanceof Array) {
+        return [].slice.call(node).map(node => getSubComponent(node, componentName, config));
+    };
+
+    return getSubComponents(node, componentName, config)[0]
 }

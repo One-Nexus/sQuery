@@ -1,29 +1,27 @@
-import getModuleNamespace from '../utilities/getModuleNamespace';
+import getNamespace from './getNamespace';
 
-/**
- * @param {(String|Array)} modifier 
- */
-export default function removeModifier(modifier) {
+export default function removeModifier(node, modifier, config) {
+    config = Object.assign(this || {}, config || {});
+
     if (modifier.constructor === Array) {
-        return modifier.forEach(_modifier => {
-            removeModifier.bind(Object.assign(this))(_modifier);
-        });
+        return modifier.forEach(_modifier => removeModifier(node, _modifier, config));
     }
 
-    if (this.DOMNodes instanceof NodeList) {
-        return this.DOMNodes.forEach(node => removeModifier.bind(Object.assign(this, { DOMNodes: node }))(modifier));
+    if (node instanceof NodeList || node instanceof Array) {
+        return node.forEach(node => removeModifier(node, modifier, config));
     }
 
-    const node = this.DOMNodes;
+    const { modifierGlue } = config;
 
-    Array.prototype.slice.call(node.classList).forEach(className => {
-        const moduleMatch = className.indexOf((this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue)) + this.modifierGlue) === 0;
-        const modifierMatch = className.indexOf(this.modifierGlue + modifier) > -1;
-        const newClass = className.replace(new RegExp(this.modifierGlue + modifier, 'g'), '');
+    const namespace = config.namespace || getNamespace(node, true, config);
+
+    [].slice.call(node.classList).forEach(className => {
+        const moduleMatch = className.indexOf(namespace + modifierGlue) === 0;
+        const modifierMatch = className.indexOf(modifierGlue + modifier) > -1;
+        const newClass = className.replace(new RegExp(modifierGlue + modifier, 'g'), '');
 
         if (moduleMatch && modifierMatch) {
-            node.classList.remove(className);
-            node.classList.add(newClass);
+            node.classList.replace(className, newClass);
         }
     });
 }

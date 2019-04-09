@@ -1,50 +1,76 @@
-import getModuleNamespace from '../utilities/getModuleNamespace';
+import getNamespace from './getNamespace';
+import filterElements from '../utilities/filterElements';
 import isValidSelector from '../utilities/isValidSelector';
-import parent from './parent';
 
-/**
- * @param {*} componentName 
- */
-export default function getComponents(componentName = '', modifier, namespace) {
+export default function getComponents(node, componentName, config) {
+    config = Object.assign(this || {}, config || {});
+
     if (componentName && !isValidSelector(componentName)) return [];
 
-    if (this.DOMNodes instanceof NodeList) {
-        return Array.prototype.slice.call(this.DOMNodes).reduce((matches, node) => {
-            return matches.concat(Array.prototype.slice.call(getComponents.bind(Object.assign(this, { DOMNodes: node }))(componentName, modifier, namespace)));
+    if (node instanceof NodeList || node instanceof Array) {
+        return [].slice.call(node).reduce((matches, node) => {
+            return matches.concat([].slice.call(getComponents(node, componentName, config)));
         }, []);
     }
 
-    if (componentName.indexOf('modifier(') === 0) return;
+    const { subComponent, modifierGlue, componentGlue } = config;
 
-    namespace = namespace || this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue, 'strict');
+    const namespace = config.namespace || getNamespace(node, subComponent, config);
 
-    const query = namespace + (componentName ? (this.componentGlue + componentName) : '');
-
-    let selector = `.${query}, [class*="${query + this.modifierGlue}"]`;
+    let components;
 
     if (!componentName) {
-        selector = `[class*="${query + this.componentGlue}"]`;
+        components = node.querySelectorAll(`[class*='${namespace + componentGlue}']`);
+    } else {
+        const query = namespace + componentGlue + componentName;
+
+        components = node.querySelectorAll(`.${query}, [class*='${query + modifierGlue}']`);
     }
 
-    const subComponents = Array.prototype.slice.call(this.DOMNodes.querySelectorAll(selector)).filter(component => {
-        const parentModule = parent.bind(Object.assign(this, { DOMNodes: component }))(namespace);
-        const parentElementIsModule = this.parentElement ? this.parentElement.matches(`.${namespace}, [class*="${namespace}-"]`) : false;
+    components = [].slice.call(components).filter(element => {
+        const sourceNamespace = getNamespace(node, true, { ...config, namespace });
+        const targetNamespace = getNamespace(element, true, { ...config, namespace });
 
-        if (parentElementIsModule && this.parentElement !== parentModule) {
+        let sourceDepth = (sourceNamespace.match(new RegExp(componentGlue, 'g')) || []).length;
+        let targetDepth = (targetNamespace.match(new RegExp(componentGlue, 'g')) || []).length;
+
+        // Special condition: if no componentName passed and we want sub-components,
+        // find ALL child sub-components, as parent modules cannot have direct
+        // descendant sub-components
+        if (subComponent && !componentName && sourceNamespace.indexOf(componentGlue) === -1) {
+            return true;
+        }
+
+        if (subComponent && !sourceDepth) {
             return false;
         }
-        
-        return Array.prototype.slice.call(component.classList).some(className => {
-            const isComponent = (className.split(this.componentGlue).length - 1) === 1;
-            const isQueryMatch = className.indexOf(query) === 0;
 
-            if (modifier) {
-                return isQueryMatch && isComponent && className.indexOf(modifier) > -1;
-            } else {
-                return isQueryMatch && isComponent;
+        if (subComponent || !sourceDepth) {
+            sourceDepth++;
+        }
+
+        let modifierCriteria = true;
+
+        const targetClass = [].slice.call(element.classList).filter(className => {
+            return className.indexOf(namespace) === 0;
+        })[0];
+
+        if (config.modifier) {
+            modifierCriteria = targetClass.indexOf(config.modifier) > -1;
+        }
+
+        if (!subComponent && sourceDepth > 1) {
+            if ((targetClass.split(componentGlue).length - 1) > 1) {
+                return false;
             }
-        });
+
+            return modifierCriteria;
+        }
+
+        return modifierCriteria && targetDepth === sourceDepth;
     });
 
-    return subComponents;
+    components = filterElements(node, components, subComponent, config);
+
+    return components;
 }

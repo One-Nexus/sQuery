@@ -1,16 +1,26 @@
-import getModuleNamespace from '../utilities/getModuleNamespace';
+import getNamespace from './getNamespace';
 
-/**
- * @param {*} componentName 
- */
-export default function getModifiers() {
-    if (this.DOMNodes instanceof NodeList) {
-        return Array.prototype.slice.call(this.DOMNodes).reduce((matches, DOMNodes) => {
-            return matches.concat(getModifiers.bind(Object.assign(this, { DOMNodes }))());
+export default function getModifiers(node, config) {
+    config = Object.assign(this || {}, config || {});
+
+    if (node instanceof NodeList || node instanceof Array) {
+        let modifiers = [].slice.call(node).reduce((matches, node) => {
+            return matches.concat(getModifiers(node, config));
         }, []);
+
+        // remove duplicates
+        modifiers = [...new Set(modifiers)];
+
+        return modifiers;
     }
 
-    return Array.prototype.slice.call(this.DOMNodes.classList).filter(className => {
-        return className.indexOf(this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue)) === 0
-    }).map(target => target.split(this.modifierGlue).slice(1))[0];
+    const { namespace, modifierGlue } = config;
+
+    const targetClass = [].slice.call(node.classList).filter(className => {
+        return className.indexOf(namespace || getNamespace(node, false, config)) === 0
+    })[0];
+
+    const modifiers = targetClass.split(modifierGlue).slice(1);
+
+    return modifiers;
 }

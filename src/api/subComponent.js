@@ -1,42 +1,13 @@
+import component from './component';
+import getSubComponent from './getSubComponent';
 import getSubComponents from './getSubComponents';
 
-import getModuleNamespace from '../utilities/getModuleNamespace';
+export default function subComponent(node, subComponentName, operator, config) {
+    config = Object.assign(this || {}, config || {});
 
-/**
- * @param {String} componentName 
- * @param {(('find'|'is')|Function)} operator 
- */
-export default function subComponent(subComponentName, operator) {
-    if (!subComponentName && !operator) {
-        return getSubComponents.bind(this)();
-    }
+    config.subComponent = true;
+    config.getSubComponent = getSubComponent;
+    config.getSubComponents = getSubComponents;
 
-    if (!operator || operator === 'find') {
-        return getSubComponents.bind(this)(subComponentName);
-    }
-
-    if (operator === 'is') {
-        if (this.DOMNodes instanceof NodeList) {
-            return Array.prototype.slice.call(this.DOMNodes).every(node => is.bind(this)(node, subComponentName));
-        }
-
-        return is.bind(this)(this.DOMNodes, subComponentName);
-    }
-
-    if (typeof operator === 'function') {
-        getSubComponents.bind(this)(subComponentName).forEach(node => operator(node));
-    }
-}
-
-/**
- * @param {HTMLElement} node 
- * @param {String} subComponentName 
- */
-function is(node, subComponentName) {
-    const query = this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue);
-    const isMatch = query.indexOf(subComponentName) === (query.length - subComponentName.length);
-
-    return Array.prototype.slice.call(node.classList).some(className => {
-        return className.indexOf(query) > -1 && isMatch;
-    });
+    return component(node, subComponentName, operator, config);
 }

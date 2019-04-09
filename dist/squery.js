@@ -263,23 +263,28 @@ __webpack_require__.d(api_namespaceObject, "add", function() { return addModifie
 __webpack_require__.d(api_namespaceObject, "addModifier", function() { return addModifier; });
 __webpack_require__.d(api_namespaceObject, "component", function() { return component_component; });
 __webpack_require__.d(api_namespaceObject, "components", function() { return component_component; });
+__webpack_require__.d(api_namespaceObject, "module", function() { return module_module; });
+__webpack_require__.d(api_namespaceObject, "modules", function() { return module_module; });
+__webpack_require__.d(api_namespaceObject, "isModule", function() { return isModule; });
+__webpack_require__.d(api_namespaceObject, "getModules", function() { return getModules; });
+__webpack_require__.d(api_namespaceObject, "getNamespace", function() { return getNamespace; });
 __webpack_require__.d(api_namespaceObject, "find", function() { return find; });
 __webpack_require__.d(api_namespaceObject, "getComponent", function() { return getComponent; });
 __webpack_require__.d(api_namespaceObject, "getComponents", function() { return getComponents; });
 __webpack_require__.d(api_namespaceObject, "getModifiers", function() { return getModifiers; });
-__webpack_require__.d(api_namespaceObject, "getSubComponent", function() { return getSubComponent_getComponent; });
+__webpack_require__.d(api_namespaceObject, "getSubComponent", function() { return getSubComponent; });
 __webpack_require__.d(api_namespaceObject, "getSubComponents", function() { return getSubComponents; });
-__webpack_require__.d(api_namespaceObject, "has", function() { return hasModifier_hasModifier; });
-__webpack_require__.d(api_namespaceObject, "hasModifier", function() { return hasModifier_hasModifier; });
+__webpack_require__.d(api_namespaceObject, "has", function() { return hasModifier; });
+__webpack_require__.d(api_namespaceObject, "hasModifier", function() { return hasModifier; });
 __webpack_require__.d(api_namespaceObject, "is", function() { return is; });
 __webpack_require__.d(api_namespaceObject, "isComponent", function() { return isComponent; });
 __webpack_require__.d(api_namespaceObject, "modifier", function() { return modifier_modifier; });
+__webpack_require__.d(api_namespaceObject, "remove", function() { return removeModifier; });
 __webpack_require__.d(api_namespaceObject, "removeModifier", function() { return removeModifier; });
 __webpack_require__.d(api_namespaceObject, "parent", function() { return parent_parent; });
-__webpack_require__.d(api_namespaceObject, "parentComponent", function() { return parentComponent; });
 __webpack_require__.d(api_namespaceObject, "setComponent", function() { return setComponent; });
-__webpack_require__.d(api_namespaceObject, "subComponent", function() { return subComponent; });
-__webpack_require__.d(api_namespaceObject, "subComponents", function() { return subComponent; });
+__webpack_require__.d(api_namespaceObject, "subComponent", function() { return subComponent_subComponent; });
+__webpack_require__.d(api_namespaceObject, "subComponents", function() { return subComponent_subComponent; });
 __webpack_require__.d(api_namespaceObject, "unsetComponent", function() { return unsetComponent; });
 
 // CONCATENATED MODULE: ./src/utilities/getConfig.js
@@ -306,16 +311,6 @@ function getConfig(defaults, custom, parser) {
   return extendedConfig;
 }
 // CONCATENATED MODULE: ./src/utilities/isValidSelector.js
-/**
- * Test the validity (not existance) of a CSS selector
- * 
- * @param {String} selector - the selector to test for validity
- * 
- * @returns {Bool}
- * 
- * @example isValidSelector('[data-foo-bar]') // returns true
- * @example isValidSelector(4) // returns false
- */
 function isValidSelector(selector) {
   if (!selector || typeof selector !== 'string') return false;
   var stub = document.createElement('br');
@@ -329,7 +324,7 @@ function isValidSelector(selector) {
 
   return true;
 }
-// CONCATENATED MODULE: ./src/utilities/getDomNodes.js
+// CONCATENATED MODULE: ./src/utilities/getDOMNodes.js
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 
@@ -345,7 +340,7 @@ function getDomNodes(query) {
   }
 
   if (query instanceof HTMLElement) {
-    return query;
+    return [query];
   }
 
   if (query instanceof Array) {
@@ -364,17 +359,15 @@ function getDomNodes(query) {
     return document.querySelectorAll(".".concat(query, ", [class*=\"").concat(query, "-\"]"));
   }
 }
-// CONCATENATED MODULE: ./src/utilities/getModuleNamespace.js
-function getModuleNamespace_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { getModuleNamespace_typeof = function _typeof(obj) { return typeof obj; }; } else { getModuleNamespace_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return getModuleNamespace_typeof(obj); }
+// CONCATENATED MODULE: ./src/api/getNamespace.js
+function getNamespace_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { getNamespace_typeof = function _typeof(obj) { return typeof obj; }; } else { getNamespace_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return getNamespace_typeof(obj); }
 
-/**
- * Get the Module name from a Synergy query
- * 
- * @param {*} query 
- * @param {Bool} strict
- */
-function getModuleNamespace(query, componentGlue, modifierGlue) {
-  var strict = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+function getNamespace(query, strict, config) {
+  config = Object.assign(this || {}, config || {});
+  var _config = config,
+      namespace = _config.namespace,
+      modifierGlue = _config.modifierGlue,
+      componentGlue = _config.componentGlue;
 
   if (query instanceof HTMLElement) {
     if (query.hasAttribute('data-module')) {
@@ -382,11 +375,27 @@ function getModuleNamespace(query, componentGlue, modifierGlue) {
     }
 
     if (query.classList.length) {
-      if (strict) {
-        return query.classList[0].split(modifierGlue)[0].split(componentGlue)[0];
+      var targetClass;
+
+      if (namespace) {
+        targetClass = [].slice.call(query.classList).filter(function (className) {
+          return className.indexOf(namespace) === 0;
+        })[0];
       }
 
-      return query.classList[0].split(modifierGlue)[0];
+      if (!namespace || !targetClass) {
+        targetClass = query.classList[0];
+      }
+
+      if (strict) {
+        return targetClass.split(modifierGlue)[0];
+      }
+
+      return targetClass.split(modifierGlue)[0].split(componentGlue)[0];
+    }
+
+    if (namespace) {
+      return namespace;
     }
   }
 
@@ -394,7 +403,7 @@ function getModuleNamespace(query, componentGlue, modifierGlue) {
     return query;
   }
 
-  if (getModuleNamespace_typeof(query) === 'object' && 'name' in query) {
+  if (query && getNamespace_typeof(query) === 'object' && query.name) {
     return query.name;
   }
 
@@ -402,32 +411,475 @@ function getModuleNamespace(query, componentGlue, modifierGlue) {
     return query[1];
   }
 }
-// CONCATENATED MODULE: ./src/api/addModifier.js
+// CONCATENATED MODULE: ./src/utilities/isSafeElement.js
+function isSafeElement(node, namespace, _ref) {
+  var modifierGlue = _ref.modifierGlue;
 
-/**
- * @param {(String|Array)} modifier 
- */
-
-function addModifier(modifier) {
-  var _this = this;
-
-  if (this.DOMNodes instanceof NodeList) {
-    return this.DOMNodes.forEach(function (node) {
-      return addModifier.bind(Object.assign(_this, {
-        DOMNodes: node
-      }))(modifier);
+  if (node instanceof NodeList || node instanceof Array) {
+    return node.every(function (node) {
+      return isSafeElement(node, namespace, {
+        modifierGlue: modifierGlue
+      });
     });
   }
 
-  if (modifier.constructor === Array) {
-    modifier = modifier.join(this.modifierGlue);
+  var matchedClasses = [].slice.call(node.classList).filter(function (className) {
+    var conditions = [className === namespace, className.indexOf(namespace + modifierGlue) === 0];
+    return conditions.some(function (condition) {
+      return !!condition;
+    });
+  });
+  return matchedClasses.length === 1 ? matchedClasses[0] : false;
+}
+// CONCATENATED MODULE: ./src/api/addModifier.js
+
+
+function addModifier(node, modifier, config) {
+  config = Object.assign(this || {}, config || {});
+
+  if (node instanceof NodeList || node instanceof Array) {
+    return node.forEach(function (node) {
+      return addModifier(node, modifier, config);
+    });
   }
 
-  var namespace = this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue);
-  this.DOMNodes.classList.add(namespace + this.modifierGlue + modifier);
-  return this.DOMNodes;
+  var _config = config,
+      modifierGlue = _config.modifierGlue;
+  var namespace = config.namespace || getNamespace(node, true, config);
+  var safeNamespace = isSafeElement(node, namespace, config);
+
+  if (modifier.constructor === Array) {
+    modifier = modifier.join(modifierGlue);
+  }
+
+  if (safeNamespace) {
+    node.classList.replace(safeNamespace, safeNamespace + modifierGlue + modifier);
+  } else {
+    node.classList.add(namespace + modifierGlue + modifier);
+  }
+
+  return node;
 }
 // CONCATENATED MODULE: ./src/api/parent.js
+
+function parent_parent(node, query, config) {
+  config = Object.assign(this || {}, config || {});
+
+  if (node instanceof NodeList || node instanceof Array) {
+    return [].slice.call(node).map(function (node) {
+      return parent_parent(node, query, config);
+    });
+  }
+
+  var _config = config,
+      componentGlue = _config.componentGlue,
+      modifierGlue = _config.modifierGlue;
+  var namespace = config.namespace || getNamespace(node, false, config);
+  var $query = query || namespace;
+
+  if ($query !== namespace) {
+    $query = namespace + componentGlue + $query;
+  }
+
+  var parentComponent = $query && node.closest(".".concat($query, ", [class*='").concat($query + modifierGlue, "']"));
+
+  if (parentComponent) {
+    return parentComponent;
+  }
+
+  namespace = config.namespace || getNamespace(node, true, config);
+
+  if (namespace && namespace.indexOf(query > -1)) {
+    $query = namespace.substring(0, namespace.indexOf(query) + query.length);
+  }
+
+  var parentSubComponent = $query && node.closest(".".concat($query, ", [class*='").concat($query + modifierGlue, "']"));
+
+  if (parentSubComponent) {
+    return parentSubComponent;
+  }
+}
+// CONCATENATED MODULE: ./src/utilities/filterElements.js
+
+
+function filterElements(node, elements, subComponent, config) {
+  var namespace = config.namespace || getNamespace(node, subComponent, config);
+  var sourceParent = parent_parent(node, namespace, config);
+  if (!sourceParent) return elements;
+  elements = [].slice.call(elements).filter(function (element) {
+    var targetParent = parent_parent(element, namespace, config);
+
+    if (!targetParent) {
+      return true;
+    }
+
+    return targetParent === sourceParent;
+  });
+  return elements;
+}
+// CONCATENATED MODULE: ./src/api/getComponents.js
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+
+
+
+function getComponents(node, componentName, config) {
+  config = Object.assign(this || {}, config || {});
+  if (componentName && !isValidSelector(componentName)) return [];
+
+  if (node instanceof NodeList || node instanceof Array) {
+    return [].slice.call(node).reduce(function (matches, node) {
+      return matches.concat([].slice.call(getComponents(node, componentName, config)));
+    }, []);
+  }
+
+  var _config = config,
+      subComponent = _config.subComponent,
+      modifierGlue = _config.modifierGlue,
+      componentGlue = _config.componentGlue;
+  var namespace = config.namespace || getNamespace(node, subComponent, config);
+  var components;
+
+  if (!componentName) {
+    components = node.querySelectorAll("[class*='".concat(namespace + componentGlue, "']"));
+  } else {
+    var query = namespace + componentGlue + componentName;
+    components = node.querySelectorAll(".".concat(query, ", [class*='").concat(query + modifierGlue, "']"));
+  }
+
+  components = [].slice.call(components).filter(function (element) {
+    var sourceNamespace = getNamespace(node, true, _objectSpread({}, config, {
+      namespace: namespace
+    }));
+    var targetNamespace = getNamespace(element, true, _objectSpread({}, config, {
+      namespace: namespace
+    }));
+    var sourceDepth = (sourceNamespace.match(new RegExp(componentGlue, 'g')) || []).length;
+    var targetDepth = (targetNamespace.match(new RegExp(componentGlue, 'g')) || []).length; // Special condition: if no componentName passed and we want sub-components,
+    // find ALL child sub-components, as parent modules cannot have direct
+    // descendant sub-components
+
+    if (subComponent && !componentName && sourceNamespace.indexOf(componentGlue) === -1) {
+      return true;
+    }
+
+    if (subComponent && !sourceDepth) {
+      return false;
+    }
+
+    if (subComponent || !sourceDepth) {
+      sourceDepth++;
+    }
+
+    var modifierCriteria = true;
+    var targetClass = [].slice.call(element.classList).filter(function (className) {
+      return className.indexOf(namespace) === 0;
+    })[0];
+
+    if (config.modifier) {
+      modifierCriteria = targetClass.indexOf(config.modifier) > -1;
+    }
+
+    if (!subComponent && sourceDepth > 1) {
+      if (targetClass.split(componentGlue).length - 1 > 1) {
+        return false;
+      }
+
+      return modifierCriteria;
+    }
+
+    return modifierCriteria && targetDepth === sourceDepth;
+  });
+  components = filterElements(node, components, subComponent, config);
+  return components;
+}
+// CONCATENATED MODULE: ./src/api/getComponent.js
+
+/**
+ * @TODO allow this API
+ * const [title, content] = panel.getComponent(['title', 'content']);
+ */
+
+function getComponent(node, componentName, config) {
+  config = Object.assign(this || {}, config || {});
+
+  if (node instanceof NodeList || node instanceof Array) {
+    return [].slice.call(node).map(function (node) {
+      return getComponent(node, componentName, config);
+    });
+  }
+
+  ;
+  return getComponents(node, componentName, config)[0];
+}
+// CONCATENATED MODULE: ./src/api/setComponent.js
+
+function setComponent(node, componentName, namespace, replace, config) {
+  config = Object.assign(this || {}, config || {});
+
+  if (node instanceof NodeList || node instanceof Array) {
+    return node.forEach(function (node) {
+      return setComponent(node, componentName, namespace, replace, config);
+    });
+  }
+
+  if (!namespace && !replace) {
+    replace = config.namespace || getNamespace(node, false, config);
+  }
+
+  namespace = namespace || config.namespace || getNamespace(node, false, config);
+  node.classList.add(namespace + config.componentGlue + componentName);
+  node.setAttribute('data-component', componentName);
+  replace && node.classList.remove(replace);
+}
+// CONCATENATED MODULE: ./src/api/unsetComponent.js
+
+function unsetComponent(node, componentName, config) {
+  config = Object.assign(this || {}, config || {});
+
+  if (node instanceof NodeList || node instanceof Array) {
+    return node.forEach(function (node) {
+      return unsetComponent(node, componentName, config);
+    });
+  }
+
+  var _config = config,
+      componentGlue = _config.componentGlue;
+  var namespace = config.namespace || getNamespace(node, false, config);
+  return [].slice.call(node.classList).forEach(function (className) {
+    var isAComponent = className.split(componentGlue).length - 1 === 1;
+    var isMatch = className.indexOf(namespace + componentGlue + componentName) === 0;
+
+    if (isAComponent && isMatch) {
+      node.classList.remove(className);
+    }
+  });
+}
+// CONCATENATED MODULE: ./src/api/isComponent.js
+
+function isComponent(node, componentName, config) {
+  config = Object.assign(this || {}, config || {});
+
+  if (node instanceof NodeList || node instanceof Array) {
+    return [].slice.call(node).every(function (node) {
+      return isComponent(node, componentName, config);
+    });
+  }
+
+  var _config = config,
+      componentGlue = _config.componentGlue;
+  var namespace = config.namespace || getNamespace(node, false, config);
+  return [].slice.call(node.classList).some(function (className) {
+    if (config.subComponent) {
+      var isASubComponent = className.split(componentGlue).length - 1 > 1;
+
+      var _isMatch = className.indexOf(componentName) === className.length - componentName.length;
+
+      return isASubComponent && _isMatch;
+    }
+
+    var isAComponent = className.split(componentGlue).length - 1 === 1;
+    var query = namespace + componentGlue + componentName;
+    var isMatch = query.indexOf(componentGlue + componentName) > -1;
+    return className.indexOf(query) === 0 && isAComponent && isMatch;
+  });
+}
+// CONCATENATED MODULE: ./src/api/component.js
+
+
+
+
+
+function component_component(node, componentName, operator, config) {
+  config = Object.assign(this || {}, config || {});
+
+  if (!componentName && !operator) {
+    return (config.getSubComponents || getComponents)(node, false, config);
+  }
+
+  if (!operator || operator === 'find') {
+    return (config.getSubComponents || getComponents)(node, componentName, config);
+  }
+
+  if (operator === 'first') {
+    return (config.getSubComponent || getComponent)(node, componentName, config);
+  }
+
+  if (operator === 'is') {
+    return isComponent(node, componentName, config);
+  }
+
+  if (operator === 'set') {
+    //@TODO setSubComponent
+    return setComponent(node, componentName, null, null, config);
+  }
+
+  if (operator === 'unset') {
+    //@TODO unsetSubComponent
+    return unsetComponent(node, componentName, config);
+  }
+
+  if (typeof operator === 'function') {
+    return getComponents(node, componentName, config).forEach(function (node) {
+      return operator(node);
+    });
+  }
+}
+// CONCATENATED MODULE: ./src/api/isModule.js
+function isModule(node, moduleName, config) {
+  config = Object.assign(this || {}, config || {});
+  var DOMNodes = !(node instanceof NodeList || node instanceof Array) ? [node] : node;
+  return [].slice.call(DOMNodes).every(function (node) {
+    return node.matches(".".concat(moduleName, ", [class*=\"").concat(moduleName + config.modifierGlue, "\"]"));
+  });
+}
+// CONCATENATED MODULE: ./src/api/getModules.js
+function getModules(node, moduleName, config) {
+  config = Object.assign(this || {}, config || {});
+  var _config = config,
+      modifierGlue = _config.modifierGlue;
+
+  if (node instanceof NodeList || node instanceof Array) {
+    var matchedModules = [].slice.call(node).reduce(function (matches, node) {
+      var modules = [].slice.call(getModules(node, moduleName, config));
+      matches = matches.filter(function (match) {
+        return modules.every(function (module) {
+          return module !== match;
+        });
+      });
+      return matches.concat(modules);
+    }, []);
+    return matchedModules;
+  }
+
+  var potentialModules = node.querySelectorAll(".".concat(moduleName, ", [class*=\"").concat(moduleName + modifierGlue, "\"]"));
+  var modules = [].slice.call(potentialModules).filter(function (potentialModule) {
+    return [].slice.call(potentialModule.classList).some(function (className) {
+      return className.indexOf(moduleName) === 0;
+    });
+  });
+  return modules;
+}
+// CONCATENATED MODULE: ./src/api/module.js
+
+
+function module_module(node, moduleName, operator, config) {
+  config = Object.assign(this || {}, config || {});
+
+  if (!operator || operator === 'find') {
+    return getModules(node, moduleName, config);
+  }
+
+  if (operator === 'is') {
+    return isModule(node, moduleName, config);
+  }
+
+  if (typeof operator === 'function') {
+    return getModules(node, moduleName, config).forEach(function (node) {
+      return operator(node);
+    });
+  }
+}
+// CONCATENATED MODULE: ./src/api/hasModifier.js
+
+function hasModifier(node, modifier, config) {
+  config = Object.assign(this || {}, config || {});
+  if (!modifier) return;
+
+  if (modifier.constructor === Array) {
+    return modifier.every(function (modifier) {
+      return hasModifier(node, modifier, config);
+    });
+  }
+
+  if (node instanceof NodeList || node instanceof Array) {
+    return [].slice.call(node).every(function (node) {
+      return hasModifier(node, modifier, config);
+    });
+  }
+
+  var _config = config,
+      modifierGlue = _config.modifierGlue;
+  var namespace = config.namespace || node.namespace || getNamespace(node, false, config);
+  return [].slice.call(node.classList).some(function (className) {
+    var matchIndex = className.indexOf(modifierGlue + modifier);
+    var namespaceMatch = className.indexOf(namespace) === 0;
+    var isModifierTest1 = className.indexOf(modifierGlue + modifier + modifierGlue) > -1;
+    var isModifierTest2 = matchIndex > -1 && matchIndex === className.length - modifier.length - modifierGlue.length;
+    return namespaceMatch && (isModifierTest1 || isModifierTest2);
+  });
+}
+// CONCATENATED MODULE: ./src/api/find.js
+function find_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { find_defineProperty(target, key, source[key]); }); } return target; }
+
+function find_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function find_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { find_typeof = function _typeof(obj) { return typeof obj; }; } else { find_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return find_typeof(obj); }
+
+
+
+
+function find(node, query, config) {
+  config = Object.assign(this || {}, config || {});
+
+  if (find_typeof(query) === 'object') {
+    if (node instanceof NodeList || node instanceof Array) {
+      return [].slice.call(node).reduce(function (matches, node) {
+        return matches.concat(getQueryFromObject(node, query, config));
+      }, []);
+    }
+
+    return getQueryFromObject(node, query, config);
+  }
+
+  if (typeof query === 'string') {
+    var modules = getModules(node, query, config);
+
+    if (modules.length) {
+      return modules;
+    }
+
+    var components = getComponents(node, query, config);
+
+    if (components.length) {
+      return components;
+    }
+  }
+}
+
+function getQueryFromObject(node, query, config) {
+  config = Object.assign(this || {}, config || {});
+  var module = query.module,
+      component = query.component,
+      modifier = query.modifier;
+  var matches = [];
+
+  if (module) {
+    if (component) {
+      matches = getComponents(node, component, find_objectSpread({}, config, {
+        namespace: module,
+        modifier: modifier
+      }));
+    } else {
+      matches = getModules(node, module, config);
+    }
+  } else if (component) {
+    matches = getComponents(node, component, find_objectSpread({}, config, {
+      modifier: modifier
+    }));
+  }
+
+  if (modifier) {
+    matches = [].slice.call(matches).filter(function (match) {
+      return hasModifier(match, modifier, config);
+    });
+  }
+
+  return matches;
+}
+// CONCATENATED MODULE: ./src/api/getModifiers.js
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -437,472 +889,48 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
 
-/**
- * @param {(String|'module'|'component')} query 
- */
+function getModifiers(node, config) {
+  config = Object.assign(this || {}, config || {});
 
-function parent_parent(query, namespace) {
-  var _this = this;
+  if (node instanceof NodeList || node instanceof Array) {
+    var _modifiers = [].slice.call(node).reduce(function (matches, node) {
+      return matches.concat(getModifiers(node, config));
+    }, []); // remove duplicates
 
-  if (query === 'module') {
-    return _toConsumableArray(this.DOMNodes).map(function (node) {
-      return node.parentNode.closest('[data-module]');
-    });
+
+    _modifiers = _toConsumableArray(new Set(_modifiers));
+    return _modifiers;
   }
 
-  if (query === 'component') {
-    return _toConsumableArray(this.DOMNodes).map(function (node) {
-      return node.parentNode.closest('[data-component]');
-    });
-  }
-
-  if (query && typeof query === 'string') {
-    var moduleMatch = function moduleMatch() {
-      var nodes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _this.DOMNodes;
-      var parentModule;
-
-      if (nodes instanceof NodeList) {
-        return _toConsumableArray(nodes).map(function (node) {
-          return moduleMatch(node);
-        });
-      }
-
-      parentModule = nodes.parentNode.closest("[data-module=\"".concat(query, "\"]"));
-
-      if (parentModule) {
-        return parentModule;
-      }
-
-      parentModule = nodes.closest(".".concat(query, ", [class*=\"").concat(query + _this.modifierGlue, "\"]"));
-
-      if (parentModule && getModuleNamespace(parentModule, _this.componentGlue, _this.modifierGlue, 'strict') === query) {
-        return parentModule;
-      }
-    };
-
-    var componentMatch = function componentMatch() {
-      var nodes = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _this.DOMNodes;
-      namespace = namespace || getModuleNamespace(nodes, _this.componentGlue, _this.modifierGlue, 'strict');
-      var parentModule, selector;
-
-      if (nodes instanceof NodeList) {
-        return _toConsumableArray(nodes).map(function (node) {
-          return componentMatch(node);
-        });
-      }
-
-      parentModule = nodes.parentNode.closest("[data-component=\"".concat(query, "\"]"));
-
-      if (parentModule) {
-        return parentModule;
-      }
-
-      parentModule = nodes.parentNode.closest(".".concat(namespace + _this.componentGlue + query));
-
-      if (parentModule) {
-        return parentModule;
-      }
-
-      selector = "[class*=\"".concat(namespace + _this.componentGlue, "\"][class*=\"").concat(_this.componentGlue + query, "\"]");
-      parentModule = nodes.parentNode.closest(selector);
-
-      if (parentModule) {
-        return parentModule;
-      }
-    };
-
-    if (this.DOMNodes instanceof HTMLElement) {
-      return moduleMatch() || componentMatch();
-    }
-
-    return moduleMatch()[0] ? moduleMatch() : componentMatch();
-  }
+  var _config = config,
+      namespace = _config.namespace,
+      modifierGlue = _config.modifierGlue;
+  var targetClass = [].slice.call(node.classList).filter(function (className) {
+    return className.indexOf(namespace || getNamespace(node, false, config)) === 0;
+  })[0];
+  var modifiers = targetClass.split(modifierGlue).slice(1);
+  return modifiers;
 }
-// CONCATENATED MODULE: ./src/api/getComponents.js
+// CONCATENATED MODULE: ./src/api/getSubComponents.js
 
-
-
-/**
- * @param {*} componentName 
- */
-
-function getComponents() {
-  var _this = this;
-
-  var componentName = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-  var modifier = arguments.length > 1 ? arguments[1] : undefined;
-  var namespace = arguments.length > 2 ? arguments[2] : undefined;
-  if (componentName && !isValidSelector(componentName)) return [];
-
-  if (this.DOMNodes instanceof NodeList) {
-    return Array.prototype.slice.call(this.DOMNodes).reduce(function (matches, node) {
-      return matches.concat(Array.prototype.slice.call(getComponents.bind(Object.assign(_this, {
-        DOMNodes: node
-      }))(componentName, modifier, namespace)));
-    }, []);
-  }
-
-  if (componentName.indexOf('modifier(') === 0) return;
-  namespace = namespace || this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue, 'strict');
-  var query = namespace + (componentName ? this.componentGlue + componentName : '');
-  var selector = ".".concat(query, ", [class*=\"").concat(query + this.modifierGlue, "\"]");
-
-  if (!componentName) {
-    selector = "[class*=\"".concat(query + this.componentGlue, "\"]");
-  }
-
-  var subComponents = Array.prototype.slice.call(this.DOMNodes.querySelectorAll(selector)).filter(function (component) {
-    var parentModule = parent_parent.bind(Object.assign(_this, {
-      DOMNodes: component
-    }))(namespace);
-    var parentElementIsModule = _this.parentElement ? _this.parentElement.matches(".".concat(namespace, ", [class*=\"").concat(namespace, "-\"]")) : false;
-
-    if (parentElementIsModule && _this.parentElement !== parentModule) {
-      return false;
-    }
-
-    return Array.prototype.slice.call(component.classList).some(function (className) {
-      var isComponent = className.split(_this.componentGlue).length - 1 === 1;
-      var isQueryMatch = className.indexOf(query) === 0;
-
-      if (modifier) {
-        return isQueryMatch && isComponent && className.indexOf(modifier) > -1;
-      } else {
-        return isQueryMatch && isComponent;
-      }
-    });
-  }); // console.log(subComponents)
-
-  return subComponents;
+function getSubComponents(node, subComponentName, config) {
+  config = Object.assign(this || {}, config || {});
+  config.subComponent = true;
+  return getComponents(node, subComponentName, config);
 }
-// CONCATENATED MODULE: ./src/api/isComponent.js
+// CONCATENATED MODULE: ./src/api/getSubComponent.js
 
-/**
- * @param {*} componentName 
- */
+function getSubComponent(node, componentName, config) {
+  config = Object.assign(this || {}, config || {});
 
-function isComponent(componentName) {
-  var _this = this;
-
-  if (this.DOMNodes instanceof NodeList) {
-    return Array.prototype.slice.call(this.DOMNodes).every(function (DOMNodes) {
-      return isComponent.bind(Object.assign(_this, {
-        DOMNodes: DOMNodes
-      }))(componentName);
-    });
-  }
-
-  return Array.prototype.slice.call(this.DOMNodes.classList).some(function (className) {
-    var isAComponent = className.split(_this.componentGlue).length - 1 === 1;
-    var query = (_this.namespace || getModuleNamespace(_this.DOMNodes, _this.componentGlue, _this.modifierGlue, 'strict')) + _this.componentGlue + componentName;
-    var isMatch = query.indexOf(_this.componentGlue + componentName) > -1;
-    return className.indexOf(query) === 0 && isAComponent && isMatch;
-  });
-}
-// CONCATENATED MODULE: ./src/api/component.js
-
-
-
-/**
- * @param {String} componentName 
- * @param {(('find'|'is'|'set'|'unset')|Function)} operator 
- */
-
-function component_component(componentName, operator) {
-  var _this = this;
-
-  var namespace = function namespace(node) {
-    return _this.namespace || getModuleNamespace(node, _this.componentGlue, _this.modifierGlue, 'strict');
-  };
-
-  if (!componentName && !operator) {
-    return getComponents.bind(this)();
-  }
-
-  if (!operator || operator === 'find') {
-    return getComponents.bind(this)(componentName);
-  }
-
-  if (operator === 'is') {
-    return isComponent.bind(this)(componentName);
-  }
-
-  if (operator === 'set') {
-    if (this.DOMNodes instanceof NodeList) {
-      this.DOMNodes.forEach(function (node) {
-        return node.classList.add(namespace(node) + _this.componentGlue + componentName);
-      });
-    } else {
-      this.DOMNodes.classList.add(namespace(this.DOMNodes) + this.componentGlue + componentName);
-    }
-  }
-
-  if (operator === 'unset') {
-    if (this.DOMNodes instanceof NodeList) {
-      this.DOMNodes.forEach(function (node) {
-        return node.classList.remove(namespace(node) + _this.componentGlue + componentName);
-      });
-    } else {
-      this.DOMNodes.classList.remove(namespace(this.DOMNodes) + this.componentGlue + componentName);
-    }
-  }
-
-  if (typeof operator === 'function') {
-    getComponents.bind(this)(componentName).forEach(function (node) {
-      return operator(node);
-    });
-  }
-}
-// CONCATENATED MODULE: ./src/utilities/getModules.js
-/**
- * @param {*} target 
- * @param {*} moduleName 
- */
-function getModules(target, moduleName) {
-  if (target.DOMNodes instanceof NodeList) {
-    return Array.prototype.slice.call(this.DOMNodes).reduce(function (matches, node) {
-      return matches.concat(Array.prototype.slice.call(node.querySelectorAll(".".concat(moduleName, ", [class*=\"").concat(moduleName + target.modifierGlue, "\"]"))));
-    }, []);
-  }
-
-  return target.DOMNodes.querySelectorAll(".".concat(moduleName, ", [class*=\"").concat(moduleName + target.modifierGlue, "\"]"));
-}
-// CONCATENATED MODULE: ./src/api/find.js
-function find_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { find_typeof = function _typeof(obj) { return typeof obj; }; } else { find_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return find_typeof(obj); }
-
-
-
-
-/**
- * @param {*} query 
- */
-
-function find(query) {
-  var _this = this;
-
-  if (find_typeof(query) === 'object') {
-    if (this.DOMNodes instanceof NodeList) {
-      return Array.prototype.slice.call(this.DOMNodes).reduce(function (matches, node) {
-        return matches.concat(getQueryFromObject.bind(_this)(query, node));
-      }, []);
-    }
-
-    return getQueryFromObject.bind(this)(query, this.DOMNodes);
-  }
-
-  if (typeof query === 'string') {
-    var components = getComponents.bind(this)(query);
-
-    if (components.length) {
-      return components;
-    }
-
-    if (getModules(this, query).length) {
-      return getModules(this, query);
-    }
-  }
-}
-/**
- * @param {Object} query 
- * @param {HTMLElement} node 
- */
-
-function getQueryFromObject(query, node) {
-  var _this2 = this;
-
-  var matches = [];
-
-  if (query.module) {
-    if (query.component) {
-      return matches.concat(Array.prototype.slice.call(getComponents.bind(this)(query.component, query.modifier, query.module)));
-    }
-
-    return matches.concat(Array.prototype.slice.call(node.querySelectorAll(".".concat(query.module, ", [class*=\"").concat(query.module + query.modifierGlue, "\"]"))));
-  }
-
-  if (query.component) {
-    var components = getComponents.bind(this)(query.component);
-
-    if (query.modifier) {
-      return matches.concat(Array.prototype.slice.call(components.filter(function (component) {
-        return Array.prototype.slice.call(component.classList).some(function (className) {
-          var isNamespace = className.indexOf(_this2.namespace || getModuleNamespace(component, _this2.componentGlue, _this2.modifierGlue)) === 0;
-          var hasModifier = className.indexOf(query.modifier) > -1;
-          return isNamespace && hasModifier;
-        });
-      })));
-    }
-
-    return matches.concat(Array.prototype.slice.call(components));
-  }
-
-  if (query.modifier) {
-    return;
-  }
-}
-// CONCATENATED MODULE: ./src/api/getComponent.js
-
-/**
- * @param {*} componentName 
- */
-
-function getComponent(componentName) {
-  var _this = this;
-
-  if (this.DOMNodes instanceof NodeList) {
-    return Array.prototype.slice.call(this.DOMNodes).map(function (DOMNodes) {
-      return getComponent.bind(Object.assign(_this, {
-        DOMNodes: DOMNodes
-      }))(componentName);
+  if (node instanceof NodeList || node instanceof Array) {
+    return [].slice.call(node).map(function (node) {
+      return getSubComponent(node, componentName, config);
     });
   }
 
   ;
-  return getComponents.bind(this)(componentName)[0];
-}
-// CONCATENATED MODULE: ./src/api/getModifiers.js
-
-/**
- * @param {*} componentName 
- */
-
-function getModifiers() {
-  var _this = this;
-
-  if (this.DOMNodes instanceof NodeList) {
-    return Array.prototype.slice.call(this.DOMNodes).reduce(function (matches, DOMNodes) {
-      return matches.concat(getModifiers.bind(Object.assign(_this, {
-        DOMNodes: DOMNodes
-      }))());
-    }, []);
-  }
-
-  return Array.prototype.slice.call(this.DOMNodes.classList).filter(function (className) {
-    return className.indexOf(_this.namespace || getModuleNamespace(_this.DOMNodes, _this.componentGlue, _this.modifierGlue)) === 0;
-  }).map(function (target) {
-    return target.split(_this.modifierGlue).slice(1);
-  })[0];
-}
-// CONCATENATED MODULE: ./src/api/getSubComponents.js
-
-
-/**
- * @param {*} subComponentName 
- */
-
-function getSubComponents(subComponentName) {
-  var _this = this;
-
-  var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-  var modifier = arguments.length > 2 ? arguments[2] : undefined;
-  if (subComponentName && !isValidSelector(subComponentName)) return [];
-
-  if (this.DOMNodes instanceof NodeList) {
-    return Array.prototype.slice.call(this.DOMNodes).reduce(function (matches, DOMNodes) {
-      return matches.concat(Array.prototype.slice.call(getSubComponents.bind(Object.assign(_this, {
-        DOMNodes: DOMNodes
-      }))(subComponentName, context, modifier)));
-    }, []);
-  }
-
-  var namespace = this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue) || '';
-  var depth = namespace.split(this.componentGlue).length - 1;
-
-  if (context.length) {
-    namespace = [namespace].concat(context, [subComponentName]).join(this.componentGlue);
-  } else if (subComponentName) {
-    namespace = namespace + this.componentGlue + subComponentName;
-  }
-
-  var selector = ".".concat(namespace, ", [class*=\"").concat(namespace + this.modifierGlue, "\"]");
-
-  if (!subComponentName) {
-    selector = "[class*=\"".concat(namespace + this.componentGlue, "\"]");
-  }
-
-  return Array.prototype.slice.call(this.DOMNodes.querySelectorAll(selector)).filter(function (subComponent) {
-    return Array.prototype.slice.call(subComponent.classList).some(function (className) {
-      if ((className.match(new RegExp(_this.componentGlue, 'g')) || []).length < 2) {
-        return false;
-      }
-
-      var namespaceMatch;
-
-      if (modifier) {
-        namespaceMatch = className.indexOf(namespace) === 0 && className.indexOf(modifier) > -1;
-      } else {
-        namespaceMatch = className.indexOf(namespace) === 0;
-      }
-
-      var depthMatch = className.split(_this.componentGlue).length - 1 === (context.length ? depth : depth + 1);
-      return depth ? namespaceMatch && depthMatch : namespaceMatch;
-    });
-  });
-}
-// CONCATENATED MODULE: ./src/api/getSubComponent.js
-
-/**
- * @param {*} subComponentName 
- */
-
-function getSubComponent_getComponent(subComponentName) {
-  var _this = this;
-
-  var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-
-  if (this.DOMNodes instanceof NodeList) {
-    return Array.prototype.slice.call(this.DOMNodes).map(function () {
-      return getSubComponents.bind(_this)(subComponentName, context)[0];
-    });
-  }
-
-  return getSubComponents.bind(this)(subComponentName, context)[0];
-}
-// CONCATENATED MODULE: ./src/api/hasModifier.js
-
-/**
- * @param {*} modifier 
- */
-
-function hasModifier_hasModifier(modifier) {
-  var _this = this;
-
-  if (modifier) {
-    if (modifier.constructor === Array) {
-      return modifier.every(function (_modifier) {
-        return hasModifier_hasModifier.bind(_this)(_modifier);
-      });
-    }
-
-    if (this.DOMNodes instanceof NodeList) {
-      return Array.prototype.slice.call(this.DOMNodes).every(function (DOMNodes) {
-        return hasModifier_hasModifier.bind(Object.assign(_this, {
-          DOMNodes: DOMNodes
-        }))(modifier);
-      });
-    }
-
-    var node = this.DOMNodes;
-    return Array.prototype.slice.call(node.classList).some(function (className) {
-      var namespace = _this.namespace || node.namespace || getModuleNamespace(node, _this.modifierGlue, _this.componentGlue);
-      var matchIndex = className.indexOf(_this.modifierGlue + modifier);
-      var namespaceMatch = className.indexOf(namespace) === 0;
-      var isModifierTest1 = className.indexOf(_this.modifierGlue + modifier + _this.modifierGlue) > -1;
-      var isModifierTest2 = matchIndex > -1 && matchIndex === className.length - modifier.length - _this.modifierGlue.length;
-      return namespaceMatch && (isModifierTest1 || isModifierTest2);
-    });
-  }
-}
-// CONCATENATED MODULE: ./src/utilities/isModule.js
-/**
- * @param {*} target 
- * @param {*} moduleName 
- */
-function isModule(target, moduleName) {
-  var DOMNodes = !(target.DOMNodes instanceof NodeList) ? [target.DOMNodes] : target.DOMNodes;
-  return Array.prototype.slice.call(DOMNodes).every(function (node) {
-    return node.matches(".".concat(moduleName, ", [class*=\"").concat(moduleName + target.modifierGlue, "\"]"));
-  });
+  return getSubComponents(node, componentName, config)[0];
 }
 // CONCATENATED MODULE: ./src/api/is.js
 function is_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { is_typeof = function _typeof(obj) { return typeof obj; }; } else { is_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return is_typeof(obj); }
@@ -911,56 +939,58 @@ function is_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iter
 
 
 
-/**
- * @param {*} query 
- */
-
-function is(query) {
-  var _this = this;
-
-  var DOMNodes = !(this.DOMNodes instanceof NodeList) ? [this.DOMNodes] : this.DOMNodes;
+function is(node, query, config) {
+  config = Object.assign(this || {}, config || {});
+  var namespace = config.namespace || getNamespace(node, false, config);
 
   if (is_typeof(query) === 'object') {
-    if (query.module) {
-      if (query.component) {
-        var isModuleNamespace = Array.prototype.slice.call(DOMNodes).every(function (node) {
-          return (_this.namespace || getModuleNamespace(node, _this.componentGlue, _this.modifierGlue, true)) === query.module;
-        });
+    var module = query.module,
+        component = query.component,
+        modifier = query.modifier;
 
-        if (query.modifier) {
-          return isModuleNamespace && isComponent.bind(this)(query.component) && hasModifier_hasModifier.bind(this)(query.modifier);
+    if (module) {
+      if (component) {
+        var namespaceMatch = namespace === module;
+        var componentMatch = isComponent(node, component, config);
+
+        if (modifier) {
+          return namespaceMatch && componentMatch && hasModifier(node, modifier, config);
         }
 
-        return isModuleNamespace && isComponent.bind(this)(query.component);
+        return namespaceMatch && componentMatch;
       }
 
-      return isModule(this, query.module);
-    }
-
-    if (query.component) {
-      if (query.modifier) {
-        return isComponent.bind(this)(query.component) && hasModifier_hasModifier.bind(this)(query.modifier);
+      if (modifier) {
+        return isModule(node, module, config) && hasModifier(node, modifier, config);
       }
 
-      return isComponent.bind(this)(query.component);
+      return isModule(node, module, config);
     }
 
-    if (query.modifier) {
-      return hasModifier_hasModifier.bind(this)(query.modifier);
+    if (component) {
+      if (modifier) {
+        return isComponent(node, component, config) && hasModifier(node, modifier, config);
+      }
+
+      return isComponent(node, component, config);
+    }
+
+    if (modifier) {
+      return hasModifier(node, modifier, config);
     }
   }
 
   if (typeof query === 'string') {
-    if (isModule(this, query)) {
-      return isModule(this, query);
+    if (isModule(node, query, config)) {
+      return isModule(node, query, config);
     }
 
-    if (isComponent.bind(this)(query)) {
-      return isComponent.bind(this)(query);
+    if (isComponent(node, query, config)) {
+      return isComponent(node, query, config);
     }
 
-    if (hasModifier_hasModifier.bind(this)(query)) {
-      return hasModifier_hasModifier.bind(this)(query);
+    if (hasModifier(node, query, config)) {
+      return hasModifier(node, query, config);
     }
   }
 
@@ -968,36 +998,31 @@ function is(query) {
 }
 // CONCATENATED MODULE: ./src/api/removeModifier.js
 
-/**
- * @param {(String|Array)} modifier 
- */
-
-function removeModifier(modifier) {
-  var _this = this;
+function removeModifier(node, modifier, config) {
+  config = Object.assign(this || {}, config || {});
 
   if (modifier.constructor === Array) {
     return modifier.forEach(function (_modifier) {
-      removeModifier.bind(Object.assign(_this))(_modifier);
+      return removeModifier(node, _modifier, config);
     });
   }
 
-  if (this.DOMNodes instanceof NodeList) {
-    return this.DOMNodes.forEach(function (node) {
-      return removeModifier.bind(Object.assign(_this, {
-        DOMNodes: node
-      }))(modifier);
+  if (node instanceof NodeList || node instanceof Array) {
+    return node.forEach(function (node) {
+      return removeModifier(node, modifier, config);
     });
   }
 
-  var node = this.DOMNodes;
-  Array.prototype.slice.call(node.classList).forEach(function (className) {
-    var moduleMatch = className.indexOf((_this.namespace || getModuleNamespace(node, _this.componentGlue, _this.modifierGlue)) + _this.modifierGlue) === 0;
-    var modifierMatch = className.indexOf(_this.modifierGlue + modifier) > -1;
-    var newClass = className.replace(new RegExp(_this.modifierGlue + modifier, 'g'), '');
+  var _config = config,
+      modifierGlue = _config.modifierGlue;
+  var namespace = config.namespace || getNamespace(node, true, config);
+  [].slice.call(node.classList).forEach(function (className) {
+    var moduleMatch = className.indexOf(namespace + modifierGlue) === 0;
+    var modifierMatch = className.indexOf(modifierGlue + modifier) > -1;
+    var newClass = className.replace(new RegExp(modifierGlue + modifier, 'g'), '');
 
     if (moduleMatch && modifierMatch) {
-      node.classList.remove(className);
-      node.classList.add(newClass);
+      node.classList.replace(className, newClass);
     }
   });
 }
@@ -1005,137 +1030,44 @@ function removeModifier(modifier) {
 
 
 
-/**
- * @param {String} modifier 
- * @param {(('is'|'set'|'unset')|Function)} operator 
- */
 
-function modifier_modifier(modifier, operator) {
+function modifier_modifier(node, modifier, operator, config) {
+  config = Object.assign(this || {}, config || {});
+
+  if (!operator && !modifier) {
+    return getModifiers(node, config);
+  }
+
   if (!operator || operator === 'is') {
-    return hasModifier_hasModifier.bind(this)(modifier);
+    return hasModifier(node, modifier, config);
   }
 
   if (operator === 'set' || operator === 'add') {
-    return addModifier.bind(this)(modifier);
+    return addModifier(node, modifier, config);
   }
 
   if (operator === 'unset' || operator === 'remove') {
-    return removeModifier.bind(this)(modifier);
-  }
-}
-// CONCATENATED MODULE: ./src/api/parentComponent.js
-/**
- * @param {*} componentName 
- */
-function parentComponent(componentName) {
-  if (this.DOMNodes instanceof NodeList) {
-    return Array.prototype.slice.call(this.DOMNodes).map(function (node) {
-      return node.parentNode.closest("[data-component=\"".concat(componentName, "\"]"));
-    });
-  }
+    return removeModifier(node, modifier, config);
+  } // @TODO
+  // if (operator === 'toggle') {
+  // }
 
-  return this.DOMNodes.parentNode.closest("[data-component=\"".concat(componentName, "\"]"));
-}
-// CONCATENATED MODULE: ./src/api/setComponent.js
-
-/**
- * @param {*} componentName 
- */
-
-function setComponent(componentName, namespace, replace) {
-  var _this = this;
-
-  if (this.DOMNodes instanceof NodeList) {
-    return this.DOMNodes.forEach(function (DOMNodes) {
-      return setComponent.bind(Object.assign(_this, {
-        DOMNodes: DOMNodes
-      }))(componentName);
-    });
-  }
-
-  if (!namespace && !replace) {
-    replace = this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue);
-  }
-
-  namespace = namespace || this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue);
-  this.DOMNodes.classList.add(namespace + this.componentGlue + componentName);
-  this.DOMNodes.setAttribute('data-component', componentName);
-  replace && this.DOMNodes.classList.remove(replace);
 }
 // CONCATENATED MODULE: ./src/api/subComponent.js
 
 
-/**
- * @param {String} componentName 
- * @param {(('find'|'is')|Function)} operator 
- */
 
-function subComponent(subComponentName, operator) {
-  var _this = this;
-
-  if (!subComponentName && !operator) {
-    return getSubComponents.bind(this)();
-  }
-
-  if (!operator || operator === 'find') {
-    return getSubComponents.bind(this)(subComponentName);
-  }
-
-  if (operator === 'is') {
-    if (this.DOMNodes instanceof NodeList) {
-      return Array.prototype.slice.call(this.DOMNodes).every(function (node) {
-        return subComponent_is.bind(_this)(node, subComponentName);
-      });
-    }
-
-    return subComponent_is.bind(this)(this.DOMNodes, subComponentName);
-  }
-
-  if (typeof operator === 'function') {
-    getSubComponents.bind(this)(subComponentName).forEach(function (node) {
-      return operator(node);
-    });
-  }
-}
-/**
- * @param {HTMLElement} node 
- * @param {String} subComponentName 
- */
-
-function subComponent_is(node, subComponentName) {
-  var query = this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue);
-  var isMatch = query.indexOf(subComponentName) === query.length - subComponentName.length;
-  return Array.prototype.slice.call(node.classList).some(function (className) {
-    return className.indexOf(query) > -1 && isMatch;
-  });
-}
-// CONCATENATED MODULE: ./src/api/unsetComponent.js
-
-/**
- * @param {*} componentName 
- */
-
-function unsetComponent(componentName) {
-  var _this = this;
-
-  if (this.DOMNodes instanceof NodeList) {
-    return this.DOMNodes.forEach(function (DOMNodes) {
-      return unsetComponent.bind(Object.assign(_this, {
-        DOMNodes: DOMNodes
-      }))(componentName);
-    });
-  }
-
-  return Array.prototype.slice.call(this.DOMNodes.classList).forEach(function (className) {
-    var isAComponent = className.split(_this.componentGlue).length - 1 === 1;
-    var isMatch = className.indexOf((_this.namespace || getModuleNamespace(_this.DOMNodes, _this.componentGlue, _this.modifierGlue)) + _this.componentGlue + componentName) === 0;
-
-    if (isAComponent && isMatch) {
-      _this.DOMNodes.classList.remove(className);
-    }
-  });
+function subComponent_subComponent(node, subComponentName, operator, config) {
+  config = Object.assign(this || {}, config || {});
+  config.subComponent = true;
+  config.getSubComponent = getSubComponent;
+  config.getSubComponents = getSubComponents;
+  return component_component(node, subComponentName, operator, config);
 }
 // CONCATENATED MODULE: ./src/api/index.js
+
+
+
 
 
 
@@ -1169,7 +1101,7 @@ function init(custom) {
     elementProto: true,
     nodeListProto: true,
     preset: 'Synergy',
-    attachToWindow: true,
+    Synergy: true,
     alterMethodName: ['sQuery']
   }, custom);
   options.alterMethodName = options.alterMethodName || [];
@@ -1178,18 +1110,18 @@ function init(custom) {
     Synergy: ['_', '-', 'module', 'component', 'modifier']
   };
 
-  var _Array$prototype$slic = Array.prototype.slice.call(PRESETS[options.preset]),
-      _Array$prototype$slic2 = _slicedToArray(_Array$prototype$slic, 5),
-      componentGlue = _Array$prototype$slic2[0],
-      modifierGlue = _Array$prototype$slic2[1],
-      moduleNamespace = _Array$prototype$slic2[2],
-      componentNamespace = _Array$prototype$slic2[3],
-      modifierNamespace = _Array$prototype$slic2[4];
+  var _slice$call = [].slice.call(PRESETS[options.preset]),
+      _slice$call2 = _slicedToArray(_slice$call, 5),
+      componentGlue = _slice$call2[0],
+      modifierGlue = _slice$call2[1],
+      moduleNamespace = _slice$call2[2],
+      componentNamespace = _slice$call2[3],
+      modifierNamespace = _slice$call2[4];
 
   componentGlue = options.componentGlue || componentGlue;
   modifierGlue = options.modifierGlue || modifierGlue;
 
-  if (options.attachToWindow) {
+  if (options.Synergy) {
     window.Synergy = window.Synergy || {};
     Object.assign(window.Synergy, {
       componentGlue: componentGlue,
@@ -1254,12 +1186,14 @@ function init(custom) {
 
       if (typeof document.body[methodName] === 'undefined') {
         Element.prototype[methodName] = function () {
+          for (var _len2 = arguments.length, params = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+            params[_key2] = arguments[_key2];
+          }
+
           return method.bind({
-            DOMNodes: this,
-            parentElement: this,
             componentGlue: componentGlue,
             modifierGlue: modifierGlue
-          }).apply(void 0, arguments);
+          }).apply(void 0, [this].concat(params));
         };
       }
     }
@@ -1268,12 +1202,14 @@ function init(custom) {
       methodName = options.alterMethodName.includes('nodeListProto') ? newMethodName : methodName;
 
       NodeList.prototype[methodName] = function () {
+        for (var _len3 = arguments.length, params = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+          params[_key3] = arguments[_key3];
+        }
+
         return method.bind({
-          DOMNodes: this,
-          parentElement: this,
           componentGlue: componentGlue,
           modifierGlue: modifierGlue
-        }).apply(void 0, arguments);
+        }).apply(void 0, [this].concat(params));
       };
     }
   };
@@ -1284,6 +1220,7 @@ function init(custom) {
 }
 // CONCATENATED MODULE: ./src/squery.js
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return squery_sQuery; });
+/* concated harmony reexport init */__webpack_require__.d(__webpack_exports__, "init", function() { return init; });
 /* concated harmony reexport add */__webpack_require__.d(__webpack_exports__, "add", function() { return addModifier; });
 /* concated harmony reexport addModifier */__webpack_require__.d(__webpack_exports__, "addModifier", function() { return addModifier; });
 /* concated harmony reexport component */__webpack_require__.d(__webpack_exports__, "component", function() { return component_component; });
@@ -1292,19 +1229,19 @@ function init(custom) {
 /* concated harmony reexport getComponent */__webpack_require__.d(__webpack_exports__, "getComponent", function() { return getComponent; });
 /* concated harmony reexport getComponents */__webpack_require__.d(__webpack_exports__, "getComponents", function() { return getComponents; });
 /* concated harmony reexport getModifiers */__webpack_require__.d(__webpack_exports__, "getModifiers", function() { return getModifiers; });
-/* concated harmony reexport getSubComponent */__webpack_require__.d(__webpack_exports__, "getSubComponent", function() { return getSubComponent_getComponent; });
+/* concated harmony reexport getSubComponent */__webpack_require__.d(__webpack_exports__, "getSubComponent", function() { return getSubComponent; });
 /* concated harmony reexport getSubComponents */__webpack_require__.d(__webpack_exports__, "getSubComponents", function() { return getSubComponents; });
-/* concated harmony reexport has */__webpack_require__.d(__webpack_exports__, "has", function() { return hasModifier_hasModifier; });
-/* concated harmony reexport hasModifier */__webpack_require__.d(__webpack_exports__, "hasModifier", function() { return hasModifier_hasModifier; });
+/* concated harmony reexport has */__webpack_require__.d(__webpack_exports__, "has", function() { return hasModifier; });
+/* concated harmony reexport hasModifier */__webpack_require__.d(__webpack_exports__, "hasModifier", function() { return hasModifier; });
 /* concated harmony reexport is */__webpack_require__.d(__webpack_exports__, "is", function() { return is; });
 /* concated harmony reexport isComponent */__webpack_require__.d(__webpack_exports__, "isComponent", function() { return isComponent; });
 /* concated harmony reexport modifier */__webpack_require__.d(__webpack_exports__, "modifier", function() { return modifier_modifier; });
+/* concated harmony reexport remove */__webpack_require__.d(__webpack_exports__, "remove", function() { return removeModifier; });
 /* concated harmony reexport removeModifier */__webpack_require__.d(__webpack_exports__, "removeModifier", function() { return removeModifier; });
 /* concated harmony reexport parent */__webpack_require__.d(__webpack_exports__, "parent", function() { return parent_parent; });
-/* concated harmony reexport parentComponent */__webpack_require__.d(__webpack_exports__, "parentComponent", function() { return parentComponent; });
 /* concated harmony reexport setComponent */__webpack_require__.d(__webpack_exports__, "setComponent", function() { return setComponent; });
-/* concated harmony reexport subComponent */__webpack_require__.d(__webpack_exports__, "subComponent", function() { return subComponent; });
-/* concated harmony reexport subComponents */__webpack_require__.d(__webpack_exports__, "subComponents", function() { return subComponent; });
+/* concated harmony reexport subComponent */__webpack_require__.d(__webpack_exports__, "subComponent", function() { return subComponent_subComponent; });
+/* concated harmony reexport subComponents */__webpack_require__.d(__webpack_exports__, "subComponents", function() { return subComponent_subComponent; });
 /* concated harmony reexport unsetComponent */__webpack_require__.d(__webpack_exports__, "unsetComponent", function() { return unsetComponent; });
 function squery_slicedToArray(arr, i) { return squery_arrayWithHoles(arr) || squery_iterableToArrayLimit(arr, i) || squery_nonIterableRest(); }
 
@@ -1318,18 +1255,12 @@ function squery_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
-
  // spoof env process to assist bundle size
 
 if (typeof process === 'undefined') window.process = {
   env: {}
 };
 /**
- * @param {*} SynergyQuery
- * @param {Function} [callback]
- * @param {Object} [defaults]
- * @param {Object} [custom]
- * @param {Object} [parser]
  */
 
 function squery_sQuery(SynergyQuery, callback, defaults, custom, parser) {
@@ -1338,7 +1269,10 @@ function squery_sQuery(SynergyQuery, callback, defaults, custom, parser) {
   var config = getConfig(defaults, custom, parser);
   var modifierGlue = config.modifierGlue || Synergy.modifierGlue || '-';
   var componentGlue = config.componentGlue || Synergy.componentGlue || '_';
-  var namespace = getModuleNamespace(SynergyQuery, componentGlue, modifierGlue);
+  var namespace = getNamespace(SynergyQuery, false, {
+    componentGlue: componentGlue,
+    modifierGlue: modifierGlue
+  });
   var DOMNodes = getDomNodes(SynergyQuery);
 
   var _arr = Object.entries(api_namespaceObject);
@@ -1348,28 +1282,31 @@ function squery_sQuery(SynergyQuery, callback, defaults, custom, parser) {
         key = _arr$_i[0],
         method = _arr$_i[1];
 
-    methods[key] = method.bind({
-      namespace: namespace,
-      DOMNodes: DOMNodes,
-      componentGlue: componentGlue,
-      modifierGlue: modifierGlue
-    });
+    if (DOMNodes) {
+      methods[key] = method.bind({
+        namespace: namespace,
+        componentGlue: componentGlue,
+        modifierGlue: modifierGlue
+      }, DOMNodes);
+    } else {
+      methods[key] = method.bind({
+        namespace: namespace,
+        componentGlue: componentGlue,
+        modifierGlue: modifierGlue
+      });
+    }
   }
 
   if (typeof callback === 'function') {
-    if (DOMNodes instanceof NodeList) {
-      DOMNodes.forEach(function (node) {
-        return callback(node, config);
-      });
-    } else {
-      callback(node, DOMNodes);
-    }
+    DOMNodes.forEach(function (node) {
+      return callback(node, config);
+    });
   }
 
   return Object.assign(methods, {
     namespace: namespace,
-    DOMNodes: DOMNodes,
-    DOMNode: DOMNodes ? DOMNodes[0] : null
+    nodes: DOMNodes,
+    node: DOMNodes ? DOMNodes[0] : null
   });
 }
 squery_sQuery.init = init;

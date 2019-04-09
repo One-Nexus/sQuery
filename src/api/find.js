@@ -1,70 +1,55 @@
-import getModuleNamespace from '../utilities/getModuleNamespace';
-import getModules from '../utilities/getModules';
-
+import getModules from './getModules';
 import getComponents from './getComponents';
+import hasModifier from './hasModifier';
 
-/**
- * @param {*} query 
- */
-export default function find(query) {
+export default function find(node, query, config) {
+    config = Object.assign(this || {}, config || {});
+
     if (typeof query === 'object') {
-        if (this.DOMNodes instanceof NodeList) {
-            return Array.prototype.slice.call(this.DOMNodes).reduce((matches, node) => {
-                return matches.concat(getQueryFromObject.bind(this)(query, node));
+        if (node instanceof NodeList || node instanceof Array) {
+            return [].slice.call(node).reduce((matches, node) => {
+                return matches.concat(getQueryFromObject(node, query, config));
             }, []);
         }
 
-        return getQueryFromObject.bind(this)(query, this.DOMNodes);
+        return getQueryFromObject(node, query, config);
     }
 
     if (typeof query === 'string') {
-        const components = getComponents.bind(this)(query);
+        const modules = getModules(node, query, config);
+
+        if (modules.length) {
+            return modules;
+        }
+
+        const components = getComponents(node, query, config);
 
         if (components.length) {
             return components;
         }
-
-        if (getModules(this, query).length) {
-            return getModules(this, query);
-        }
     }
 }
 
-/**
- * @param {Object} query 
- * @param {HTMLElement} node 
- */
-function getQueryFromObject(query, node) {
-    const matches = [];
+function getQueryFromObject(node, query, config) {
+    config = Object.assign(this || {}, config || {});
 
-    if (query.module) {
-        if (query.component) {
-            return matches.concat(Array.prototype.slice.call(getComponents.bind(this)(query.component, query.modifier, query.module)));
+    const { module, component, modifier } = query;
+
+    let matches = [];
+
+    if (module) {
+        if (component) {
+            matches = getComponents(node, component, { ...config, namespace: module, modifier });
+        } else {
+            matches = getModules(node, module, config);
         }
-
-        return matches.concat(Array.prototype.slice.call(node.querySelectorAll(`.${query.module}, [class*="${query.module + query.modifierGlue}"]`)));
+    } else if (component) {
+        matches = getComponents(node, component, { ...config, modifier });
     }
 
-    if (query.component) {
-        const components = getComponents.bind(this)(query.component);
-
-        if (query.modifier) {
-            return matches.concat(
-                Array.prototype.slice.call(components.filter(component => {
-                    return Array.prototype.slice.call(component.classList).some(className => {
-                        const isNamespace = className.indexOf(this.namespace || getModuleNamespace(component, this.componentGlue, this.modifierGlue)) === 0;
-                        const hasModifier = className.indexOf(query.modifier) > -1;
-
-                        return isNamespace && hasModifier;
-                    });
-                }))
-            );
-        }
-
-        return matches.concat(Array.prototype.slice.call(components));
+    if (modifier) {
+        matches = [].slice.call(matches).filter(match => hasModifier(match, modifier, config));
     }
 
-    if (query.modifier) {
-        return;
-    }
+    return matches;
 }

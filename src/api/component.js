@@ -1,48 +1,41 @@
-import getModuleNamespace from '../utilities/getModuleNamespace';
-
 import getComponents from './getComponents';
+import getComponent from './getComponent';
+import setComponent from './setComponent';
+import unsetComponent from './unsetComponent';
 import isComponent from './isComponent';
 
-/**
- * @param {String} componentName 
- * @param {(('find'|'is'|'set'|'unset')|Function)} operator 
- */
-export default function component(componentName, operator) {
-    let namespace = node => this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue, 'strict');
+export default function component(node, componentName, operator, config) {
+    config = Object.assign(this || {}, config || {});
 
     if (!componentName && !operator) {
-        return getComponents.bind(this)();
+        return (config.getSubComponents || getComponents)(node, false, config);
     }
 
     if (!operator || operator === 'find') {
-        return getComponents.bind(this)(componentName);
+        return (config.getSubComponents || getComponents)(node, componentName, config);
+    }
+
+    if (operator === 'first') {
+        return (config.getSubComponent || getComponent)(node, componentName, config);
     }
 
     if (operator === 'is') {
-        return isComponent.bind(this)(componentName);
+        return isComponent(node, componentName, config);
     }
 
     if (operator === 'set') {
-        if (this.DOMNodes instanceof NodeList) {
-            this.DOMNodes.forEach(node => {
-                return node.classList.add(namespace(node) + this.componentGlue + componentName);
-            });
-        } else {
-            this.DOMNodes.classList.add(namespace(this.DOMNodes) + this.componentGlue + componentName);
-        }
+        //@TODO setSubComponent
+
+        return setComponent(node, componentName, null, null, config);
     }
 
     if (operator === 'unset') {
-        if (this.DOMNodes instanceof NodeList) {
-            this.DOMNodes.forEach(node => {
-                return node.classList.remove(namespace(node) + this.componentGlue + componentName);
-            });
-        } else {
-            this.DOMNodes.classList.remove(namespace(this.DOMNodes) + this.componentGlue + componentName);
-        }
+        //@TODO unsetSubComponent
+    
+        return unsetComponent(node, componentName, config);
     }
 
     if (typeof operator === 'function') {
-        getComponents.bind(this)(componentName).forEach(node => operator(node));
+        return getComponents(node, componentName, config).forEach(node => operator(node));
     }
 }

@@ -1,8 +1,8 @@
-import getConfig from '../refactor/utilities/getConfig';
-import getDomNodes from '../refactor/utilities/getDOMNodes';
-import init from '../refactor/utilities/init';
+import getConfig from './utilities/getConfig';
+import getDomNodes from './utilities/getDOMNodes';
+import init from './utilities/init';
 
-import * as API from '../refactor/api';
+import * as API from './api';
 
 import {
     add,
@@ -24,12 +24,11 @@ import {
     remove,
     removeModifier,
     parent,
-    parentComponent,
     setComponent,
     subComponent,
     subComponents,
     unsetComponent,
-} from '../refactor/api';
+} from './api';
 
 // spoof env process to assist bundle size
 if (typeof process === 'undefined') window.process = { env: {} };
@@ -98,7 +97,6 @@ export {
     remove,
     removeModifier,
     parent,
-    parentComponent,
     setComponent,
     subComponent,
     subComponents,

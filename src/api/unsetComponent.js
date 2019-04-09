@@ -1,21 +1,22 @@
-import getModuleNamespace from '../utilities/getModuleNamespace';
+import getNamespace from './getNamespace';
 
-/**
- * @param {*} componentName 
- */
-export default function unsetComponent(componentName) {
-    if (this.DOMNodes instanceof NodeList) {
-        return this.DOMNodes.forEach(DOMNodes => unsetComponent.bind(Object.assign(this, { DOMNodes }))(componentName));
+export default function unsetComponent(node, componentName, config) {
+    config = Object.assign(this || {}, config || {});
+
+    if (node instanceof NodeList || node instanceof Array) {
+        return node.forEach(node => unsetComponent(node, componentName, config));
     }
 
-    return Array.prototype.slice.call(this.DOMNodes.classList).forEach(className => {
-        const isAComponent = (className.split(this.componentGlue).length - 1) === 1;
-        const isMatch = className.indexOf(
-            (this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue)) + this.componentGlue + componentName
-        ) === 0;
+    const { componentGlue } = config;
+
+    const namespace = config.namespace || getNamespace(node, false, config);
+
+    return [].slice.call(node.classList).forEach(className => {
+        const isAComponent = (className.split(componentGlue).length - 1) === 1;
+        const isMatch = className.indexOf(namespace + componentGlue + componentName) === 0;
 
         if (isAComponent && isMatch) {
-            this.DOMNodes.classList.remove(className);
+            node.classList.remove(className);
         }
     });
 }

@@ -1,56 +1,59 @@
-import getModuleNamespace from '../utilities/getModuleNamespace';
-import isModule from '../utilities/isModule';
-
+import getNamespace from './getNamespace';
+import isModule from './isModule';
 import isComponent from './isComponent';
 import hasModifier from './hasModifier';
 
-/**
- * @param {*} query 
- */
-export default function is(query) {
-    const DOMNodes = !(this.DOMNodes instanceof NodeList) ? [this.DOMNodes] : this.DOMNodes;
+export default function is(node, query, config) {
+    config = Object.assign(this || {}, config || {});
+
+    const namespace = config.namespace || getNamespace(node, false, config);
 
     if (typeof query === 'object') {
-        if (query.module) {
-            if (query.component) {
-                const isModuleNamespace = Array.prototype.slice.call(DOMNodes).every(node => {
-                    return (this.namespace || getModuleNamespace(node, this.componentGlue, this.modifierGlue, true)) === query.module;
-                });
+        const { module, component, modifier } = query;
 
-                if (query.modifier) {
-                    return isModuleNamespace && isComponent.bind(this)(query.component) && hasModifier.bind(this)(query.modifier);
+        if (module) {
+            if (component) {
+                const namespaceMatch = (namespace === module);
+                const componentMatch = isComponent(node, component, config);
+
+                if (modifier) {
+                    return namespaceMatch && componentMatch && hasModifier(node, modifier, config);
                 }
 
-                return isModuleNamespace && isComponent.bind(this)(query.component);
+                return namespaceMatch && componentMatch;
             }
 
-            return isModule(this, query.module);
-        }
-
-        if (query.component) {
-            if (query.modifier) {
-                return isComponent.bind(this)(query.component) && hasModifier.bind(this)(query.modifier);
+            if (modifier) {
+                return isModule(node, module, config) && hasModifier(node, modifier, config);
             }
 
-            return isComponent.bind(this)(query.component);
+            return isModule(node, module, config);
         }
 
-        if (query.modifier) {
-            return hasModifier.bind(this)(query.modifier)
+        if (component) {
+            if (modifier) {
+                return isComponent(node, component, config) && hasModifier(node, modifier, config);
+            }
+
+            return isComponent(node, component, config);
+        }
+
+        if (modifier) {
+            return hasModifier(node, modifier, config)
         }
     }
 
     if (typeof query === 'string') {
-        if (isModule(this, query)) {
-            return isModule(this, query);
+        if (isModule(node, query, config)) {
+            return isModule(node, query, config);
         }
 
-        if (isComponent.bind(this)(query)) {
-            return isComponent.bind(this)(query);
+        if (isComponent(node, query, config)) {
+            return isComponent(node, query, config);
         }
 
-        if (hasModifier.bind(this)(query)) {
-            return hasModifier.bind(this)(query);
+        if (hasModifier(node, query, config)) {
+            return hasModifier(node, query, config);
         }
     }
 

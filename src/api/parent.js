@@ -1,71 +1,37 @@
-import getModuleNamespace from '../utilities/getModuleNamespace';
+import getNamespace from './getNamespace';
 
-/**
- * @param {(String|'module'|'component')} query 
- */
-export default function parent(query, namespace) {
-    if (query === 'module') {
-        return [...this.DOMNodes].map(node => node.parentNode.closest('[data-module]'));
+export default function parent(node, query, config) {
+    config = Object.assign(this || {}, config || {});
+
+    if (node instanceof NodeList || node instanceof Array) {
+        return [].slice.call(node).map(node => parent(node, query, config));
     }
 
-    if (query === 'component') {
-        return [...this.DOMNodes].map(node => node.parentNode.closest('[data-component]'));
+    const { componentGlue, modifierGlue } = config;
+
+    let namespace = config.namespace || getNamespace(node, false, config);
+
+    let $query = query || namespace;
+
+    if ($query !== namespace) {
+        $query = namespace + componentGlue + $query;
     }
 
-    if (query && typeof query === 'string') {
-        const moduleMatch = (nodes = this.DOMNodes) => {
-            let parentModule;
+    const parentComponent = $query && node.closest(`.${$query}, [class*='${$query + modifierGlue}']`);
 
-            if (nodes instanceof NodeList) {
-                return [...nodes].map(node => moduleMatch(node));
-            }
+    if (parentComponent) {
+        return parentComponent;
+    }
 
-            parentModule = nodes.parentNode.closest(`[data-module="${query}"]`);
+    namespace = config.namespace || getNamespace(node, true, config);
 
-            if (parentModule) {
-                return parentModule;
-            }
+    if (namespace && namespace.indexOf(query > -1)) {
+        $query = namespace.substring(0, namespace.indexOf(query) + query.length);
+    }
 
-            parentModule = nodes.closest(`.${query}, [class*="${query + this.modifierGlue}"]`);
+    const parentSubComponent = $query && node.closest(`.${$query}, [class*='${$query + modifierGlue}']`);
 
-            if (parentModule && getModuleNamespace(parentModule, this.componentGlue, this.modifierGlue, 'strict') === query) {
-                return parentModule;
-            }
-        };
-
-        const componentMatch = (nodes = this.DOMNodes) => {
-            namespace = namespace || getModuleNamespace(nodes, this.componentGlue, this.modifierGlue, 'strict');
-
-            let parentModule, selector;
-
-            if (nodes instanceof NodeList) {
-                return [...nodes].map(node => componentMatch(node));
-            }
-  
-            parentModule = nodes.parentNode.closest(`[data-component="${query}"]`);
-
-            if (parentModule) {
-                return parentModule;
-            }
-
-            parentModule = nodes.parentNode.closest(`.${namespace + this.componentGlue + query}`);
-
-            if (parentModule) {
-                return parentModule;
-            }
-
-            selector = `[class*="${namespace + this.componentGlue}"][class*="${this.componentGlue + query}"]`;
-            parentModule = nodes.parentNode.closest(selector);
-
-            if (parentModule) {
-                return parentModule;
-            }
-        };
-
-        if (this.DOMNodes instanceof HTMLElement) {
-            return moduleMatch() || componentMatch();
-        }
-
-        return moduleMatch()[0] ? moduleMatch() : componentMatch();
+    if (parentSubComponent) {
+        return parentSubComponent;
     }
 }

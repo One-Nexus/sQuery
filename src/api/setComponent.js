@@ -1,21 +1,20 @@
-import getModuleNamespace from '../utilities/getModuleNamespace';
+import getNamespace from './getNamespace';
 
-/**
- * @param {*} componentName 
- */
-export default function setComponent(componentName, namespace, replace) {
-    if (this.DOMNodes instanceof NodeList) {
-        return this.DOMNodes.forEach(DOMNodes => setComponent.bind(Object.assign(this, { DOMNodes }))(componentName));
+export default function setComponent(node, componentName, namespace, replace, config) {
+    config = Object.assign(this || {}, config || {});
+
+    if (node instanceof NodeList || node instanceof Array) {
+        return node.forEach(node => setComponent(node, componentName, namespace, replace, config));
     }
 
     if (!namespace && !replace) {
-        replace = this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue);
+        replace = config.namespace || getNamespace(node, false, config);
     }
 
-    namespace = namespace || this.namespace || getModuleNamespace(this.DOMNodes, this.componentGlue, this.modifierGlue);
+    namespace = namespace || config.namespace || getNamespace(node, false, config);
 
-    this.DOMNodes.classList.add(namespace + this.componentGlue + componentName);
-    this.DOMNodes.setAttribute('data-component', componentName);
+    node.classList.add(namespace + config.componentGlue + componentName);
+    node.setAttribute('data-component', componentName);
 
-    replace && this.DOMNodes.classList.remove(replace);
+    replace && node.classList.remove(replace);
 }
