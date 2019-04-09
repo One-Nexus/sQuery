@@ -1,7 +1,7 @@
 import getNamespace from './getNamespace';
 
 export default function removeModifier(node, modifier, config) {
-    config = config || this;
+    config = Object.assign(this || {}, config || {});
 
     if (modifier.constructor === Array) {
         return modifier.forEach(_modifier => removeModifier(node, _modifier, config));

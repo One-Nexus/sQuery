@@ -1,7 +1,7 @@
 import getNamespace from './getNamespace';
 
 export default function getModifiers(node, config) {
-    config = config || this;
+    config = Object.assign(this || {}, config || {});
 
     if (node instanceof NodeList || node instanceof Array) {
         let modifiers = [].slice.call(node).reduce((matches, node) => {

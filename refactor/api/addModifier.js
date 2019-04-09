@@ -2,7 +2,7 @@ import getNamespace from './getNamespace';
 import isSafeElement from '../utilities/isSafeElement';
 
 export default function addModifier(node, modifier, config) {
-    config = config || this;
+    config = Object.assign(this || {}, config || {});
 
     if (node instanceof NodeList || node instanceof Array) {
         return node.forEach(node => addModifier(node, modifier, config));

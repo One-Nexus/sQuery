@@ -1,7 +1,7 @@
 import getNamespace from './getNamespace';
 
 export default function hasModifier(node, modifier, config) {
-    config = config || this;
+    config = Object.assign(this || {}, config || {});
 
     if (!modifier) return;
 
@@ -15,8 +15,9 @@ export default function hasModifier(node, modifier, config) {
 
     const { modifierGlue } = config;
 
+    const namespace = config.namespace || node.namespace || getNamespace(node, false, config);
+
     return [].slice.call(node.classList).some(className => {
-        const namespace = config.namespace || node.namespace || getNamespace(node, false, config);
         const matchIndex = className.indexOf(modifierGlue + modifier);
         const namespaceMatch  = className.indexOf(namespace) === 0;
         const isModifierTest1 = className.indexOf(modifierGlue + modifier + modifierGlue) > -1;

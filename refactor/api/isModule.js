@@ -1,5 +1,5 @@
 export default function isModule(node, moduleName, config) {
-    config = config || this;
+    config = Object.assign(this || {}, config || {});
 
     const DOMNodes = !(node instanceof NodeList || node instanceof Array) ? [node] : node;
 

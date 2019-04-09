@@ -3,7 +3,7 @@ import filterElements from '../utilities/filterElements';
 import isValidSelector from '../utilities/isValidSelector';
 
 export default function getComponents(node, componentName, config) {
-    config = config || this;
+    config = Object.assign(this || {}, config || {});
 
     if (componentName && !isValidSelector(componentName)) return [];
 
@@ -30,6 +30,10 @@ export default function getComponents(node, componentName, config) {
     components = [].slice.call(components).filter(element => {
         const sourceNamespace = getNamespace(node, true, { ...config, namespace });
         const targetNamespace = getNamespace(element, true, { ...config, namespace });
+
+        if (componentName === 'toggle') {
+            console.log(node, config, sourceNamespace, namespace);
+        }
 
         let sourceDepth = (sourceNamespace.match(new RegExp(componentGlue, 'g')) || []).length;
         let targetDepth = (targetNamespace.match(new RegExp(componentGlue, 'g')) || []).length;
@@ -71,10 +75,6 @@ export default function getComponents(node, componentName, config) {
     });
 
     components = filterElements(node, components, subComponent, config);
-
-    if (componentName === 'pagination') {
-        // console.log(components);
-    }
 
     return components;
 }

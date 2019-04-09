@@ -4,7 +4,7 @@ import isComponent from './isComponent';
 import hasModifier from './hasModifier';
 
 export default function is(node, query, config) {
-    config = config || this;
+    config = Object.assign(this || {}, config || {});
 
     const namespace = config.namespace || getNamespace(node, false, config);
 

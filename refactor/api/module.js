@@ -2,7 +2,7 @@ import isModule from './isModule';
 import getModules from './getModules';
 
 export default function module(node, moduleName, operator, config) {
-    config = config || this;
+    config = Object.assign(this || {}, config || {});
 
     if (!operator || operator === 'find') {
         return getModules(node, moduleName, config);

@@ -1,7 +1,7 @@
 import getNamespace from './getNamespace';
 
 export default function unsetComponent(node, componentName, config) {
-    config = config || this;
+    config = Object.assign(this || {}, config || {});
 
     if (node instanceof NodeList || node instanceof Array) {
         return node.forEach(node => unsetComponent(node, componentName, config));

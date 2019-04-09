@@ -1,5 +1,5 @@
 export default function getModules(node, moduleName, config) {
-    config = config || this;
+    config = Object.assign(this || {}, config || {});
 
     const { modifierGlue } = config;
 

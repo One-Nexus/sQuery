@@ -4,7 +4,7 @@ import removeModifier from './removeModifier';
 import getModifiers from './getModifiers';
 
 export default function modifier(node, modifier, operator, config) {
-    config = config || this;
+    config = Object.assign(this || {}, config || {});
 
     if (!operator && !modifier) {
         return getModifiers(node, config);

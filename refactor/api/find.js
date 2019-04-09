@@ -3,7 +3,7 @@ import getComponents from './getComponents';
 import hasModifier from './hasModifier';
 
 export default function find(node, query, config) {
-    config = config || this;
+    config = Object.assign(this || {}, config || {});
 
     if (typeof query === 'object') {
         if (node instanceof NodeList || node instanceof Array) {
@@ -31,7 +31,7 @@ export default function find(node, query, config) {
 }
 
 function getQueryFromObject(node, query, config) {
-    config = config || this;
+    config = Object.assign(this || {}, config || {});
 
     const { module, component, modifier } = query;
 

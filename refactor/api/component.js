@@ -5,7 +5,7 @@ import unsetComponent from './unsetComponent';
 import isComponent from './isComponent';
 
 export default function component(node, componentName, operator, config) {
-    config = config || this;
+    config = Object.assign(this || {}, config || {});
 
     if (!componentName && !operator) {
         return (config.getSubComponents || getComponents)(node, false, config);

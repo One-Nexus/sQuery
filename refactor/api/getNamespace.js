@@ -1,5 +1,5 @@
 export default function getNamespace(query, strict, config) {
-    config = config || this;
+    config = Object.assign(this || {}, config || {});
 
     const { namespace, modifierGlue, componentGlue } = config;
 
@@ -26,6 +26,10 @@ export default function getNamespace(query, strict, config) {
             }
 
             return targetClass.split(modifierGlue)[0].split(componentGlue)[0];
+        }
+
+        if (namespace) {
+            return namespace;
         }
     }
 

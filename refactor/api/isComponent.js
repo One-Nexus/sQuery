@@ -1,7 +1,7 @@
 import getNamespace from './getNamespace';
 
 export default function isComponent(node, componentName, config) {
-    config = config || this;
+    config = Object.assign(this || {}, config || {});
 
     if (node instanceof NodeList || node instanceof Array) {
         return [].slice.call(node).every(node => isComponent(node, componentName, config));
