@@ -7,7 +7,7 @@ export default function removeModifier(node, modifier, config) {
         return modifier.forEach(_modifier => removeModifier(node, _modifier, config));
     }
 
-    if (node instanceof NodeList) {
+    if (node instanceof NodeList || node instanceof Array) {
         return node.forEach(node => removeModifier(node, modifier, config));
     }
 

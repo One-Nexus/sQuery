@@ -1,7 +1,7 @@
 export default function getNamespace(query, strict, config) {
     config = config || this;
 
-    const { modifierGlue, componentGlue } = config;
+    const { namespace, modifierGlue, componentGlue } = config;
 
     if (query instanceof HTMLElement) {
         if (query.hasAttribute('data-module')) {
@@ -9,11 +9,23 @@ export default function getNamespace(query, strict, config) {
         }
 
         if (query.classList.length) {
-            if (strict) {
-                return query.classList[0].split(modifierGlue)[0];
+            let targetClass;
+            
+            if (namespace) {
+                targetClass = [].slice.call(query.classList).filter(className => {
+                    return className.indexOf(namespace) === 0;
+                })[0];
+            }
+            
+            if (!namespace || !targetClass) {
+                targetClass = query.classList[0];
             }
 
-            return query.classList[0].split(modifierGlue)[0].split(componentGlue)[0];
+            if (strict) {
+                return targetClass.split(modifierGlue)[0];
+            }
+
+            return targetClass.split(modifierGlue)[0].split(componentGlue)[0];
         }
     }
 

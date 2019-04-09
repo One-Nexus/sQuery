@@ -11,6 +11,10 @@ export default function filterElements(node, elements, subComponent, config) {
     elements = [].slice.call(elements).filter(element => {
         const targetParent = parent(element, namespace, config);
 
+        if (!targetParent) {
+            return true;
+        }
+
         return targetParent === sourceParent;
     });
 

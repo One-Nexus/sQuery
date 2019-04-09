@@ -3,7 +3,7 @@ import getNamespace from './getNamespace';
 export default function isComponent(node, componentName, config) {
     config = config || this;
 
-    if (node instanceof NodeList) {
+    if (node instanceof NodeList || node instanceof Array) {
         return [].slice.call(node).every(node => isComponent(node, componentName, config));
     }
 

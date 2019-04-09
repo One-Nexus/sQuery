@@ -9,7 +9,7 @@ export default function hasModifier(node, modifier, config) {
         return modifier.every(modifier => hasModifier(node, modifier, config));
     }
 
-    if (node instanceof NodeList) {
+    if (node instanceof NodeList || node instanceof Array) {
         return [].slice.call(node).every(node => hasModifier(node, modifier, config));
     }
 

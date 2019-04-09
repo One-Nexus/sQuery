@@ -7,7 +7,7 @@ export default function getComponents(node, componentName, config) {
 
     if (componentName && !isValidSelector(componentName)) return [];
 
-    if (node instanceof NodeList) {
+    if (node instanceof NodeList || node instanceof Array) {
         return [].slice.call(node).reduce((matches, node) => {
             return matches.concat([].slice.call(getComponents(node, componentName, config)));
         }, []);
@@ -28,8 +28,8 @@ export default function getComponents(node, componentName, config) {
     }
 
     components = [].slice.call(components).filter(element => {
-        const sourceNamespace = getNamespace(node, true, config);
-        const targetNamespace = getNamespace(element, true, config);
+        const sourceNamespace = getNamespace(node, true, { ...config, namespace });
+        const targetNamespace = getNamespace(element, true, { ...config, namespace });
 
         let sourceDepth = (sourceNamespace.match(new RegExp(componentGlue, 'g')) || []).length;
         let targetDepth = (targetNamespace.match(new RegExp(componentGlue, 'g')) || []).length;
@@ -71,6 +71,10 @@ export default function getComponents(node, componentName, config) {
     });
 
     components = filterElements(node, components, subComponent, config);
+
+    if (componentName === 'pagination') {
+        // console.log(components);
+    }
 
     return components;
 }

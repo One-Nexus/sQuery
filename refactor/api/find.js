@@ -6,7 +6,7 @@ export default function find(node, query, config) {
     config = config || this;
 
     if (typeof query === 'object') {
-        if (node instanceof NodeList) {
+        if (node instanceof NodeList || node instanceof Array) {
             return [].slice.call(node).reduce((matches, node) => {
                 return matches.concat(getQueryFromObject(node, query, config));
             }, []);

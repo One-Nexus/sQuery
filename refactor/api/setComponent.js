@@ -3,7 +3,7 @@ import getNamespace from './getNamespace';
 export default function setComponent(node, componentName, namespace, replace, config) {
     config = config || this;
 
-    if (node instanceof NodeList) {
+    if (node instanceof NodeList || node instanceof Array) {
         return node.forEach(node => setComponent(node, componentName, namespace, replace, config));
     }
 

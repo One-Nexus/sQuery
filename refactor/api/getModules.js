@@ -3,7 +3,7 @@ export default function getModules(node, moduleName, config) {
 
     const { modifierGlue } = config;
 
-    if (node instanceof NodeList) {
+    if (node instanceof NodeList || node instanceof Array) {
         const matchedModules = [].slice.call(node).reduce((matches, node) => {
             const modules = [].slice.call(getModules(node, moduleName, config));
 

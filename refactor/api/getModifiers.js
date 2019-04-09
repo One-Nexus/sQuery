@@ -3,7 +3,7 @@ import getNamespace from './getNamespace';
 export default function getModifiers(node, config) {
     config = config || this;
 
-    if (node instanceof NodeList) {
+    if (node instanceof NodeList || node instanceof Array) {
         let modifiers = [].slice.call(node).reduce((matches, node) => {
             return matches.concat(getModifiers(node, config));
         }, []);

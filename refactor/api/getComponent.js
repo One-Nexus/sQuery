@@ -7,7 +7,7 @@ import getComponents from './getComponents';
 export default function getComponent(node, componentName, config) {
     config = config || this;
 
-    if (node instanceof NodeList) {
+    if (node instanceof NodeList || node instanceof Array) {
         return [].slice.call(node).map(node => getComponent(node, componentName, config));
     };
 
