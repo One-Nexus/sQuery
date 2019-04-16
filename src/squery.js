@@ -87,6 +87,7 @@ export {
     getComponent,
     getComponents,
     getModifiers,
+    getNamespace,
     getSubComponent,
     getSubComponents,
     has,

@@ -1,57 +1,110 @@
+// addModifier
 export { 
     default as add, 
     default as addModifier 
 } from './addModifier';
 
+// component
 export { 
     default as component, 
     default as components 
 } from './component';
 
+// find
 export { 
-    default as module, 
-    default as modules 
-} from './module';
+    default as find 
+} from './find';
 
+// getComponent
 export { 
-    default as isModule
-} from './isModule';
+    default as getComponent 
+} from './getComponent';
 
+// getComponents
+export { 
+    default as getComponents 
+} from './getComponents';
+
+// getModifiers
+export { 
+    default as getModifiers 
+} from './getModifiers';
+
+// getModules
 export { 
     default as getModules
 } from './getModules';
 
+// getNamespace
 export { 
     default as getNamespace
 } from './getNamespace';
 
-export { default as find } from './find';
-export { default as getComponent } from './getComponent';
-export { default as getComponents } from './getComponents';
-export { default as getModifiers } from './getModifiers';
-export { default as getSubComponent } from './getSubComponent';
-export { default as getSubComponents } from './getSubComponents';
+// getSubComponent
+export { 
+    default as getSubComponent 
+} from './getSubComponent';
 
+// getSubComponents
+export { 
+    default as getSubComponents 
+} from './getSubComponents';
+
+// hasModifier
 export {
     default as has,
     default as hasModifier
 } from './hasModifier';
 
-export { default as is } from './is';
-export { default as isComponent } from './isComponent';
-export { default as modifier } from './modifier';
+// is
+export { 
+    default as is 
+} from './is';
 
+// isComponent
+export { 
+    default as isComponent 
+} from './isComponent';
+
+// isModule
+export { 
+    default as isModule
+} from './isModule';
+
+// modifier
+export { 
+    default as modifier 
+} from './modifier';
+
+// module
+export { 
+    default as module, 
+    default as modules 
+} from './module';
+
+// parent
+export { 
+    default as parent 
+} from './parent';
+
+// removeModifier
 export { 
     default as remove,
     default as removeModifier 
 } from './removeModifier';
 
-export { default as parent } from './parent';
-export { default as setComponent } from './setComponent';
+// setComponent
+export { 
+    default as setComponent 
+} from './setComponent';
 
+// subComponent
 export { 
     default as subComponent,
     default as subComponents
 } from './subComponent';
 
-export { default as unsetComponent } from './unsetComponent';
+// unsetComponent
+export { 
+    default as unsetComponent 
+} from './unsetComponent';

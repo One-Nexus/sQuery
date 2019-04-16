@@ -33,6 +33,7 @@
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.2.3",
     "@babel/register": "^7.0.0",
+    "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
     "eslint": "^4.14.0",
     "jsdoc": "^3.5.5",
@@ -45,9 +46,8 @@
     "webpack-cli": "^3.2.1"
   },
   "scripts": {
-    "lint": "eslint './src/js/**/*.js'",
+    "lint": "eslint './src/**/*.js'",
     "test": "nyc --require @babel/register mocha test/tests.js --require @babel/register && nyc report --reporter=lcov",
-    "foo": "nyc --require @babel/register mocha test/tests.js --require @babel/register",
     "docs": "jsdoc src -r -d docs/js",
     "js": "webpack",
     "build": "npm run lint && npm test && npm run docs && npm run js"

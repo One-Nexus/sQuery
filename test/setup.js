@@ -8,7 +8,9 @@ jsdom();
 
 sQuery.init();
 
-global.deepExtend = deepExtend;
-global.assert = assert;
-global.sQuery = sQuery;
-global.NodeListsAreEqual = NodeListsAreEqual;
+Object.assign(global, {
+    deepExtend,
+    assert,
+    sQuery,
+    NodeListsAreEqual
+});

@@ -40,7 +40,6 @@ describe('sQuery `subComponent` API', () => {
     describe('when used without `subComponentName` and `operator` parameters', () => {
         describe('on a single component', () => {
             it('should find all child sub-components', () => {
-                // sQuery().subComponent(document.getElementById('HH156')).forEach(e => console.log(e))
                 assert(NodeListsAreEqual(
                     sQuery().subComponent(document.getElementById('HH156')),
                     document.querySelectorAll('#A0BG9, #N1WY1, #ZSAE6')
