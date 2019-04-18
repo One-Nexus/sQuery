@@ -38,6 +38,15 @@ describe('sQuery `subComponent` API', () => {
     });
 
     describe('when used without `subComponentName` and `operator` parameters', () => {
+        describe('on a single module', () => {
+            it('should find all child sub-components', () => {
+                assert(NodeListsAreEqual(
+                    sQuery().subComponent(document.getElementById('SVRNE')),
+                    document.querySelectorAll('#HH156, #A0BG9, #M1FAC, #FH5FN, #N1WY1, #ZSAE6, #KJ4PM, #VQTLX, #HRJM1')
+                ));
+            });
+        });
+
         describe('on a single component', () => {
             it('should find all child sub-components', () => {
                 assert(NodeListsAreEqual(
@@ -57,8 +66,17 @@ describe('sQuery `subComponent` API', () => {
         });
     });
 
+    describe('when passed `subComponentName` and used on a module', () => {
+        it('should not return any elements', () => {
+            assert(NodeListsAreEqual(
+                sQuery().subComponent(document.querySelectorAll('#SVRNE'), 'bar'),
+                document.querySelectorAll('null')
+            ));
+        });
+    });
+
     describe('when used with `first` operator', () => {
-        describe('on a single module', () => {
+        describe('on a single component', () => {
             it('should find all specified child sub-components', () => {
                 assert.equal(
                     sQuery().subComponent(document.getElementById('HH156'), 'fizz', 'first'),

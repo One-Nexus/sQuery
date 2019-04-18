@@ -13,6 +13,8 @@ const TEMPLATE = (`
         <div class="fizz" id="M1FAC"></div>
         <div class="fizz" id="EI7RQ"></div>
     </div>
+
+    <div class="foo_bar" id="SW420"></div>
 `);
 
 document.body.innerHTML = TEMPLATE;
@@ -26,6 +28,15 @@ describe('sQuery function', () => {
 
     it('should exist', () => {
         assert.equal(typeof sQuery, 'function');
+    });
+
+    describe('invoked with custom namespace', () => {
+        it('should retreive expected DOM nodes', () => {
+            assert(NodeListsAreEqual(
+                sQuery(document.body).getComponents('bar', { namespace: 'foo' }),
+                document.querySelectorAll('#SW420')
+            ));
+        });
     });
 
     describe('invoked with NodeList', () => {

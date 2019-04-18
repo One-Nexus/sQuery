@@ -1,7 +1,9 @@
 const TEMPLATE = (`
-    <div class="foo foo-pancake test" id="SVRNE">
+    <div class="foo foo-pancake test" id="SVRNE" data-module="foo">
         <div class="foo_bar" id="HH156">
-            <div class="foo_bar_fizz" id="A0BG9"></div>
+            <div class="foo_bar_fizz" id="A0BG9">
+                <div class="foo_qux" id="PJ23B"></div>
+            </div>
             <div class="foo_beta" id="HRJM1"></div>
             <div class="alpha" id="E0RZS">
                 <div class="alpha_beta" id="TKLD4"></div>
@@ -43,7 +45,7 @@ describe('sQuery `component` API', () => {
             it('should find all child components', () => {
                 assert(NodeListsAreEqual(
                     sQuery().component(document.getElementById('SVRNE')),
-                    document.querySelectorAll('#HH156, #FH5FN, #KJ4PM, #HRJM1')
+                    document.querySelectorAll('#HH156, #FH5FN, #KJ4PM, #HRJM1, #PJ23B')
                 ));
             });
         });
@@ -52,7 +54,16 @@ describe('sQuery `component` API', () => {
             it('should find all child components', () => {
                 assert(NodeListsAreEqual(
                     sQuery().component(document.querySelectorAll('#SVRNE, #E0RZS')),
-                    document.querySelectorAll('#HH156, #FH5FN, #KJ4PM, #HRJM1, #TKLD4')
+                    document.querySelectorAll('#HH156, #FH5FN, #KJ4PM, #HRJM1, #TKLD4, #PJ23B')
+                ));
+            });
+        });
+
+        describe('on a single sub-component', () => {
+            it('should not return any elements', () => {
+                assert(NodeListsAreEqual(
+                    sQuery().component(document.getElementById('EI7RQ')),
+                    document.querySelectorAll('null')
                 ));
             });
         });
@@ -81,6 +92,15 @@ describe('sQuery `component` API', () => {
                 assert(NodeListsAreEqual(
                     sQuery().component(document.getElementById('SVRNE'), 'bar', 'find', config),
                     document.querySelectorAll('#HH156')
+                ));
+            });
+        });
+
+        describe('on a single sub-component', () => {
+            it('should return the specified child components', () => {
+                assert(NodeListsAreEqual(
+                    sQuery().component(document.getElementById('A0BG9'), 'qux'),
+                    document.querySelectorAll('#PJ23B')
                 ));
             });
         });

@@ -263,25 +263,25 @@ __webpack_require__.d(api_namespaceObject, "add", function() { return addModifie
 __webpack_require__.d(api_namespaceObject, "addModifier", function() { return addModifier; });
 __webpack_require__.d(api_namespaceObject, "component", function() { return component_component; });
 __webpack_require__.d(api_namespaceObject, "components", function() { return component_component; });
-__webpack_require__.d(api_namespaceObject, "module", function() { return module_module; });
-__webpack_require__.d(api_namespaceObject, "modules", function() { return module_module; });
-__webpack_require__.d(api_namespaceObject, "isModule", function() { return isModule; });
-__webpack_require__.d(api_namespaceObject, "getModules", function() { return getModules; });
-__webpack_require__.d(api_namespaceObject, "getNamespace", function() { return getNamespace; });
 __webpack_require__.d(api_namespaceObject, "find", function() { return find; });
 __webpack_require__.d(api_namespaceObject, "getComponent", function() { return getComponent; });
 __webpack_require__.d(api_namespaceObject, "getComponents", function() { return getComponents; });
 __webpack_require__.d(api_namespaceObject, "getModifiers", function() { return getModifiers; });
+__webpack_require__.d(api_namespaceObject, "getModules", function() { return getModules; });
+__webpack_require__.d(api_namespaceObject, "getNamespace", function() { return getNamespace; });
 __webpack_require__.d(api_namespaceObject, "getSubComponent", function() { return getSubComponent; });
 __webpack_require__.d(api_namespaceObject, "getSubComponents", function() { return getSubComponents; });
 __webpack_require__.d(api_namespaceObject, "has", function() { return hasModifier; });
 __webpack_require__.d(api_namespaceObject, "hasModifier", function() { return hasModifier; });
 __webpack_require__.d(api_namespaceObject, "is", function() { return is; });
 __webpack_require__.d(api_namespaceObject, "isComponent", function() { return isComponent; });
+__webpack_require__.d(api_namespaceObject, "isModule", function() { return isModule; });
 __webpack_require__.d(api_namespaceObject, "modifier", function() { return modifier_modifier; });
+__webpack_require__.d(api_namespaceObject, "module", function() { return module_module; });
+__webpack_require__.d(api_namespaceObject, "modules", function() { return module_module; });
+__webpack_require__.d(api_namespaceObject, "parent", function() { return parent_parent; });
 __webpack_require__.d(api_namespaceObject, "remove", function() { return removeModifier; });
 __webpack_require__.d(api_namespaceObject, "removeModifier", function() { return removeModifier; });
-__webpack_require__.d(api_namespaceObject, "parent", function() { return parent_parent; });
 __webpack_require__.d(api_namespaceObject, "setComponent", function() { return setComponent; });
 __webpack_require__.d(api_namespaceObject, "subComponent", function() { return subComponent_subComponent; });
 __webpack_require__.d(api_namespaceObject, "subComponents", function() { return subComponent_subComponent; });
@@ -727,14 +727,6 @@ function component_component(node, componentName, operator, config) {
     });
   }
 }
-// CONCATENATED MODULE: ./src/api/isModule.js
-function isModule(node, moduleName, config) {
-  config = Object.assign(this || {}, config || {});
-  var DOMNodes = !(node instanceof NodeList || node instanceof Array) ? [node] : node;
-  return [].slice.call(DOMNodes).every(function (node) {
-    return node.matches(".".concat(moduleName, ", [class*=\"").concat(moduleName + config.modifierGlue, "\"]"));
-  });
-}
 // CONCATENATED MODULE: ./src/api/getModules.js
 function getModules(node, moduleName, config) {
   config = Object.assign(this || {}, config || {});
@@ -761,26 +753,6 @@ function getModules(node, moduleName, config) {
     });
   });
   return modules;
-}
-// CONCATENATED MODULE: ./src/api/module.js
-
-
-function module_module(node, moduleName, operator, config) {
-  config = Object.assign(this || {}, config || {});
-
-  if (!operator || operator === 'find') {
-    return getModules(node, moduleName, config);
-  }
-
-  if (operator === 'is') {
-    return isModule(node, moduleName, config);
-  }
-
-  if (typeof operator === 'function') {
-    return getModules(node, moduleName, config).forEach(function (node) {
-      return operator(node);
-    });
-  }
 }
 // CONCATENATED MODULE: ./src/api/hasModifier.js
 
@@ -932,6 +904,14 @@ function getSubComponent(node, componentName, config) {
   ;
   return getSubComponents(node, componentName, config)[0];
 }
+// CONCATENATED MODULE: ./src/api/isModule.js
+function isModule(node, moduleName, config) {
+  config = Object.assign(this || {}, config || {});
+  var DOMNodes = !(node instanceof NodeList || node instanceof Array) ? [node] : node;
+  return [].slice.call(DOMNodes).every(function (node) {
+    return node.matches(".".concat(moduleName, ", [class*=\"").concat(moduleName + config.modifierGlue, "\"]"));
+  });
+}
 // CONCATENATED MODULE: ./src/api/is.js
 function is_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { is_typeof = function _typeof(obj) { return typeof obj; }; } else { is_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return is_typeof(obj); }
 
@@ -1053,6 +1033,26 @@ function modifier_modifier(node, modifier, operator, config) {
   // }
 
 }
+// CONCATENATED MODULE: ./src/api/module.js
+
+
+function module_module(node, moduleName, operator, config) {
+  config = Object.assign(this || {}, config || {});
+
+  if (!operator || operator === 'find') {
+    return getModules(node, moduleName, config);
+  }
+
+  if (operator === 'is') {
+    return isModule(node, moduleName, config);
+  }
+
+  if (typeof operator === 'function') {
+    return getModules(node, moduleName, config).forEach(function (node) {
+      return operator(node);
+    });
+  }
+}
 // CONCATENATED MODULE: ./src/api/subComponent.js
 
 
@@ -1065,25 +1065,46 @@ function subComponent_subComponent(node, subComponentName, operator, config) {
   return component_component(node, subComponentName, operator, config);
 }
 // CONCATENATED MODULE: ./src/api/index.js
+// addModifier
+ // component
 
+ // find
 
+ // getComponent
 
+ // getComponents
 
+ // getModifiers
 
+ // getModules
 
+ // getNamespace
 
+ // getSubComponent
 
+ // getSubComponents
 
+ // hasModifier
 
+ // is
 
+ // isComponent
 
+ // isModule
 
+ // modifier
 
+ // module
 
+ // parent
 
+ // removeModifier
 
+ // setComponent
 
+ // subComponent
 
+ // unsetComponent
 
 
 // CONCATENATED MODULE: ./src/utilities/init.js
@@ -1229,6 +1250,7 @@ function init(custom) {
 /* concated harmony reexport getComponent */__webpack_require__.d(__webpack_exports__, "getComponent", function() { return getComponent; });
 /* concated harmony reexport getComponents */__webpack_require__.d(__webpack_exports__, "getComponents", function() { return getComponents; });
 /* concated harmony reexport getModifiers */__webpack_require__.d(__webpack_exports__, "getModifiers", function() { return getModifiers; });
+/* concated harmony reexport getNamespace */__webpack_require__.d(__webpack_exports__, "getNamespace", function() { return getNamespace; });
 /* concated harmony reexport getSubComponent */__webpack_require__.d(__webpack_exports__, "getSubComponent", function() { return getSubComponent; });
 /* concated harmony reexport getSubComponents */__webpack_require__.d(__webpack_exports__, "getSubComponents", function() { return getSubComponents; });
 /* concated harmony reexport has */__webpack_require__.d(__webpack_exports__, "has", function() { return hasModifier; });
