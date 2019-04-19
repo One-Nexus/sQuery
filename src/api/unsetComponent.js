@@ -1,4 +1,4 @@
-import getNamespace from './getNamespace';
+import getNamespace from '../utilities/getNamespace';
 
 export default function unsetComponent(node, componentName, config) {
     config = Object.assign(this || {}, config || {});

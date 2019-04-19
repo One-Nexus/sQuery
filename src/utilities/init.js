@@ -33,6 +33,8 @@ export default function init(custom) {
         Object.assign(window.Synergy, { componentGlue, modifierGlue });
     }
 
+    const methods = {};
+
     for (let [key, method] of Object.entries(API)) {
         let methodName = key, newMethodName;
     
@@ -40,12 +42,12 @@ export default function init(custom) {
             const moduleUpperCase = moduleNamespace[0].toUpperCase() + moduleNamespace.substring(1);
             const componentUpperCase = componentNamespace[0].toUpperCase() + componentNamespace.substring(1);
             const modifierUpperCase = modifierNamespace[0].toUpperCase() + modifierNamespace.substring(1);
-
-            if (methodName.toLowerCase().indexOf('module') > -1) {
+    
+            if (methodName.indexOf('module') > -1) {
                 newMethodName = methodName.replace(new RegExp('module', 'g'), moduleNamespace);
             }
 
-            if (methodName.toLowerCase().indexOf('Module') > -1) {
+            if (methodName.indexOf('Module') > -1) {
                 newMethodName = methodName.replace(new RegExp('Module', 'g'), moduleUpperCase);
             }
 
@@ -57,19 +59,15 @@ export default function init(custom) {
                 newMethodName = methodName.replace(new RegExp('Component', 'g'), componentUpperCase);
             }
 
-            if (methodName.toLowerCase().indexOf('modifier') > -1) {
-                newMethodName = methodName.replace(new RegExp('modifier', 'g'), modifierNamespace);
-            }
-
-            if (methodName.toLowerCase().indexOf('Modifier') > -1) {
-                newMethodName = methodName.replace(new RegExp('Modifier', 'g'), modifierUpperCase);
-            }
+            // @TODO do modifier renames
 
             if (options.preset !== 'Synergy' && sQuery && options.alterMethodName.includes('sQuery')) {
                 sQuery[newMethodName] = function(node, ...params) {
                     return this(node)[methodName](...params);
                 }
             }
+
+            methods[methodName] = newMethodName || methodName;
         }
 
         if (options.elementProto) {
@@ -95,5 +93,9 @@ export default function init(custom) {
                 })(this, ...params);
             }
         }
+    }
+
+    if (typeof sQuery !== 'undefined') {
+        sQuery.config = Object.assign(options, { methods });
     }
 }

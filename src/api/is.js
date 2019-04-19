@@ -1,4 +1,4 @@
-import getNamespace from './getNamespace';
+import getNamespace from '../utilities/getNamespace';
 import isModule from './isModule';
 import isComponent from './isComponent';
 import hasModifier from './hasModifier';

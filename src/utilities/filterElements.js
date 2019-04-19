@@ -1,4 +1,4 @@
-import getNamespace from '../api/getNamespace';
+import getNamespace from './getNamespace';
 import parent from '../api/parent';
 
 export default function filterElements(node, elements, subComponent, config) {

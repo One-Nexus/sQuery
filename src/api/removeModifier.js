@@ -1,4 +1,4 @@
-import getNamespace from './getNamespace';
+import getNamespace from '../utilities/getNamespace';
 
 export default function removeModifier(node, modifier, config) {
     config = Object.assign(this || {}, config || {});

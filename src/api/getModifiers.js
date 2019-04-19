@@ -1,4 +1,4 @@
-import getNamespace from './getNamespace';
+import getNamespace from '../utilities/getNamespace';
 
 export default function getModifiers(node, config) {
     config = Object.assign(this || {}, config || {});

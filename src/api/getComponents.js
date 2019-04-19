@@ -1,4 +1,4 @@
-import getNamespace from './getNamespace';
+import getNamespace from '../utilities/getNamespace';
 import filterElements from '../utilities/filterElements';
 import isValidSelector from '../utilities/isValidSelector';
 

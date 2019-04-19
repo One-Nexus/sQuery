@@ -1,4 +1,4 @@
-import getNamespace from './getNamespace';
+import getNamespace from '../utilities/getNamespace';
 import isSafeElement from '../utilities/isSafeElement';
 
 export default function addModifier(node, modifier, config) {

@@ -35,11 +35,6 @@ export {
     default as getModules
 } from './getModules';
 
-// getNamespace
-export { 
-    default as getNamespace
-} from './getNamespace';
-
 // getSubComponent
 export { 
     default as getSubComponent 
