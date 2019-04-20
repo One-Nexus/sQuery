@@ -24,4 +24,10 @@ export default function removeModifier(node, modifier, config) {
             node.classList.replace(className, newClass);
         }
     });
+
+    if (node.repaint) {
+        node.repaint();
+    }
+
+    return node;
 }

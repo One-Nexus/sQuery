@@ -17,10 +17,14 @@ export default function addModifier(node, modifier, config) {
         modifier = modifier.join(modifierGlue);
     }
 
-    if (safeNamespace) {
+    if (safeNamespace && config.singleClass) {
         node.classList.replace(safeNamespace, safeNamespace + modifierGlue + modifier);
     } else {
         node.classList.add(namespace + modifierGlue + modifier);
+    }
+
+    if (node.repaint) {
+        node.repaint();
     }
 
     return node;

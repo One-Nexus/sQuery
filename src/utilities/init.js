@@ -11,6 +11,10 @@ export default function init(custom) {
 
     options.alterMethodName = options.alterMethodName || [];
 
+    if (options.preset !== 'BEM' && typeof options.singleClass === 'undefined') {
+        options.singleClass = true;
+    }
+
     const PRESETS = {
         BEM: ['__', '--', 'block', 'element', 'modifier'],
         Synergy: ['_', '-', 'module', 'component', 'modifier']
@@ -77,7 +81,8 @@ export default function init(custom) {
                 Element.prototype[methodName] = function(...params) {
                     return method.bind({
                         componentGlue, 
-                        modifierGlue 
+                        modifierGlue,
+                        singleClass: options.singleClass
                     })(this, ...params);
                 }
             }
@@ -89,7 +94,8 @@ export default function init(custom) {
             NodeList.prototype[methodName] = function(...params) {
                 return method.bind({
                     componentGlue, 
-                    modifierGlue 
+                    modifierGlue,
+                    singleClass: options.singleClass
                 })(this, ...params);
             }
         }

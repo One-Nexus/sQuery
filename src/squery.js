@@ -12,24 +12,30 @@ if (typeof process === 'undefined') window.process = { env: {} };
 function sQuery(SynergyQuery, callback, defaults, custom, parser) {
     var Synergy = window.Synergy || {};
 
+    sQuery.config = sQuery.config || {};
+
     const methods = {};
     const config = getConfig(defaults, custom, parser);
 
     const modifierGlue  = config.modifierGlue  || Synergy.modifierGlue  || '-';
     const componentGlue = config.componentGlue || Synergy.componentGlue || '_';
 
+    const singleClass = sQuery.config.singleClass;
+
     const namespace = getNamespace(SynergyQuery, false, { componentGlue, modifierGlue });
     const DOMNodes = getDomNodes(SynergyQuery);
 
     for (let [key, method] of Object.entries(API)) {
-        if (sQuery.config && sQuery.config.methods && sQuery.config.methods[key]) {
+        if (sQuery.config.methods && sQuery.config.methods[key]) {
             key = sQuery.config.methods[key];
         }
 
+        const internalConfig = { namespace, componentGlue, modifierGlue, singleClass };
+
         if (DOMNodes) {
-            methods[key] = method.bind({ namespace, componentGlue, modifierGlue }, DOMNodes);
+            methods[key] = method.bind(internalConfig, DOMNodes);
         } else {
-            methods[key] = method.bind({ namespace, componentGlue, modifierGlue });
+            methods[key] = method.bind(internalConfig);
         }
     }
 
