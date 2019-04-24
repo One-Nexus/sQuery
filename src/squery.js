@@ -17,10 +17,9 @@ function sQuery(SynergyQuery, callback, defaults, custom, parser) {
     const methods = {};
     const config = getConfig(defaults, custom, parser);
 
-    const modifierGlue  = config.modifierGlue  || Synergy.modifierGlue  || '-';
-    const componentGlue = config.componentGlue || Synergy.componentGlue || '_';
-
-    const singleClass = sQuery.config.singleClass;
+    const modifierGlue    = config.modifierGlue    || Synergy.modifierGlue    || '-';
+    const componentGlue   = config.componentGlue   || Synergy.componentGlue   || '_';
+    const multipleClasses = config.multipleClasses || Synergy.multipleClasses || false;
 
     const namespace = getNamespace(SynergyQuery, false, { componentGlue, modifierGlue });
     const DOMNodes = getDomNodes(SynergyQuery);
@@ -30,7 +29,7 @@ function sQuery(SynergyQuery, callback, defaults, custom, parser) {
             key = sQuery.config.methods[key];
         }
 
-        const internalConfig = { namespace, componentGlue, modifierGlue, singleClass };
+        const internalConfig = { namespace, componentGlue, modifierGlue, multipleClasses };
 
         if (DOMNodes) {
             methods[key] = method.bind(internalConfig, DOMNodes);

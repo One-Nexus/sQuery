@@ -17,7 +17,7 @@ export default function addModifier(node, modifier, config) {
         modifier = modifier.join(modifierGlue);
     }
 
-    if (safeNamespace && config.singleClass) {
+    if (safeNamespace && !config.multipleClasses) {
         node.classList.replace(safeNamespace, safeNamespace + modifierGlue + modifier);
     } else {
         node.classList.add(namespace + modifierGlue + modifier);

@@ -11,13 +11,9 @@ export default function init(custom) {
 
     options.alterMethodName = options.alterMethodName || [];
 
-    if (options.preset !== 'BEM' && typeof options.singleClass === 'undefined') {
-        options.singleClass = true;
-    }
-
     const PRESETS = {
-        BEM: ['__', '--', 'block', 'element', 'modifier'],
-        Synergy: ['_', '-', 'module', 'component', 'modifier']
+        BEM: ['__', '--', 'block', 'element', 'modifier', true],
+        Synergy: ['_', '-', 'module', 'component', 'modifier', false]
     }
 
     let [
@@ -25,16 +21,18 @@ export default function init(custom) {
         modifierGlue, 
         moduleNamespace, 
         componentNamespace,
-        modifierNamespace
+        modifierNamespace,
+        multipleClasses
     ] = [].slice.call(PRESETS[options.preset]);
 
     componentGlue = options.componentGlue || componentGlue;
-    modifierGlue  = options.modifierGlue  || modifierGlue;
+    modifierGlue = options.modifierGlue || modifierGlue;
+    multipleClasses = typeof options.multipleClasses === 'undefined' ? multipleClasses : options.multipleClasses;
 
     if (options.Synergy) {
         window.Synergy = window.Synergy || {};
 
-        Object.assign(window.Synergy, { componentGlue, modifierGlue });
+        Object.assign(window.Synergy, { componentGlue, modifierGlue, multipleClasses });
     }
 
     const methods = {};
@@ -82,7 +80,7 @@ export default function init(custom) {
                     return method.bind({
                         componentGlue, 
                         modifierGlue,
-                        singleClass: options.singleClass
+                        multipleClasses
                     })(this, ...params);
                 }
             }
@@ -95,7 +93,7 @@ export default function init(custom) {
                 return method.bind({
                     componentGlue, 
                     modifierGlue,
-                    singleClass: options.singleClass
+                    multipleClasses
                 })(this, ...params);
             }
         }
