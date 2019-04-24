@@ -8,6 +8,10 @@ jsdom();
 
 sQuery.init();
 
+sQuery.config = {
+    singleClass: true
+}
+
 Object.assign(global, {
     deepExtend,
     assert,
