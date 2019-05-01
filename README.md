@@ -90,9 +90,9 @@ sQuery('foo').getComponents('bar').addModifier('buzz');
 
 Checkout these other One-Nexus tools for working with Synergy modules:
 
-* [Cell](https://github.com/One-Nexus/Cell) - Style DOM elements that follow the Synergy naming convention (including BEM) using Sass
-* [Polymorph](https://github.com/One-Nexus/Polymorph) - Style DOM elements that follow the Synergy naming convention (including BEM) using JavaScript
-* [Lucid](https://github.com/One-Nexus/Lucid) - A set of Higher-Order React Components for rendering UI elements that follow the Synergy naming convention
+* [Cell](https://github.com/One-Nexus/Cell) - Style Synergy modules/BEM DOM elements using Sass
+* [Polymorph](https://github.com/One-Nexus/Polymorph) - Style Synergy modules/BEM DOM elements using JavaScript
+* [Lucid](https://github.com/One-Nexus/Lucid) - A set of higher-order React components for rendering Synergy modules/BEM DOM elements
 * [Synergy](https://github.com/One-Nexus/Synergy) - A front-end framework for creating modular, configurable and scalable UI components (all of the above in one packaged framework)
 
 ## Installation & Setup
