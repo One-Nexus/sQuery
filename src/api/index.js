@@ -99,6 +99,11 @@ export {
     default as subComponents
 } from './subComponent';
 
+// toggleModifier
+export { 
+    default as toggleModifier
+} from './toggleModifier';
+
 // unsetComponent
 export { 
     default as unsetComponent 

@@ -380,4 +380,49 @@ describe('sQuery `modifier` API', () => {
             });
         });
     });
+
+    describe('when used to toggle a single modifiers', () => {
+        beforeEach('setup DOM', () => {
+            EL = document.getElementById('HY7S3');
+
+            sQuery().modifier(EL, 'bar', 'toggle');
+        });
+
+        it('should correctly add the modifier to the module', () => {
+            assert(sQuery().modifier(EL, 'bar', 'is'));
+        });
+
+        describe('and is toggled again', () => {
+            beforeEach('setup DOM', () => {
+                sQuery().modifier(EL, 'bar', 'toggle');
+            });
+    
+            it('should correctly add the modifier to the module', () => {
+                assert(!sQuery().modifier(EL, 'bar', 'is'));
+            });
+        });
+    });
+
+    describe('when used to toggle multiple modifiers', () => {
+        beforeEach('setup DOM', () => {
+            EL = document.getElementById('HY7S3');
+
+            sQuery().modifier(EL, ['foo', 'bar'], 'toggle');
+        });
+
+        it('should correctly add the modifier to the module', () => {
+            assert(sQuery().modifier(EL, ['foo', 'bar'], 'is'));
+        });
+
+        describe('and is toggled again', () => {
+            beforeEach('setup DOM', () => {
+                sQuery().modifier(EL, 'bar', 'toggle');
+            });
+    
+            it('should correctly add the modifier to the module', () => {
+                assert(sQuery().modifier(EL, 'foo', 'is'));
+                assert(!sQuery().modifier(EL, 'bar', 'is'));
+            });
+        });
+    });
 });

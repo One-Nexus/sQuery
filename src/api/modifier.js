@@ -1,6 +1,7 @@
 import hasModifier from './hasModifier';
 import addModifier from './addModifier';
 import removeModifier from './removeModifier';
+import toggleModifier from './toggleModifier';
 import getModifiers from './getModifiers';
 
 export default function modifier(node, modifier, operator, config) {
@@ -22,7 +23,7 @@ export default function modifier(node, modifier, operator, config) {
         return removeModifier(node, modifier, config);
     }
 
-    // @TODO
-    // if (operator === 'toggle') {
-    // }
+    if (operator === 'toggle') {
+        return toggleModifier(node, modifier, config);
+    }
 }
