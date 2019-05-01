@@ -101,7 +101,9 @@ export {
 
 // toggleModifier
 export { 
-    default as toggleModifier
+    default as toggle,
+    default as toggleModifier,
+    default as toggleModifiers
 } from './toggleModifier';
 
 // unsetComponent

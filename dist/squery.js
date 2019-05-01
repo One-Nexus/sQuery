@@ -268,7 +268,6 @@ __webpack_require__.d(api_namespaceObject, "getComponent", function() { return g
 __webpack_require__.d(api_namespaceObject, "getComponents", function() { return getComponents; });
 __webpack_require__.d(api_namespaceObject, "getModifiers", function() { return getModifiers; });
 __webpack_require__.d(api_namespaceObject, "getModules", function() { return getModules; });
-__webpack_require__.d(api_namespaceObject, "getNamespace", function() { return getNamespace; });
 __webpack_require__.d(api_namespaceObject, "getSubComponent", function() { return getSubComponent; });
 __webpack_require__.d(api_namespaceObject, "getSubComponents", function() { return getSubComponents; });
 __webpack_require__.d(api_namespaceObject, "has", function() { return hasModifier; });
@@ -285,6 +284,9 @@ __webpack_require__.d(api_namespaceObject, "removeModifier", function() { return
 __webpack_require__.d(api_namespaceObject, "setComponent", function() { return setComponent; });
 __webpack_require__.d(api_namespaceObject, "subComponent", function() { return subComponent_subComponent; });
 __webpack_require__.d(api_namespaceObject, "subComponents", function() { return subComponent_subComponent; });
+__webpack_require__.d(api_namespaceObject, "toggle", function() { return toggleModifier; });
+__webpack_require__.d(api_namespaceObject, "toggleModifier", function() { return toggleModifier; });
+__webpack_require__.d(api_namespaceObject, "toggleModifiers", function() { return toggleModifier; });
 __webpack_require__.d(api_namespaceObject, "unsetComponent", function() { return unsetComponent; });
 
 // CONCATENATED MODULE: ./src/utilities/getConfig.js
@@ -359,7 +361,7 @@ function getDomNodes(query) {
     return document.querySelectorAll(".".concat(query, ", [class*=\"").concat(query, "-\"]"));
   }
 }
-// CONCATENATED MODULE: ./src/api/getNamespace.js
+// CONCATENATED MODULE: ./src/utilities/getNamespace.js
 function getNamespace_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { getNamespace_typeof = function _typeof(obj) { return typeof obj; }; } else { getNamespace_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return getNamespace_typeof(obj); }
 
 function getNamespace(query, strict, config) {
@@ -452,10 +454,14 @@ function addModifier(node, modifier, config) {
     modifier = modifier.join(modifierGlue);
   }
 
-  if (safeNamespace) {
+  if (safeNamespace && !config.multipleClasses) {
     node.classList.replace(safeNamespace, safeNamespace + modifierGlue + modifier);
   } else {
     node.classList.add(namespace + modifierGlue + modifier);
+  }
+
+  if (node.repaint) {
+    node.repaint();
   }
 
   return node;
@@ -1005,8 +1011,34 @@ function removeModifier(node, modifier, config) {
       node.classList.replace(className, newClass);
     }
   });
+
+  if (node.repaint) {
+    node.repaint();
+  }
+
+  return node;
+}
+// CONCATENATED MODULE: ./src/api/toggleModifier.js
+
+
+
+function toggleModifier(node, modifier, config) {
+  config = Object.assign(this || {}, config || {});
+
+  if (node instanceof NodeList || node instanceof Array) {
+    return node.forEach(function (node) {
+      return toggleModifier(node, modifier, config);
+    });
+  }
+
+  if (hasModifier(node, modifier, config)) {
+    return removeModifier(node, modifier, config);
+  } else {
+    return addModifier(node, modifier, config);
+  }
 }
 // CONCATENATED MODULE: ./src/api/modifier.js
+
 
 
 
@@ -1028,10 +1060,11 @@ function modifier_modifier(node, modifier, operator, config) {
 
   if (operator === 'unset' || operator === 'remove') {
     return removeModifier(node, modifier, config);
-  } // @TODO
-  // if (operator === 'toggle') {
-  // }
+  }
 
+  if (operator === 'toggle') {
+    return toggleModifier(node, modifier, config);
+  }
 }
 // CONCATENATED MODULE: ./src/api/module.js
 
@@ -1078,8 +1111,6 @@ function subComponent_subComponent(node, subComponentName, operator, config) {
 
  // getModules
 
- // getNamespace
-
  // getSubComponent
 
  // getSubComponents
@@ -1104,6 +1135,8 @@ function subComponent_subComponent(node, subComponentName, operator, config) {
 
  // subComponent
 
+ // toggleModifier
+
  // unsetComponent
 
 
@@ -1127,28 +1160,33 @@ function init(custom) {
   }, custom);
   options.alterMethodName = options.alterMethodName || [];
   var PRESETS = {
-    BEM: ['__', '--', 'block', 'element', 'modifier'],
-    Synergy: ['_', '-', 'module', 'component', 'modifier']
+    BEM: ['__', '--', 'block', 'element', 'modifier', true],
+    Synergy: ['_', '-', 'module', 'component', 'modifier', false]
   };
 
   var _slice$call = [].slice.call(PRESETS[options.preset]),
-      _slice$call2 = _slicedToArray(_slice$call, 5),
+      _slice$call2 = _slicedToArray(_slice$call, 6),
       componentGlue = _slice$call2[0],
       modifierGlue = _slice$call2[1],
       moduleNamespace = _slice$call2[2],
       componentNamespace = _slice$call2[3],
-      modifierNamespace = _slice$call2[4];
+      modifierNamespace = _slice$call2[4],
+      multipleClasses = _slice$call2[5];
 
   componentGlue = options.componentGlue || componentGlue;
   modifierGlue = options.modifierGlue || modifierGlue;
+  multipleClasses = typeof options.multipleClasses === 'undefined' ? multipleClasses : options.multipleClasses;
 
   if (options.Synergy) {
     window.Synergy = window.Synergy || {};
     Object.assign(window.Synergy, {
       componentGlue: componentGlue,
-      modifierGlue: modifierGlue
+      modifierGlue: modifierGlue,
+      multipleClasses: multipleClasses
     });
   }
+
+  var methods = {};
 
   var _arr2 = Object.entries(api_namespaceObject);
 
@@ -1165,11 +1203,11 @@ function init(custom) {
       var componentUpperCase = componentNamespace[0].toUpperCase() + componentNamespace.substring(1);
       var modifierUpperCase = modifierNamespace[0].toUpperCase() + modifierNamespace.substring(1);
 
-      if (methodName.toLowerCase().indexOf('module') > -1) {
+      if (methodName.indexOf('module') > -1) {
         newMethodName = methodName.replace(new RegExp('module', 'g'), moduleNamespace);
       }
 
-      if (methodName.toLowerCase().indexOf('Module') > -1) {
+      if (methodName.indexOf('Module') > -1) {
         newMethodName = methodName.replace(new RegExp('Module', 'g'), moduleUpperCase);
       }
 
@@ -1179,15 +1217,8 @@ function init(custom) {
 
       if (methodName.indexOf('Component') > -1) {
         newMethodName = methodName.replace(new RegExp('Component', 'g'), componentUpperCase);
-      }
+      } // @TODO do modifier renames
 
-      if (methodName.toLowerCase().indexOf('modifier') > -1) {
-        newMethodName = methodName.replace(new RegExp('modifier', 'g'), modifierNamespace);
-      }
-
-      if (methodName.toLowerCase().indexOf('Modifier') > -1) {
-        newMethodName = methodName.replace(new RegExp('Modifier', 'g'), modifierUpperCase);
-      }
 
       if (options.preset !== 'Synergy' && sQuery && options.alterMethodName.includes('sQuery')) {
         sQuery[newMethodName] = function (node) {
@@ -1200,6 +1231,8 @@ function init(custom) {
           return (_this = this(node))[methodName].apply(_this, params);
         };
       }
+
+      methods[methodName] = newMethodName || methodName;
     }
 
     if (options.elementProto) {
@@ -1213,7 +1246,8 @@ function init(custom) {
 
           return method.bind({
             componentGlue: componentGlue,
-            modifierGlue: modifierGlue
+            modifierGlue: modifierGlue,
+            multipleClasses: multipleClasses
           }).apply(void 0, [this].concat(params));
         };
       }
@@ -1229,7 +1263,8 @@ function init(custom) {
 
         return method.bind({
           componentGlue: componentGlue,
-          modifierGlue: modifierGlue
+          modifierGlue: modifierGlue,
+          multipleClasses: multipleClasses
         }).apply(void 0, [this].concat(params));
       };
     }
@@ -1238,33 +1273,14 @@ function init(custom) {
   for (var _i2 = 0; _i2 < _arr2.length; _i2++) {
     _loop();
   }
+
+  if (typeof sQuery !== 'undefined') {
+    sQuery.config = Object.assign(options, {
+      methods: methods
+    });
+  }
 }
 // CONCATENATED MODULE: ./src/squery.js
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return squery_sQuery; });
-/* concated harmony reexport init */__webpack_require__.d(__webpack_exports__, "init", function() { return init; });
-/* concated harmony reexport add */__webpack_require__.d(__webpack_exports__, "add", function() { return addModifier; });
-/* concated harmony reexport addModifier */__webpack_require__.d(__webpack_exports__, "addModifier", function() { return addModifier; });
-/* concated harmony reexport component */__webpack_require__.d(__webpack_exports__, "component", function() { return component_component; });
-/* concated harmony reexport components */__webpack_require__.d(__webpack_exports__, "components", function() { return component_component; });
-/* concated harmony reexport find */__webpack_require__.d(__webpack_exports__, "find", function() { return find; });
-/* concated harmony reexport getComponent */__webpack_require__.d(__webpack_exports__, "getComponent", function() { return getComponent; });
-/* concated harmony reexport getComponents */__webpack_require__.d(__webpack_exports__, "getComponents", function() { return getComponents; });
-/* concated harmony reexport getModifiers */__webpack_require__.d(__webpack_exports__, "getModifiers", function() { return getModifiers; });
-/* concated harmony reexport getNamespace */__webpack_require__.d(__webpack_exports__, "getNamespace", function() { return getNamespace; });
-/* concated harmony reexport getSubComponent */__webpack_require__.d(__webpack_exports__, "getSubComponent", function() { return getSubComponent; });
-/* concated harmony reexport getSubComponents */__webpack_require__.d(__webpack_exports__, "getSubComponents", function() { return getSubComponents; });
-/* concated harmony reexport has */__webpack_require__.d(__webpack_exports__, "has", function() { return hasModifier; });
-/* concated harmony reexport hasModifier */__webpack_require__.d(__webpack_exports__, "hasModifier", function() { return hasModifier; });
-/* concated harmony reexport is */__webpack_require__.d(__webpack_exports__, "is", function() { return is; });
-/* concated harmony reexport isComponent */__webpack_require__.d(__webpack_exports__, "isComponent", function() { return isComponent; });
-/* concated harmony reexport modifier */__webpack_require__.d(__webpack_exports__, "modifier", function() { return modifier_modifier; });
-/* concated harmony reexport remove */__webpack_require__.d(__webpack_exports__, "remove", function() { return removeModifier; });
-/* concated harmony reexport removeModifier */__webpack_require__.d(__webpack_exports__, "removeModifier", function() { return removeModifier; });
-/* concated harmony reexport parent */__webpack_require__.d(__webpack_exports__, "parent", function() { return parent_parent; });
-/* concated harmony reexport setComponent */__webpack_require__.d(__webpack_exports__, "setComponent", function() { return setComponent; });
-/* concated harmony reexport subComponent */__webpack_require__.d(__webpack_exports__, "subComponent", function() { return subComponent_subComponent; });
-/* concated harmony reexport subComponents */__webpack_require__.d(__webpack_exports__, "subComponents", function() { return subComponent_subComponent; });
-/* concated harmony reexport unsetComponent */__webpack_require__.d(__webpack_exports__, "unsetComponent", function() { return unsetComponent; });
 function squery_slicedToArray(arr, i) { return squery_arrayWithHoles(arr) || squery_iterableToArrayLimit(arr, i) || squery_nonIterableRest(); }
 
 function squery_nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
@@ -1282,15 +1298,16 @@ function squery_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 if (typeof process === 'undefined') window.process = {
   env: {}
 };
-/**
- */
+/** */
 
 function squery_sQuery(SynergyQuery, callback, defaults, custom, parser) {
   var Synergy = window.Synergy || {};
+  squery_sQuery.config = squery_sQuery.config || {};
   var methods = {};
   var config = getConfig(defaults, custom, parser);
   var modifierGlue = config.modifierGlue || Synergy.modifierGlue || '-';
   var componentGlue = config.componentGlue || Synergy.componentGlue || '_';
+  var multipleClasses = config.multipleClasses || Synergy.multipleClasses || false;
   var namespace = getNamespace(SynergyQuery, false, {
     componentGlue: componentGlue,
     modifierGlue: modifierGlue
@@ -1304,18 +1321,21 @@ function squery_sQuery(SynergyQuery, callback, defaults, custom, parser) {
         key = _arr$_i[0],
         method = _arr$_i[1];
 
+    if (squery_sQuery.config.methods && squery_sQuery.config.methods[key]) {
+      key = squery_sQuery.config.methods[key];
+    }
+
+    var internalConfig = {
+      namespace: namespace,
+      componentGlue: componentGlue,
+      modifierGlue: modifierGlue,
+      multipleClasses: multipleClasses
+    };
+
     if (DOMNodes) {
-      methods[key] = method.bind({
-        namespace: namespace,
-        componentGlue: componentGlue,
-        modifierGlue: modifierGlue
-      }, DOMNodes);
+      methods[key] = method.bind(internalConfig, DOMNodes);
     } else {
-      methods[key] = method.bind({
-        namespace: namespace,
-        componentGlue: componentGlue,
-        modifierGlue: modifierGlue
-      });
+      methods[key] = method.bind(internalConfig);
     }
   }
 
@@ -1331,6 +1351,7 @@ function squery_sQuery(SynergyQuery, callback, defaults, custom, parser) {
     node: DOMNodes ? DOMNodes[0] : null
   });
 }
+
 squery_sQuery.init = init;
 
 var squery_arr2 = Object.entries(api_namespaceObject);
@@ -1347,7 +1368,7 @@ if (typeof window !== 'undefined') {
   window.sQuery = squery_sQuery;
 }
 
-
+/* harmony default export */ var squery = __webpack_exports__["default"] = (squery_sQuery);
 
 /***/ })
 /******/ ]);
