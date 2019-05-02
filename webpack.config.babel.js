@@ -14,6 +14,7 @@ export default function() {
 
         output: {
             path: path.resolve(__dirname, 'dist/'),
+            globalObject: 'typeof self !== \'undefined\' ? self : this',
             filename: '[name].js',
             publicPath: '/',
             libraryTarget: 'umd'
