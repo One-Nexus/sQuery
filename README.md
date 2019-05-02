@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.com/One-Nexus/sQuery.svg?branch=master)](https://travis-ci.com/One-Nexus/sQuery)
 [![codecov](https://codecov.io/gh/One-Nexus/sQuery/branch/master/graph/badge.svg)](https://codecov.io/gh/One-Nexus/sQuery)
 
-> Interact with DOM elements that follow the Synergy naming convention
+> Interact with Synergy modules/BEM DOM elements
 
 <img height="56px" src="http://www.onenexus.io/squery/images/squery-logo.png?v=2" />
 
@@ -90,9 +90,9 @@ sQuery('foo').getComponents('bar').addModifier('buzz');
 
 Checkout these other One-Nexus tools for working with Synergy modules:
 
-* [Cell](https://github.com/One-Nexus/Cell) - Style Synergy modules/BEM DOM elements using Sass
-* [Polymorph](https://github.com/One-Nexus/Polymorph) - Style Synergy modules/BEM DOM elements using JavaScript
-* [Lucid](https://github.com/One-Nexus/Lucid) - A set of higher-order React components for rendering Synergy modules/BEM DOM elements
+* [Cell](https://github.com/One-Nexus/Cell) - Style DOM elements that follow the Synergy naming convention (including BEM) using Sass
+* [Polymorph](https://github.com/One-Nexus/Polymorph) - Style DOM elements that follow the Synergy naming convention (including BEM) using JavaScript
+* [Lucid](https://github.com/One-Nexus/Lucid) - A set of Higher-Order React Components for rendering UI elements that follow the Synergy naming convention
 * [Synergy](https://github.com/One-Nexus/Synergy) - A front-end framework for creating modular, configurable and scalable UI components (all of the above in one packaged framework)
 
 ## Installation & Setup
@@ -140,6 +140,7 @@ sQuery.init();
 * [.setComponent()](https://github.com/One-Nexus/sQuery/wiki/.setComponent())
 * [.subComponent()](https://github.com/One-Nexus/sQuery/wiki/.subComponent())
 * [.subComponents()](https://github.com/One-Nexus/sQuery/wiki/.subComponent())
+* [.toggleModifier()](https://github.com/One-Nexus/sQuery/wiki/.toggleModifier())
 * [.unsetComponent()](https://github.com/One-Nexus/sQuery/wiki/.unsetComponent())
 
 ### Usage
