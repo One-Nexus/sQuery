@@ -1,12 +1,17 @@
 import * as API from '../api';
 
 export default function init(custom) {
+    var Synergy = window.Synergy || {};
+
     const options = Object.assign({
         elementProto: true,
         nodeListProto: true,
         preset: 'Synergy',
         Synergy: true,
-        alterMethodName: ['sQuery']
+        alterMethodName: ['sQuery'],
+        componentGlue: Synergy.componentGlue,
+        modifierGlue: Synergy.modifierGlue,
+        multipleClasses: Synergy.multipleClasses
     }, custom);
 
     options.alterMethodName = options.alterMethodName || [];
@@ -17,12 +22,7 @@ export default function init(custom) {
     }
 
     let [
-        componentGlue, 
-        modifierGlue, 
-        moduleNamespace, 
-        componentNamespace,
-        modifierNamespace,
-        multipleClasses
+        componentGlue, modifierGlue, moduleNamespace, componentNamespace, modifierNamespace, multipleClasses
     ] = [].slice.call(PRESETS[options.preset]);
 
     componentGlue = options.componentGlue || componentGlue;
@@ -30,7 +30,7 @@ export default function init(custom) {
     multipleClasses = typeof options.multipleClasses === 'undefined' ? multipleClasses : options.multipleClasses;
 
     if (options.Synergy) {
-        window.Synergy = window.Synergy || {};
+        window.Synergy = Synergy;
 
         Object.assign(window.Synergy, { componentGlue, modifierGlue, multipleClasses });
     }
