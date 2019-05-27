@@ -1,6 +1,6 @@
 {
   "name": "@onenexus/squery",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "Interact with Synergy modules/BEM DOM elements",
   "license": "MIT",
   "main": "dist/squery.js",

@@ -1151,12 +1151,16 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 function init(custom) {
+  var Synergy = window.Synergy || {};
   var options = Object.assign({
     elementProto: true,
     nodeListProto: true,
     preset: 'Synergy',
     Synergy: true,
-    alterMethodName: ['sQuery']
+    alterMethodName: ['sQuery'],
+    componentGlue: Synergy.componentGlue,
+    modifierGlue: Synergy.modifierGlue,
+    multipleClasses: Synergy.multipleClasses
   }, custom);
   options.alterMethodName = options.alterMethodName || [];
   var PRESETS = {
@@ -1178,7 +1182,7 @@ function init(custom) {
   multipleClasses = typeof options.multipleClasses === 'undefined' ? multipleClasses : options.multipleClasses;
 
   if (options.Synergy) {
-    window.Synergy = window.Synergy || {};
+    window.Synergy = Synergy;
     Object.assign(window.Synergy, {
       componentGlue: componentGlue,
       modifierGlue: modifierGlue,
