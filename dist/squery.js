@@ -279,6 +279,7 @@ __webpack_require__.d(api_namespaceObject, "modifier", function() { return modif
 __webpack_require__.d(api_namespaceObject, "module", function() { return module_module; });
 __webpack_require__.d(api_namespaceObject, "modules", function() { return module_module; });
 __webpack_require__.d(api_namespaceObject, "parent", function() { return parent_parent; });
+__webpack_require__.d(api_namespaceObject, "parentModule", function() { return parentModule; });
 __webpack_require__.d(api_namespaceObject, "remove", function() { return removeModifier; });
 __webpack_require__.d(api_namespaceObject, "removeModifier", function() { return removeModifier; });
 __webpack_require__.d(api_namespaceObject, "setComponent", function() { return setComponent; });
@@ -1086,6 +1087,20 @@ function module_module(node, moduleName, operator, config) {
     });
   }
 }
+// CONCATENATED MODULE: ./src/api/parentModule.js
+
+function parentModule(node, config) {
+  config = Object.assign(this || {}, config || {});
+
+  if (node instanceof NodeList || node instanceof Array) {
+    return [].slice.call(node).map(function (node) {
+      return parentModule(node, config);
+    });
+  }
+
+  var namespace = config.namespace || getNamespace(node, false, config);
+  return node.closest(".".concat(namespace, ", [class*='").concat(namespace + config.modifierGlue, "']"));
+}
 // CONCATENATED MODULE: ./src/api/subComponent.js
 
 
@@ -1128,6 +1143,8 @@ function subComponent_subComponent(node, subComponentName, operator, config) {
  // module
 
  // parent
+
+ // parentModule
 
  // removeModifier
 

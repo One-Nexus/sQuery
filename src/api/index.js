@@ -82,6 +82,11 @@ export {
     default as parent 
 } from './parent';
 
+// parentModule
+export { 
+    default as parentModule 
+} from './parentModule';
+
 // removeModifier
 export { 
     default as remove,
