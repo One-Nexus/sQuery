@@ -9,9 +9,9 @@ export default function init(custom) {
         preset: 'Synergy',
         Synergy: true,
         alterMethodName: ['sQuery'],
-        componentGlue: Synergy.componentGlue,
-        modifierGlue: Synergy.modifierGlue,
-        multipleClasses: Synergy.multipleClasses
+        componentGlue: (typeof sQuery !== 'undefined') && Synergy.componentGlue,
+        modifierGlue: (typeof sQuery !== 'undefined') && Synergy.modifierGlue,
+        multipleClasses: (typeof sQuery !== 'undefined') && Synergy.multipleClasses
     }, custom);
 
     options.alterMethodName = options.alterMethodName || [];
@@ -75,6 +75,10 @@ export default function init(custom) {
         if (options.elementProto) {
             methodName = options.alterMethodName.includes('elementProto') ? newMethodName : methodName;
 
+            if (Element.prototype[methodName] && Element.prototype[methodName].sQuery) {
+                Element.prototype[methodName] = undefined;
+            }
+
             if (typeof document.body[methodName] === 'undefined') {
                 Element.prototype[methodName] = function(...params) {
                     return method.bind({
@@ -83,11 +87,14 @@ export default function init(custom) {
                         multipleClasses
                     })(this, ...params);
                 }
+                Element.prototype[methodName].sQuery = true;
             }
         }
 
         if (options.nodeListProto) {
             methodName = options.alterMethodName.includes('nodeListProto') ? newMethodName : methodName;
+
+            // @todo conditionally add this if not exists (and delete if previously added by sQuery)
 
             NodeList.prototype[methodName] = function(...params) {
                 return method.bind({
@@ -96,6 +103,7 @@ export default function init(custom) {
                     multipleClasses
                 })(this, ...params);
             }
+            NodeList.prototype[methodName].sQuery = true;
         }
     }
 

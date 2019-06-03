@@ -1175,9 +1175,9 @@ function init(custom) {
     preset: 'Synergy',
     Synergy: true,
     alterMethodName: ['sQuery'],
-    componentGlue: Synergy.componentGlue,
-    modifierGlue: Synergy.modifierGlue,
-    multipleClasses: Synergy.multipleClasses
+    componentGlue: typeof sQuery !== 'undefined' && Synergy.componentGlue,
+    modifierGlue: typeof sQuery !== 'undefined' && Synergy.modifierGlue,
+    multipleClasses: typeof sQuery !== 'undefined' && Synergy.multipleClasses
   }, custom);
   options.alterMethodName = options.alterMethodName || [];
   var PRESETS = {
@@ -1259,6 +1259,10 @@ function init(custom) {
     if (options.elementProto) {
       methodName = options.alterMethodName.includes('elementProto') ? newMethodName : methodName;
 
+      if (Element.prototype[methodName] && Element.prototype[methodName].sQuery) {
+        Element.prototype[methodName] = undefined;
+      }
+
       if (typeof document.body[methodName] === 'undefined') {
         Element.prototype[methodName] = function () {
           for (var _len2 = arguments.length, params = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
@@ -1271,11 +1275,13 @@ function init(custom) {
             multipleClasses: multipleClasses
           }).apply(void 0, [this].concat(params));
         };
+
+        Element.prototype[methodName].sQuery = true;
       }
     }
 
     if (options.nodeListProto) {
-      methodName = options.alterMethodName.includes('nodeListProto') ? newMethodName : methodName;
+      methodName = options.alterMethodName.includes('nodeListProto') ? newMethodName : methodName; // @todo conditionally add this if not exists (and delete if previously added by sQuery)
 
       NodeList.prototype[methodName] = function () {
         for (var _len3 = arguments.length, params = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
@@ -1288,6 +1294,8 @@ function init(custom) {
           multipleClasses: multipleClasses
         }).apply(void 0, [this].concat(params));
       };
+
+      NodeList.prototype[methodName].sQuery = true;
     }
   };
 
