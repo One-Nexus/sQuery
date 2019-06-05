@@ -2,7 +2,7 @@
 [![Inline docs](http://inch-ci.org/github/One-Nexus/sQuery.svg?branch=master)](http://inch-ci.org/github/One-Nexus/sQuery)
 [![Build Status](https://travis-ci.com/One-Nexus/sQuery.svg?branch=master)](https://travis-ci.com/One-Nexus/sQuery)
 [![npm version](https://badge.fury.io/js/%40onenexus%2Fsquery.svg)](https://www.npmjs.com/package/@onenexus/squery)
-[![npm version](https://img.shields.io/npm/dm/@onenexus/squery.svg)](https://www.npmjs.com/package/@onenexus/squery)
+[![npm downloads](https://img.shields.io/npm/dm/@onenexus/squery.svg)](https://www.npmjs.com/package/@onenexus/squery)
 [![codecov](https://codecov.io/gh/One-Nexus/sQuery/branch/master/graph/badge.svg)](https://codecov.io/gh/One-Nexus/sQuery)
 
 > Interact with Synergy modules/BEM DOM elements
