@@ -138,6 +138,7 @@ sQuery.init();
 * [.module()](https://github.com/One-Nexus/sQuery/wiki/.module())
 * [.modules()](https://github.com/One-Nexus/sQuery/wiki/.module())
 * [.parent()](https://github.com/One-Nexus/sQuery/wiki/.parent())
+* [.parentModule()](https://github.com/One-Nexus/sQuery/wiki/.parentModule())
 * [.remove()](https://github.com/One-Nexus/sQuery/wiki/.removeModifier())
 * [.removeModifier()](https://github.com/One-Nexus/sQuery/wiki/.removeModifier())
 * [.setComponent()](https://github.com/One-Nexus/sQuery/wiki/.setComponent())
