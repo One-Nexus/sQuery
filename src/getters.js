@@ -1,11 +1,12 @@
-import sQuery from './squery';
+import INTERFACE from './squery';
 import init from './utilities/init';
 import * as API from './api/getters';
 
 // spoof env process to assist bundle size
 if (typeof process === 'undefined') window.process = { env: {} };
 
-sQuery = sQuery.bind(API);
+const sQuery = INTERFACE.bind(API);
+
 sQuery.init = init.bind(API);
 
 for (let entry of Object.entries(API)) {
