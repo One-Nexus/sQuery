@@ -414,6 +414,217 @@ function getNamespace(query, strict, config) {
     return query[1];
   }
 }
+// CONCATENATED MODULE: ./src/squery.js
+
+
+
+/** */
+
+function squery_sQuery(SynergyQuery, callback, defaults, custom, parser, API) {
+  API = API || this;
+  var Synergy = window.Synergy || {};
+  squery_sQuery.config = squery_sQuery.config || {};
+  var methods = {};
+  var config = getConfig(defaults, custom, parser);
+  var modifierGlue = config.modifierGlue || Synergy.modifierGlue || '-';
+  var componentGlue = config.componentGlue || Synergy.componentGlue || '_';
+  var multipleClasses = config.multipleClasses || Synergy.multipleClasses || false;
+  var namespace = getNamespace(SynergyQuery, false, {
+    componentGlue: componentGlue,
+    modifierGlue: modifierGlue
+  });
+  var DOMNodes = getDomNodes(SynergyQuery);
+
+  var _arr = Object.entries(API);
+
+  for (var _i = 0; _i < _arr.length; _i++) {
+    var entry = _arr[_i];
+    var key = entry[0],
+        method = entry[1];
+
+    if (squery_sQuery.config.methods && squery_sQuery.config.methods[key]) {
+      key = squery_sQuery.config.methods[key];
+    }
+
+    var internalConfig = {
+      namespace: namespace,
+      componentGlue: componentGlue,
+      modifierGlue: modifierGlue,
+      multipleClasses: multipleClasses
+    };
+
+    if (DOMNodes) {
+      methods[key] = method.bind(internalConfig, DOMNodes);
+    } else {
+      methods[key] = method.bind(internalConfig);
+    }
+  }
+
+  if (typeof callback === 'function') {
+    DOMNodes.forEach(function (node) {
+      return callback(node, config);
+    });
+  }
+
+  return Object.assign(methods, {
+    namespace: namespace,
+    nodes: DOMNodes,
+    node: DOMNodes ? DOMNodes[0] : null
+  });
+}
+
+/* harmony default export */ var squery = (squery_sQuery);
+// CONCATENATED MODULE: ./src/utilities/init.js
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+function init(custom, API) {
+  API = API || this;
+  var Synergy = window.Synergy || {};
+  var options = Object.assign({
+    elementProto: true,
+    nodeListProto: true,
+    preset: 'Synergy',
+    Synergy: true,
+    alterMethodName: ['sQuery'],
+    componentGlue: typeof sQuery !== 'undefined' && Synergy.componentGlue,
+    modifierGlue: typeof sQuery !== 'undefined' && Synergy.modifierGlue,
+    multipleClasses: typeof sQuery !== 'undefined' && Synergy.multipleClasses
+  }, custom);
+  options.alterMethodName = options.alterMethodName || [];
+  var PRESETS = {
+    BEM: ['__', '--', 'block', 'element', 'modifier', true],
+    Synergy: ['_', '-', 'module', 'component', 'modifier', false]
+  };
+
+  var _slice$call = [].slice.call(PRESETS[options.preset]),
+      _slice$call2 = _slicedToArray(_slice$call, 6),
+      componentGlue = _slice$call2[0],
+      modifierGlue = _slice$call2[1],
+      moduleNamespace = _slice$call2[2],
+      componentNamespace = _slice$call2[3],
+      modifierNamespace = _slice$call2[4],
+      multipleClasses = _slice$call2[5];
+
+  componentGlue = options.componentGlue || componentGlue;
+  modifierGlue = options.modifierGlue || modifierGlue;
+  multipleClasses = typeof options.multipleClasses === 'undefined' ? multipleClasses : options.multipleClasses;
+
+  if (options.Synergy) {
+    window.Synergy = Synergy;
+    Object.assign(window.Synergy, {
+      componentGlue: componentGlue,
+      modifierGlue: modifierGlue,
+      multipleClasses: multipleClasses
+    });
+  }
+
+  var methods = {};
+
+  var _arr2 = Object.entries(API);
+
+  var _loop = function _loop() {
+    var entry = _arr2[_i2];
+    var key = entry[0],
+        method = entry[1];
+    var methodName = key,
+        newMethodName = void 0;
+
+    if (options.alterMethodName.length) {
+      var moduleUpperCase = moduleNamespace[0].toUpperCase() + moduleNamespace.substring(1);
+      var componentUpperCase = componentNamespace[0].toUpperCase() + componentNamespace.substring(1);
+      var modifierUpperCase = modifierNamespace[0].toUpperCase() + modifierNamespace.substring(1);
+
+      if (methodName.indexOf('module') > -1) {
+        newMethodName = methodName.replace(new RegExp('module', 'g'), moduleNamespace);
+      }
+
+      if (methodName.indexOf('Module') > -1) {
+        newMethodName = methodName.replace(new RegExp('Module', 'g'), moduleUpperCase);
+      }
+
+      if (methodName.indexOf('component') > -1) {
+        newMethodName = methodName.replace(new RegExp('component', 'g'), componentNamespace);
+      }
+
+      if (methodName.indexOf('Component') > -1) {
+        newMethodName = methodName.replace(new RegExp('Component', 'g'), componentUpperCase);
+      } // @TODO do modifier renames
+
+
+      if (options.preset !== 'Synergy' && sQuery && options.alterMethodName.includes('sQuery')) {
+        sQuery[newMethodName] = function (node) {
+          var _this;
+
+          for (var _len = arguments.length, params = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+            params[_key - 1] = arguments[_key];
+          }
+
+          return (_this = this(node))[methodName].apply(_this, params);
+        };
+      }
+
+      methods[methodName] = newMethodName || methodName;
+    }
+
+    if (options.elementProto) {
+      methodName = options.alterMethodName.includes('elementProto') ? newMethodName : methodName;
+
+      if (Element.prototype[methodName] && Element.prototype[methodName].sQuery) {
+        Element.prototype[methodName] = undefined;
+      }
+
+      if (typeof document.body[methodName] === 'undefined') {
+        Element.prototype[methodName] = function () {
+          for (var _len2 = arguments.length, params = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+            params[_key2] = arguments[_key2];
+          }
+
+          return method.bind({
+            componentGlue: componentGlue,
+            modifierGlue: modifierGlue,
+            multipleClasses: multipleClasses
+          }).apply(void 0, [this].concat(params));
+        };
+
+        Element.prototype[methodName].sQuery = true;
+      }
+    }
+
+    if (options.nodeListProto) {
+      methodName = options.alterMethodName.includes('nodeListProto') ? newMethodName : methodName; // @todo conditionally add this if not exists (and delete if previously added by sQuery)
+
+      NodeList.prototype[methodName] = function () {
+        for (var _len3 = arguments.length, params = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+          params[_key3] = arguments[_key3];
+        }
+
+        return method.bind({
+          componentGlue: componentGlue,
+          modifierGlue: modifierGlue,
+          multipleClasses: multipleClasses
+        }).apply(void 0, [this].concat(params));
+      };
+
+      NodeList.prototype[methodName].sQuery = true;
+    }
+  };
+
+  for (var _i2 = 0; _i2 < _arr2.length; _i2++) {
+    _loop();
+  }
+
+  if (typeof sQuery !== 'undefined') {
+    sQuery.config = Object.assign(options, {
+      methods: methods
+    });
+  }
+}
 // CONCATENATED MODULE: ./src/utilities/isSafeElement.js
 function isSafeElement(node, namespace, _ref) {
   var modifierGlue = _ref.modifierGlue;
@@ -1157,169 +1368,7 @@ function subComponent_subComponent(node, subComponentName, operator, config) {
  // unsetComponent
 
 
-// CONCATENATED MODULE: ./src/utilities/init.js
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
-
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
-
-function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
-
-function init(custom) {
-  var Synergy = window.Synergy || {};
-  var options = Object.assign({
-    elementProto: true,
-    nodeListProto: true,
-    preset: 'Synergy',
-    Synergy: true,
-    alterMethodName: ['sQuery'],
-    componentGlue: typeof sQuery !== 'undefined' && Synergy.componentGlue,
-    modifierGlue: typeof sQuery !== 'undefined' && Synergy.modifierGlue,
-    multipleClasses: typeof sQuery !== 'undefined' && Synergy.multipleClasses
-  }, custom);
-  options.alterMethodName = options.alterMethodName || [];
-  var PRESETS = {
-    BEM: ['__', '--', 'block', 'element', 'modifier', true],
-    Synergy: ['_', '-', 'module', 'component', 'modifier', false]
-  };
-
-  var _slice$call = [].slice.call(PRESETS[options.preset]),
-      _slice$call2 = _slicedToArray(_slice$call, 6),
-      componentGlue = _slice$call2[0],
-      modifierGlue = _slice$call2[1],
-      moduleNamespace = _slice$call2[2],
-      componentNamespace = _slice$call2[3],
-      modifierNamespace = _slice$call2[4],
-      multipleClasses = _slice$call2[5];
-
-  componentGlue = options.componentGlue || componentGlue;
-  modifierGlue = options.modifierGlue || modifierGlue;
-  multipleClasses = typeof options.multipleClasses === 'undefined' ? multipleClasses : options.multipleClasses;
-
-  if (options.Synergy) {
-    window.Synergy = Synergy;
-    Object.assign(window.Synergy, {
-      componentGlue: componentGlue,
-      modifierGlue: modifierGlue,
-      multipleClasses: multipleClasses
-    });
-  }
-
-  var methods = {};
-
-  var _arr2 = Object.entries(api_namespaceObject);
-
-  var _loop = function _loop() {
-    var _arr2$_i = _slicedToArray(_arr2[_i2], 2),
-        key = _arr2$_i[0],
-        method = _arr2$_i[1];
-
-    var methodName = key,
-        newMethodName = void 0;
-
-    if (options.alterMethodName.length) {
-      var moduleUpperCase = moduleNamespace[0].toUpperCase() + moduleNamespace.substring(1);
-      var componentUpperCase = componentNamespace[0].toUpperCase() + componentNamespace.substring(1);
-      var modifierUpperCase = modifierNamespace[0].toUpperCase() + modifierNamespace.substring(1);
-
-      if (methodName.indexOf('module') > -1) {
-        newMethodName = methodName.replace(new RegExp('module', 'g'), moduleNamespace);
-      }
-
-      if (methodName.indexOf('Module') > -1) {
-        newMethodName = methodName.replace(new RegExp('Module', 'g'), moduleUpperCase);
-      }
-
-      if (methodName.indexOf('component') > -1) {
-        newMethodName = methodName.replace(new RegExp('component', 'g'), componentNamespace);
-      }
-
-      if (methodName.indexOf('Component') > -1) {
-        newMethodName = methodName.replace(new RegExp('Component', 'g'), componentUpperCase);
-      } // @TODO do modifier renames
-
-
-      if (options.preset !== 'Synergy' && sQuery && options.alterMethodName.includes('sQuery')) {
-        sQuery[newMethodName] = function (node) {
-          var _this;
-
-          for (var _len = arguments.length, params = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-            params[_key - 1] = arguments[_key];
-          }
-
-          return (_this = this(node))[methodName].apply(_this, params);
-        };
-      }
-
-      methods[methodName] = newMethodName || methodName;
-    }
-
-    if (options.elementProto) {
-      methodName = options.alterMethodName.includes('elementProto') ? newMethodName : methodName;
-
-      if (Element.prototype[methodName] && Element.prototype[methodName].sQuery) {
-        Element.prototype[methodName] = undefined;
-      }
-
-      if (typeof document.body[methodName] === 'undefined') {
-        Element.prototype[methodName] = function () {
-          for (var _len2 = arguments.length, params = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            params[_key2] = arguments[_key2];
-          }
-
-          return method.bind({
-            componentGlue: componentGlue,
-            modifierGlue: modifierGlue,
-            multipleClasses: multipleClasses
-          }).apply(void 0, [this].concat(params));
-        };
-
-        Element.prototype[methodName].sQuery = true;
-      }
-    }
-
-    if (options.nodeListProto) {
-      methodName = options.alterMethodName.includes('nodeListProto') ? newMethodName : methodName; // @todo conditionally add this if not exists (and delete if previously added by sQuery)
-
-      NodeList.prototype[methodName] = function () {
-        for (var _len3 = arguments.length, params = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-          params[_key3] = arguments[_key3];
-        }
-
-        return method.bind({
-          componentGlue: componentGlue,
-          modifierGlue: modifierGlue,
-          multipleClasses: multipleClasses
-        }).apply(void 0, [this].concat(params));
-      };
-
-      NodeList.prototype[methodName].sQuery = true;
-    }
-  };
-
-  for (var _i2 = 0; _i2 < _arr2.length; _i2++) {
-    _loop();
-  }
-
-  if (typeof sQuery !== 'undefined') {
-    sQuery.config = Object.assign(options, {
-      methods: methods
-    });
-  }
-}
-// CONCATENATED MODULE: ./src/squery.js
-function squery_slicedToArray(arr, i) { return squery_arrayWithHoles(arr) || squery_iterableToArrayLimit(arr, i) || squery_nonIterableRest(); }
-
-function squery_nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
-
-function squery_iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function squery_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
-
-
-
+// CONCATENATED MODULE: ./src/index.js
 
 
  // spoof env process to assist bundle size
@@ -1327,77 +1376,21 @@ function squery_arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 if (typeof process === 'undefined') window.process = {
   env: {}
 };
-/** */
+var src_sQuery = squery.bind(api_namespaceObject);
+src_sQuery.init = init.bind(api_namespaceObject);
 
-function squery_sQuery(SynergyQuery, callback, defaults, custom, parser) {
-  var Synergy = window.Synergy || {};
-  squery_sQuery.config = squery_sQuery.config || {};
-  var methods = {};
-  var config = getConfig(defaults, custom, parser);
-  var modifierGlue = config.modifierGlue || Synergy.modifierGlue || '-';
-  var componentGlue = config.componentGlue || Synergy.componentGlue || '_';
-  var multipleClasses = config.multipleClasses || Synergy.multipleClasses || false;
-  var namespace = getNamespace(SynergyQuery, false, {
-    componentGlue: componentGlue,
-    modifierGlue: modifierGlue
-  });
-  var DOMNodes = getDomNodes(SynergyQuery);
+var src_arr = Object.entries(api_namespaceObject);
 
-  var _arr = Object.entries(api_namespaceObject);
-
-  for (var _i = 0; _i < _arr.length; _i++) {
-    var _arr$_i = squery_slicedToArray(_arr[_i], 2),
-        key = _arr$_i[0],
-        method = _arr$_i[1];
-
-    if (squery_sQuery.config.methods && squery_sQuery.config.methods[key]) {
-      key = squery_sQuery.config.methods[key];
-    }
-
-    var internalConfig = {
-      namespace: namespace,
-      componentGlue: componentGlue,
-      modifierGlue: modifierGlue,
-      multipleClasses: multipleClasses
-    };
-
-    if (DOMNodes) {
-      methods[key] = method.bind(internalConfig, DOMNodes);
-    } else {
-      methods[key] = method.bind(internalConfig);
-    }
-  }
-
-  if (typeof callback === 'function') {
-    DOMNodes.forEach(function (node) {
-      return callback(node, config);
-    });
-  }
-
-  return Object.assign(methods, {
-    namespace: namespace,
-    nodes: DOMNodes,
-    node: DOMNodes ? DOMNodes[0] : null
-  });
-}
-
-squery_sQuery.init = init;
-
-var squery_arr2 = Object.entries(api_namespaceObject);
-
-for (var squery_i2 = 0; squery_i2 < squery_arr2.length; squery_i2++) {
-  var _arr2$_i = squery_slicedToArray(squery_arr2[squery_i2], 2),
-      squery_key = _arr2$_i[0],
-      squery_method = _arr2$_i[1];
-
-  squery_sQuery[squery_key] = squery_method;
+for (var src_i = 0; src_i < src_arr.length; src_i++) {
+  var src_entry = src_arr[src_i];
+  src_sQuery[src_entry[0]] = src_entry[1];
 }
 
 if (typeof window !== 'undefined') {
-  window.sQuery = squery_sQuery;
+  window.sQuery = src_sQuery;
 }
 
-/* harmony default export */ var squery = __webpack_exports__["default"] = (squery_sQuery);
+/* harmony default export */ var src = __webpack_exports__["default"] = (src_sQuery);
 
 /***/ })
 /******/ ]);

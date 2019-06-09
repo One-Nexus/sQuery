@@ -1,6 +1,6 @@
-import * as API from '../api';
+export default function init(custom, API) {
+    API = API || this;
 
-export default function init(custom) {
     var Synergy = window.Synergy || {};
 
     const options = Object.assign({
@@ -22,7 +22,12 @@ export default function init(custom) {
     }
 
     let [
-        componentGlue, modifierGlue, moduleNamespace, componentNamespace, modifierNamespace, multipleClasses
+        componentGlue, 
+        modifierGlue, 
+        moduleNamespace, 
+        componentNamespace, 
+        modifierNamespace, 
+        multipleClasses
     ] = [].slice.call(PRESETS[options.preset]);
 
     componentGlue = options.componentGlue || componentGlue;
@@ -37,7 +42,9 @@ export default function init(custom) {
 
     const methods = {};
 
-    for (let [key, method] of Object.entries(API)) {
+    for (let entry of Object.entries(API)) {
+        const key = entry[0], method = entry[1];
+
         let methodName = key, newMethodName;
     
         if (options.alterMethodName.length) {

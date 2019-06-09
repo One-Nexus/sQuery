@@ -1,15 +1,11 @@
 import getConfig from './utilities/getConfig';
 import getDomNodes from './utilities/getDOMNodes';
 import getNamespace from './utilities/getNamespace';
-import init from './utilities/init';
-
-import * as API from './api';
-
-// spoof env process to assist bundle size
-if (typeof process === 'undefined') window.process = { env: {} };
 
 /** */
-function sQuery(SynergyQuery, callback, defaults, custom, parser) {
+function sQuery(SynergyQuery, callback, defaults, custom, parser, API) {
+    API = API || this;
+
     var Synergy = window.Synergy || {};
 
     sQuery.config = sQuery.config || {};
@@ -24,7 +20,9 @@ function sQuery(SynergyQuery, callback, defaults, custom, parser) {
     const namespace = getNamespace(SynergyQuery, false, { componentGlue, modifierGlue });
     const DOMNodes = getDomNodes(SynergyQuery);
 
-    for (let [key, method] of Object.entries(API)) {
+    for (let entry of Object.entries(API)) {
+        const key = entry[0], method = entry[1];
+
         if (sQuery.config.methods && sQuery.config.methods[key]) {
             key = sQuery.config.methods[key];
         }
@@ -47,16 +45,6 @@ function sQuery(SynergyQuery, callback, defaults, custom, parser) {
         nodes: DOMNodes,
         node: DOMNodes ? DOMNodes[0] : null
     });
-}
-
-sQuery.init = init;
-
-for (let [key, method] of Object.entries(API)) {
-    sQuery[key] = method;
-}
-
-if (typeof window !== 'undefined') {
-    window.sQuery = sQuery;
 }
 
 export default sQuery;

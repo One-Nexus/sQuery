@@ -3,14 +3,12 @@ import UglifyJsPlugin from 'uglifyjs-webpack-plugin';
 
 export default function() {
     const entry = {
-        'squery': './src/squery.js',
-        'squery.min': './src/squery.js',
+        'squery': './src/index.js',
+        'squery.min': './src/index.js',
     };
 
     return {
         entry,
-
-        mode: 'production',
 
         output: {
             path: path.resolve(__dirname, 'dist/'),
@@ -19,6 +17,8 @@ export default function() {
             publicPath: '/',
             libraryTarget: 'umd'
         },
+
+        mode: 'production',
 
         optimization: {
             minimizer: [
@@ -37,19 +37,13 @@ export default function() {
             rules: [{
                 test: /\.(js)$/,
                 exclude: /node_modules/,
-                use: {
-                    loader: 'babel-loader'
-                }
+                loader: 'babel-loader'
             }]
         },
 
         node: {
             process: false,
             Buffer: false
-        },
-
-        stats: { colors: true },
-
-        devtool: false
+        }
     }
 };

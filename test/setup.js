@@ -1,8 +1,8 @@
 import assert from 'assert';
 import jsdom from 'jsdom-global';
 import deepExtend from 'deep-extend';
-import sQuery from '../src/squery';
 import NodeListsAreEqual from './nodeListsAreEqual';
+import sQuery from '../src';
 
 jsdom();
 
