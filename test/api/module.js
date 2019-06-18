@@ -34,7 +34,7 @@ describe('sQuery `component` API', () => {
         describe('on a single module', () => {
             it('should find all specified child modules', () => {
                 assert(NodeListsAreEqual(
-                    sQuery().module(document.getElementById('SVRNE'), 'fizz'),
+                    sQuery(document.getElementById('SVRNE')).module('fizz'),
                     document.querySelectorAll('#HH156, #A0BG9, #ZSAE6, #N1WY1')
                 ));
             });
@@ -43,7 +43,7 @@ describe('sQuery `component` API', () => {
         describe('on multiple modules', () => {
             it('should find all specified child modules', () => {
                 assert(NodeListsAreEqual(
-                    sQuery().module(document.querySelectorAll('#SVRNE, #HY7S3'), 'fizz'),
+                    sQuery(document.querySelectorAll('#SVRNE, #HY7S3')).module('fizz'),
                     document.querySelectorAll('#HH156, #A0BG9, #ZSAE6, #N1WY1')
                 ));
             });
@@ -52,10 +52,10 @@ describe('sQuery `component` API', () => {
 
     describe('when used with `is` operator', () => {
         it('should determine if element is the specified module', () => {
-            assert(sQuery().module(document.getElementById('SVRNE'), 'foo', 'is'));
-            assert(sQuery().module(document.getElementById('HH156'), 'fizz', 'is'));
-            assert(!sQuery().module(document.getElementById('SVRNE'), 'fizz', 'is'));
-            assert(!sQuery().module(document.getElementById('HH156'), 'foo', 'is'));
+            assert(sQuery(document.getElementById('SVRNE')).module('foo', 'is'));
+            assert(sQuery(document.getElementById('HH156')).module('fizz', 'is'));
+            assert(!sQuery(document.getElementById('SVRNE')).module('fizz', 'is'));
+            assert(!sQuery(document.getElementById('HH156')).module('foo', 'is'));
         });
     });
 

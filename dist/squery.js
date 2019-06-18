@@ -338,15 +338,17 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
  */
 
 function getDomNodes(query) {
-  if (query instanceof NodeList) {
+  if (query instanceof NodeList || query instanceof HTMLElement) {
     return query;
   }
 
-  if (query instanceof HTMLElement) {
-    return [query];
-  }
-
   if (query instanceof Array) {
+    if (query.every(function (item) {
+      return item instanceof HTMLElement;
+    })) {
+      return query;
+    }
+
     return getDomNodes(query[0]);
   }
 
@@ -361,6 +363,8 @@ function getDomNodes(query) {
   if (typeof query === 'string' && query.match("^[a-zA-Z0-9_-]+$")) {
     return document.querySelectorAll(".".concat(query, ", [class*=\"").concat(query, "-\"]"));
   }
+
+  return [];
 }
 // CONCATENATED MODULE: ./src/utilities/getNamespace.js
 function getNamespace_typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { getNamespace_typeof = function _typeof(obj) { return typeof obj; }; } else { getNamespace_typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return getNamespace_typeof(obj); }
@@ -421,7 +425,7 @@ function getNamespace(query, strict, config) {
 /** */
 
 function squery_sQuery(SynergyQuery, callback, defaults, custom, parser, API) {
-  API = API || this;
+  API = API || squery_sQuery.API;
   var Synergy = window.Synergy || {};
   squery_sQuery.config = squery_sQuery.config || {};
   var methods = {};
@@ -429,7 +433,7 @@ function squery_sQuery(SynergyQuery, callback, defaults, custom, parser, API) {
   var modifierGlue = config.modifierGlue || Synergy.modifierGlue || '-';
   var componentGlue = config.componentGlue || Synergy.componentGlue || '_';
   var multipleClasses = config.multipleClasses || Synergy.multipleClasses || false;
-  var namespace = getNamespace(SynergyQuery, false, {
+  var namespace = getNamespace(SynergyQuery, true, {
     componentGlue: componentGlue,
     modifierGlue: modifierGlue
   });
@@ -441,19 +445,13 @@ function squery_sQuery(SynergyQuery, callback, defaults, custom, parser, API) {
     var entry = _arr[_i];
     var key = entry[0],
         method = entry[1];
-
-    if (squery_sQuery.config.methods && squery_sQuery.config.methods[key]) {
-      key = squery_sQuery.config.methods[key];
-    }
-
     var internalConfig = {
-      namespace: namespace,
       componentGlue: componentGlue,
       modifierGlue: modifierGlue,
       multipleClasses: multipleClasses
     };
 
-    if (DOMNodes) {
+    if (DOMNodes && (DOMNodes.length || DOMNodes instanceof HTMLElement)) {
       methods[key] = method.bind(internalConfig, DOMNodes);
     } else {
       methods[key] = method.bind(internalConfig);
@@ -466,54 +464,75 @@ function squery_sQuery(SynergyQuery, callback, defaults, custom, parser, API) {
     });
   }
 
-  return Object.assign(methods, {
+  var nodes = Array.from(DOMNodes instanceof HTMLElement ? [DOMNodes] : DOMNodes);
+  return Object.assign(DOMNodes, methods, {
     namespace: namespace,
-    nodes: DOMNodes,
-    node: DOMNodes ? DOMNodes[0] : null
+    nodes: nodes,
+    node: nodes[0]
   });
 }
 
 /* harmony default export */ var squery = (squery_sQuery);
+// CONCATENATED MODULE: ./src/utilities/BEM-API.js
+function BEMAPI(API) {
+  var NEW_API = {};
+
+  var _arr = Object.entries(API);
+
+  for (var _i = 0; _i < _arr.length; _i++) {
+    var entry = _arr[_i];
+    var key = entry[0],
+        method = entry[1];
+    var methodName = key;
+
+    if (methodName.indexOf('module') > -1) {
+      methodName = methodName.replace(new RegExp('module', 'g'), 'block');
+    }
+
+    if (methodName.indexOf('Module') > -1) {
+      methodName = methodName.replace(new RegExp('Module', 'g'), 'Block');
+    }
+
+    if (methodName.indexOf('component') > -1) {
+      methodName = methodName.replace(new RegExp('component', 'g'), 'element');
+    }
+
+    if (methodName.indexOf('Component') > -1) {
+      methodName = methodName.replace(new RegExp('Component', 'g'), 'Element');
+    }
+
+    NEW_API[methodName] = method;
+  }
+
+  return NEW_API;
+}
 // CONCATENATED MODULE: ./src/utilities/init.js
-function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
-
-function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
-
-function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
-
-function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 function init(custom, API) {
-  API = API || this;
   var Synergy = window.Synergy || {};
+  API = API || this;
   var options = Object.assign({
     elementProto: true,
     nodeListProto: true,
     preset: 'Synergy',
     Synergy: true,
-    alterMethodName: ['sQuery'],
-    componentGlue: typeof sQuery !== 'undefined' && Synergy.componentGlue,
-    modifierGlue: typeof sQuery !== 'undefined' && Synergy.modifierGlue,
-    multipleClasses: typeof sQuery !== 'undefined' && Synergy.multipleClasses
+    componentGlue: typeof sQuery !== 'undefined' && Synergy.componentGlue || '_',
+    modifierGlue: typeof sQuery !== 'undefined' && Synergy.modifierGlue || '-',
+    multipleClasses: typeof sQuery !== 'undefined' && Synergy.multipleClasses || false
   }, custom);
-  options.alterMethodName = options.alterMethodName || [];
-  var PRESETS = {
-    BEM: ['__', '--', 'block', 'element', 'modifier', true],
-    Synergy: ['_', '-', 'module', 'component', 'modifier', false]
-  };
 
-  var _slice$call = [].slice.call(PRESETS[options.preset]),
-      _slice$call2 = _slicedToArray(_slice$call, 6),
-      componentGlue = _slice$call2[0],
-      modifierGlue = _slice$call2[1],
-      moduleNamespace = _slice$call2[2],
-      componentNamespace = _slice$call2[3],
-      modifierNamespace = _slice$call2[4],
-      multipleClasses = _slice$call2[5];
+  if (options.preset === 'BEM') {
+    options.componentGlue = custom.componentGlue || '__';
+    options.modifierGlue = custom.modifierGlue || '--';
+    options.multipleClasses = custom.multipleClasses || true;
+    options.elementProto = custom.elementProto || false;
+    options.nodeListProto = custom.nodeListProto || false;
+    API = BEMAPI(API);
+  }
 
-  componentGlue = options.componentGlue || componentGlue;
-  modifierGlue = options.modifierGlue || modifierGlue;
-  multipleClasses = typeof options.multipleClasses === 'undefined' ? multipleClasses : options.multipleClasses;
+  var componentGlue = options.componentGlue,
+      modifierGlue = options.modifierGlue,
+      multipleClasses = options.multipleClasses;
 
   if (options.Synergy) {
     window.Synergy = Synergy;
@@ -524,65 +543,22 @@ function init(custom, API) {
     });
   }
 
-  var methods = {};
-
-  var _arr2 = Object.entries(API);
+  var _arr = Object.entries(API);
 
   var _loop = function _loop() {
-    var entry = _arr2[_i2];
+    var entry = _arr[_i];
     var key = entry[0],
         method = entry[1];
-    var methodName = key,
-        newMethodName = void 0;
-
-    if (options.alterMethodName.length) {
-      var moduleUpperCase = moduleNamespace[0].toUpperCase() + moduleNamespace.substring(1);
-      var componentUpperCase = componentNamespace[0].toUpperCase() + componentNamespace.substring(1);
-      var modifierUpperCase = modifierNamespace[0].toUpperCase() + modifierNamespace.substring(1);
-
-      if (methodName.indexOf('module') > -1) {
-        newMethodName = methodName.replace(new RegExp('module', 'g'), moduleNamespace);
-      }
-
-      if (methodName.indexOf('Module') > -1) {
-        newMethodName = methodName.replace(new RegExp('Module', 'g'), moduleUpperCase);
-      }
-
-      if (methodName.indexOf('component') > -1) {
-        newMethodName = methodName.replace(new RegExp('component', 'g'), componentNamespace);
-      }
-
-      if (methodName.indexOf('Component') > -1) {
-        newMethodName = methodName.replace(new RegExp('Component', 'g'), componentUpperCase);
-      } // @TODO do modifier renames
-
-
-      if (options.preset !== 'Synergy' && sQuery && options.alterMethodName.includes('sQuery')) {
-        sQuery[newMethodName] = function (node) {
-          var _this;
-
-          for (var _len = arguments.length, params = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-            params[_key - 1] = arguments[_key];
-          }
-
-          return (_this = this(node))[methodName].apply(_this, params);
-        };
-      }
-
-      methods[methodName] = newMethodName || methodName;
-    }
 
     if (options.elementProto) {
-      methodName = options.alterMethodName.includes('elementProto') ? newMethodName : methodName;
-
-      if (Element.prototype[methodName] && Element.prototype[methodName].sQuery) {
-        Element.prototype[methodName] = undefined;
+      if (Element.prototype[key] && Element.prototype[key].sQuery) {
+        Element.prototype[key] = undefined;
       }
 
-      if (typeof document.body[methodName] === 'undefined') {
-        Element.prototype[methodName] = function () {
-          for (var _len2 = arguments.length, params = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-            params[_key2] = arguments[_key2];
+      if (typeof document.body[key] === 'undefined') {
+        Element.prototype[key] = function () {
+          for (var _len = arguments.length, params = new Array(_len), _key = 0; _key < _len; _key++) {
+            params[_key] = arguments[_key];
           }
 
           return method.bind({
@@ -592,16 +568,15 @@ function init(custom, API) {
           }).apply(void 0, [this].concat(params));
         };
 
-        Element.prototype[methodName].sQuery = true;
+        Element.prototype[key].sQuery = true;
       }
     }
 
     if (options.nodeListProto) {
-      methodName = options.alterMethodName.includes('nodeListProto') ? newMethodName : methodName; // @todo conditionally add this if not exists (and delete if previously added by sQuery)
-
-      NodeList.prototype[methodName] = function () {
-        for (var _len3 = arguments.length, params = new Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-          params[_key3] = arguments[_key3];
+      // @todo conditionally add this if not exists (and delete if previously added by sQuery)
+      NodeList.prototype[key] = function () {
+        for (var _len2 = arguments.length, params = new Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+          params[_key2] = arguments[_key2];
         }
 
         return method.bind({
@@ -611,29 +586,39 @@ function init(custom, API) {
         }).apply(void 0, [this].concat(params));
       };
 
-      NodeList.prototype[methodName].sQuery = true;
+      NodeList.prototype[key].sQuery = true;
     }
   };
 
-  for (var _i2 = 0; _i2 < _arr2.length; _i2++) {
+  for (var _i = 0; _i < _arr.length; _i++) {
     _loop();
   }
 
   if (typeof sQuery !== 'undefined') {
-    sQuery.config = Object.assign(options, {
-      methods: methods
+    Object.assign(sQuery, {
+      config: options,
+      API: API
     });
   }
 }
 // CONCATENATED MODULE: ./src/utilities/isSafeElement.js
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+function _objectWithoutProperties(source, excluded) { if (source == null) return {}; var target = _objectWithoutPropertiesLoose(source, excluded); var key, i; if (Object.getOwnPropertySymbols) { var sourceSymbolKeys = Object.getOwnPropertySymbols(source); for (i = 0; i < sourceSymbolKeys.length; i++) { key = sourceSymbolKeys[i]; if (excluded.indexOf(key) >= 0) continue; if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue; target[key] = source[key]; } } return target; }
+
+function _objectWithoutPropertiesLoose(source, excluded) { if (source == null) return {}; var target = {}; var sourceKeys = Object.keys(source); var key, i; for (i = 0; i < sourceKeys.length; i++) { key = sourceKeys[i]; if (excluded.indexOf(key) >= 0) continue; target[key] = source[key]; } return target; }
+
 function isSafeElement(node, namespace, _ref) {
-  var modifierGlue = _ref.modifierGlue;
+  var modifierGlue = _ref.modifierGlue,
+      options = _objectWithoutProperties(_ref, ["modifierGlue"]);
 
   if (node instanceof NodeList || node instanceof Array) {
     return node.every(function (node) {
-      return isSafeElement(node, namespace, {
+      return isSafeElement(node, namespace, _objectSpread({
         modifierGlue: modifierGlue
-      });
+      }, options));
     });
   }
 
@@ -676,7 +661,7 @@ function addModifier(node, modifier, config) {
     node.repaint();
   }
 
-  return node;
+  return sQuery.config.elementProto ? node : sQuery(node);
 }
 // CONCATENATED MODULE: ./src/api/parent.js
 
@@ -699,7 +684,7 @@ function parent_parent(node, query, config) {
     $query = namespace + componentGlue + $query;
   }
 
-  var parentComponent = $query && node.closest(".".concat($query, ", [class*='").concat($query + modifierGlue, "']"));
+  var parentComponent = $query && node.closest(".".concat($query, ", [class*='").concat($query + modifierGlue, "']")); // console.log(`.${$query}, [class*='${$query + modifierGlue}']`, config, parentComponent);
 
   if (parentComponent) {
     return parentComponent;
@@ -736,9 +721,9 @@ function filterElements(node, elements, subComponent, config) {
   return elements;
 }
 // CONCATENATED MODULE: ./src/api/getComponents.js
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+function getComponents_objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { getComponents_defineProperty(target, key, source[key]); }); } return target; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function getComponents_defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
 
@@ -768,10 +753,10 @@ function getComponents(node, componentName, config) {
   }
 
   components = [].slice.call(components).filter(function (element) {
-    var sourceNamespace = getNamespace(node, true, _objectSpread({}, config, {
+    var sourceNamespace = getNamespace(node, true, getComponents_objectSpread({}, config, {
       namespace: namespace
     }));
-    var targetNamespace = getNamespace(element, true, _objectSpread({}, config, {
+    var targetNamespace = getNamespace(element, true, getComponents_objectSpread({}, config, {
       namespace: namespace
     }));
     var sourceDepth = (sourceNamespace.match(new RegExp(componentGlue, 'g')) || []).length;
@@ -811,7 +796,7 @@ function getComponents(node, componentName, config) {
     return modifierCriteria && targetDepth === sourceDepth;
   });
   components = filterElements(node, components, subComponent, config);
-  return components;
+  return sQuery.config.elementProto ? components : sQuery(components);
 }
 // CONCATENATED MODULE: ./src/api/getComponent.js
 
@@ -970,7 +955,7 @@ function getModules(node, moduleName, config) {
       return className.indexOf(moduleName) === 0;
     });
   });
-  return modules;
+  return sQuery.config.elementProto ? modules : sQuery(modules);
 }
 // CONCATENATED MODULE: ./src/api/hasModifier.js
 
@@ -1310,7 +1295,8 @@ function parentModule(node, config) {
   }
 
   var namespace = config.namespace || getNamespace(node, false, config);
-  return node.closest(".".concat(namespace, ", [class*='").concat(namespace + config.modifierGlue, "']"));
+  var target = node.closest(".".concat(namespace, ", [class*='").concat(namespace + config.modifierGlue, "']"));
+  return sQuery.config.elementProto ? target : sQuery(target);
 }
 // CONCATENATED MODULE: ./src/api/subComponent.js
 
@@ -1376,21 +1362,20 @@ function subComponent_subComponent(node, subComponentName, operator, config) {
 if (typeof process === 'undefined') window.process = {
   env: {}
 };
-var src_sQuery = squery.bind(api_namespaceObject);
-src_sQuery.init = init.bind(api_namespaceObject);
+squery.init = init.bind(api_namespaceObject);
 
 var src_arr = Object.entries(api_namespaceObject);
 
 for (var src_i = 0; src_i < src_arr.length; src_i++) {
   var src_entry = src_arr[src_i];
-  src_sQuery[src_entry[0]] = src_entry[1];
+  squery[src_entry[0]] = src_entry[1];
 }
 
 if (typeof window !== 'undefined') {
-  window.sQuery = src_sQuery;
+  window.sQuery = squery;
 }
 
-/* harmony default export */ var src = __webpack_exports__["default"] = (src_sQuery);
+/* harmony default export */ var src = __webpack_exports__["default"] = (squery);
 
 /***/ })
 /******/ ]);

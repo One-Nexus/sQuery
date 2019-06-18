@@ -23,5 +23,5 @@ export default function getModules(node, moduleName, config) {
         });
     });
 
-    return modules;
+    return sQuery.config.elementProto ? modules : sQuery(modules);
 }

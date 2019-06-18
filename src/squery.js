@@ -4,7 +4,7 @@ import getNamespace from './utilities/getNamespace';
 
 /** */
 function sQuery(SynergyQuery, callback, defaults, custom, parser, API) {
-    API = API || this;
+    API = API || sQuery.API;
 
     var Synergy = window.Synergy || {};
 
@@ -17,19 +17,14 @@ function sQuery(SynergyQuery, callback, defaults, custom, parser, API) {
     const componentGlue   = config.componentGlue   || Synergy.componentGlue   || '_';
     const multipleClasses = config.multipleClasses || Synergy.multipleClasses || false;
 
-    const namespace = getNamespace(SynergyQuery, false, { componentGlue, modifierGlue });
+    const namespace = getNamespace(SynergyQuery, true, { componentGlue, modifierGlue });
     const DOMNodes = getDomNodes(SynergyQuery);
 
     for (let entry of Object.entries(API)) {
         const key = entry[0], method = entry[1];
+        const internalConfig = { componentGlue, modifierGlue, multipleClasses };
 
-        if (sQuery.config.methods && sQuery.config.methods[key]) {
-            key = sQuery.config.methods[key];
-        }
-
-        const internalConfig = { namespace, componentGlue, modifierGlue, multipleClasses };
-
-        if (DOMNodes) {
+        if (DOMNodes && (DOMNodes.length || DOMNodes instanceof HTMLElement)) {
             methods[key] = method.bind(internalConfig, DOMNodes);
         } else {
             methods[key] = method.bind(internalConfig);
@@ -40,10 +35,12 @@ function sQuery(SynergyQuery, callback, defaults, custom, parser, API) {
         DOMNodes.forEach(node => callback(node, config));
     }
 
-    return Object.assign(methods, { 
+    const nodes = Array.from(DOMNodes instanceof HTMLElement ? [DOMNodes] : DOMNodes);
+
+    return Object.assign(DOMNodes, methods, { 
         namespace, 
-        nodes: DOMNodes,
-        node: DOMNodes ? DOMNodes[0] : null
+        nodes,
+        node: nodes[0]
     });
 }
 

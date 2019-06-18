@@ -6,15 +6,15 @@ import isValidSelector from './isValidSelector';
  * @param {*} query 
  */
 export default function getDomNodes(query) {
-    if (query instanceof NodeList) {
+    if (query instanceof NodeList || query instanceof HTMLElement) {
         return query;
     }
 
-    if (query instanceof HTMLElement) {
-        return [query];
-    }
-
     if (query instanceof Array) {
+        if (query.every(item => item instanceof HTMLElement)) {
+            return query;
+        }
+
         return getDomNodes(query[0]);
     }
 
@@ -29,4 +29,6 @@ export default function getDomNodes(query) {
     if (typeof query === 'string' && query.match(`^[a-zA-Z0-9_-]+$`)) {
         return document.querySelectorAll(`.${query}, [class*="${query}-"]`);
     }
+
+    return [];
 }

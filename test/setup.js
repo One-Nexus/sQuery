@@ -6,15 +6,11 @@ import sQuery from '../src';
 
 jsdom();
 
-sQuery.init();
-
-sQuery.config = {
-    singleClass: true
-}
-
 Object.assign(global, {
     deepExtend,
     assert,
     sQuery,
     NodeListsAreEqual
 });
+
+sQuery.init();

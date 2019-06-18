@@ -19,6 +19,8 @@ export default function parent(node, query, config) {
 
     const parentComponent = $query && node.closest(`.${$query}, [class*='${$query + modifierGlue}']`);
 
+    // console.log(`.${$query}, [class*='${$query + modifierGlue}']`, config, parentComponent);
+
     if (parentComponent) {
         return parentComponent;
     }

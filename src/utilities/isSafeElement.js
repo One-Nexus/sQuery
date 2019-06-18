@@ -1,6 +1,6 @@
-export default function isSafeElement(node, namespace, { modifierGlue }) {
+export default function isSafeElement(node, namespace, { modifierGlue, ...options }) {
     if (node instanceof NodeList || node instanceof Array) {
-        return node.every(node => isSafeElement(node, namespace, { modifierGlue }));
+        return node.every(node => isSafeElement(node, namespace, { modifierGlue, ...options }));
     }
 
     const matchedClasses = [].slice.call(node.classList).filter(className => {

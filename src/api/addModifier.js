@@ -27,5 +27,5 @@ export default function addModifier(node, modifier, config) {
         node.repaint();
     }
 
-    return node;
+    return sQuery.config.elementProto ? node : sQuery(node);
 }

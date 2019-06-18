@@ -75,12 +75,6 @@ describe('sQuery function', () => {
         });
     });
 
-    describe('invoked with invalid selector', () => {
-        it('should retreive expected DOM nodes', () => {
-            assert(!sQuery('$').nodes);
-        });
-    });
-
     describe('invoked with callback function', () => {
         beforeEach('initiate callback', () => {
             sQuery('.fizz', el => el.classList.add('lorem'));
