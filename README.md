@@ -188,7 +188,7 @@ sQuery.getComponents(document.querySelectorAll('.accordion'), 'panel', {
 
 #### Via Element/NodeList Prototype
 
-* Requires setting up via the [`sQuery.init()` method](#init)
+* Requires setting up via the [`sQuery.init()` method](https://github.com/One-Nexus/sQuery/wiki/.init())
 * Automatically passes modifier/component glue
 
 > This may be useful and convenient, but use with caution as it is recommended to avoid modifying JavaScript prototypes

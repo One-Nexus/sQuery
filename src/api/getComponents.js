@@ -72,5 +72,5 @@ export default function getComponents(node, componentName, config) {
 
     components = filterElements(node, components, subComponent, config);
 
-    return sQuery.config.elementProto ? components : sQuery(components);
+    return (typeof sQuery === 'function') ? sQuery(components) : components;
 }

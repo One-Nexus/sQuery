@@ -29,5 +29,5 @@ export default function removeModifier(node, modifier, config) {
         node.repaint();
     }
 
-    return node;
+    return (typeof sQuery === 'function') ? sQuery(node) : node;
 }

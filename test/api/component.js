@@ -62,7 +62,7 @@ describe('sQuery `component` API', () => {
         describe('on a single sub-component', () => {
             it('should not return any elements', () => {
                 assert(NodeListsAreEqual(
-                    sQuery().component(document.getElementById('EI7RQ')),
+                    sQuery().component(document.getElementById('EI7RQ')).nodes,
                     document.querySelectorAll('null')
                 ));
             });

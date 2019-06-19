@@ -10,5 +10,5 @@ export default function parentModule(node, config) {
     const namespace = config.namespace || getNamespace(node, false, config);
     const target = node.closest(`.${namespace}, [class*='${namespace + config.modifierGlue}']`);
 
-    return sQuery.config.elementProto ? target : sQuery(target);
+    return (typeof sQuery === 'function') ? sQuery(target) : target;
 }

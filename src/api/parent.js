@@ -19,10 +19,8 @@ export default function parent(node, query, config) {
 
     const parentComponent = $query && node.closest(`.${$query}, [class*='${$query + modifierGlue}']`);
 
-    // console.log(`.${$query}, [class*='${$query + modifierGlue}']`, config, parentComponent);
-
     if (parentComponent) {
-        return parentComponent;
+        return (typeof sQuery === 'function') ? sQuery(parentComponent) : parentComponent;
     }
 
     namespace = config.namespace || getNamespace(node, true, config);
@@ -34,6 +32,6 @@ export default function parent(node, query, config) {
     const parentSubComponent = $query && node.closest(`.${$query}, [class*='${$query + modifierGlue}']`);
 
     if (parentSubComponent) {
-        return parentSubComponent;
+        return (typeof sQuery === 'function') ? sQuery(parentSubComponent) : parentSubComponent;
     }
 }

@@ -661,7 +661,7 @@ function addModifier(node, modifier, config) {
     node.repaint();
   }
 
-  return sQuery.config.elementProto ? node : sQuery(node);
+  return typeof sQuery === 'function' ? sQuery(node) : node;
 }
 // CONCATENATED MODULE: ./src/api/parent.js
 
@@ -684,10 +684,10 @@ function parent_parent(node, query, config) {
     $query = namespace + componentGlue + $query;
   }
 
-  var parentComponent = $query && node.closest(".".concat($query, ", [class*='").concat($query + modifierGlue, "']")); // console.log(`.${$query}, [class*='${$query + modifierGlue}']`, config, parentComponent);
+  var parentComponent = $query && node.closest(".".concat($query, ", [class*='").concat($query + modifierGlue, "']"));
 
   if (parentComponent) {
-    return parentComponent;
+    return typeof sQuery === 'function' ? sQuery(parentComponent) : parentComponent;
   }
 
   namespace = config.namespace || getNamespace(node, true, config);
@@ -699,7 +699,7 @@ function parent_parent(node, query, config) {
   var parentSubComponent = $query && node.closest(".".concat($query, ", [class*='").concat($query + modifierGlue, "']"));
 
   if (parentSubComponent) {
-    return parentSubComponent;
+    return typeof sQuery === 'function' ? sQuery(parentSubComponent) : parentSubComponent;
   }
 }
 // CONCATENATED MODULE: ./src/utilities/filterElements.js
@@ -796,7 +796,7 @@ function getComponents(node, componentName, config) {
     return modifierCriteria && targetDepth === sourceDepth;
   });
   components = filterElements(node, components, subComponent, config);
-  return sQuery.config.elementProto ? components : sQuery(components);
+  return typeof sQuery === 'function' ? sQuery(components) : components;
 }
 // CONCATENATED MODULE: ./src/api/getComponent.js
 
@@ -955,7 +955,7 @@ function getModules(node, moduleName, config) {
       return className.indexOf(moduleName) === 0;
     });
   });
-  return sQuery.config.elementProto ? modules : sQuery(modules);
+  return typeof sQuery === 'function' ? sQuery(modules) : modules;
 }
 // CONCATENATED MODULE: ./src/api/hasModifier.js
 
@@ -1213,7 +1213,7 @@ function removeModifier(node, modifier, config) {
     node.repaint();
   }
 
-  return node;
+  return typeof sQuery === 'function' ? sQuery(node) : node;
 }
 // CONCATENATED MODULE: ./src/api/toggleModifier.js
 
@@ -1296,7 +1296,7 @@ function parentModule(node, config) {
 
   var namespace = config.namespace || getNamespace(node, false, config);
   var target = node.closest(".".concat(namespace, ", [class*='").concat(namespace + config.modifierGlue, "']"));
-  return sQuery.config.elementProto ? target : sQuery(target);
+  return typeof sQuery === 'function' ? sQuery(target) : target;
 }
 // CONCATENATED MODULE: ./src/api/subComponent.js
 
