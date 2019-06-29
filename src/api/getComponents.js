@@ -25,6 +25,10 @@ export default function getComponents(node, componentName, config) {
         const query = namespace + componentGlue + componentName;
 
         components = node.querySelectorAll(`.${query}, [class*='${query + modifierGlue}']`);
+
+        if (!components.length) {
+            components = node.querySelectorAll(`[class*='${namespace + componentGlue}'][class*='${componentGlue + componentName}']`);
+        }
     }
 
     components = [].slice.call(components).filter(element => {
@@ -37,7 +41,7 @@ export default function getComponents(node, componentName, config) {
         // Special condition: if no componentName passed and we want sub-components,
         // find ALL child sub-components, as parent modules cannot have direct
         // descendant sub-components
-        if (subComponent && !componentName && sourceNamespace.indexOf(componentGlue) === -1) {
+        if (subComponent && sourceNamespace.indexOf(componentGlue) === -1) {
             return true;
         }
 
